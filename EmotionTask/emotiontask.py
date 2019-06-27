@@ -30,6 +30,7 @@ import pathlib
 
 # Downloaded Libraries #
 from PySide2 import QtCore, QtGui, QtWidgets, QtMultimedia, QtMultimediaWidgets
+from PySide2.QtCore import Slot, Signal, QObject
 from PySide2.QtGui import QKeySequence
 from PySide2.QtWidgets import QWidget, QAction
 
@@ -502,6 +503,8 @@ class EmotionVideoPlayer(WidgetContainer):
         self.widget.finish_action = self.finish_action
         self.load_video()
         super().run()
+        self.widget.frameProbe.videoFrameProbed.connect(self.widget.frame)
+        self.widget.frameProbe.setSource(self.widget.mediaPlayer)
         self.widget.play()
 
     def load_video(self):
@@ -511,6 +514,7 @@ class EmotionVideoPlayer(WidgetContainer):
 class VideoPlayerWidget(QWidget):
     def __init__(self):
         super(VideoPlayerWidget, self).__init__()
+        self.frame_action = self.default_frame
         self.finish_action = self.default_finish
 
         self.ui = Ui_EmotionVideoPlayer()
@@ -522,6 +526,13 @@ class VideoPlayerWidget(QWidget):
         self.mediaPlayer = QtMultimedia.QMediaPlayer(self)
         self.mediaPlayer.setVideoOutput(self.ui.videoPlayer)
 
+        self.frameProbe = QtMultimedia.QVideoProbe(self)
+        self.frameProbe.videoFrameProbed.connect(self.frame)
+        self.frameProbe.setSource(self.mediaPlayer)
+
+        print(self.frameProbe.isActive())
+
+
     def set_video(self, video):
         if isinstance(video, pathlib.Path) or isinstance(video, str):
             video = QtCore.QUrl.fromLocalFile(video)
@@ -531,6 +542,14 @@ class VideoPlayerWidget(QWidget):
 
     def play(self):
         self.mediaPlayer.play()
+
+    @Slot(QtMultimedia.QVideoFrame)
+    def frame(self, frame):
+        print(QtCore.QTime.currentTime().toString("hh:mm:ss.zzz"))
+        #self.frame_action()
+
+    def default_frame(self):
+        print("Frame")
 
     def finish(self):
         self.finish_action()
