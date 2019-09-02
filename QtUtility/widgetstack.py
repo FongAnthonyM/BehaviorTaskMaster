@@ -24,10 +24,10 @@ Output:
 ########## Libraries, Imports, & Setup ##########
 
 # Default Libraries #
-import sys
 
 # Downloaded Libraries #
-from PySide2.QtWidgets import QMainWindow, QStackedWidget, QWidget, QHBoxLayout
+from bidict import bidict
+from PySide2.QtWidgets import QStackedWidget
 
 # Local Libraries #
 
@@ -36,9 +36,9 @@ from PySide2.QtWidgets import QMainWindow, QStackedWidget, QWidget, QHBoxLayout
 
 # Classes #
 class WidgetStack(QStackedWidget):
-    def __init__(self, parent):
+    def __init__(self, parent=None):
         super(WidgetStack, self).__init__(parent)
-        self.keys = dict()
+        self.keys = bidict()
 
     def __len__(self):
         return self.count()
@@ -50,40 +50,39 @@ class WidgetStack(QStackedWidget):
     def add(self, w, name, i=-1):
         index = self.insertWidget(i, w)
         self.keys[name] = w
-        self.keys[w] = name
         return index
 
     def remove(self, w):
-        w, n, _ = self.find_stacked(w)
+        w, name, _ = self.find_stacked(w)
         self.removeWidget(w)
-        del self.keys[n]
-        del self.keys[w]
+        del self.keys[name]
+
+    def load(self, w_container, name=None, **kwargs):
+        if name is None:
+            name = w_container.name
+
+        w_container.add_to_stack(stack=self, name=name, **kwargs)
+
+    def unload(self, w_container, **kwargs):
+        w_container.remove_from_stack(stack=self, **kwargs)
 
     def find_stacked(self, w):
         if isinstance(w, str):
             w = self.keys[w]
         elif isinstance(w, int):
             w = self.widget(w)
-        name = self.keys[w]
+        name = self.keys.inverse[w]
         index = self.indexOf(w)
         return w, name, index
 
     def current(self):
         index = self.currentIndex()
-        return self.find_stacked(index)
+        if index == -1:
+            return None, None, -1
+        else:
+            return self.find_stacked(index)
 
     def set(self, w):
         _, _, i = self.find_stacked(w)
         self.setCurrentIndex(i)
 
-
-class MainWindow(QMainWindow):
-    def __init__(self):
-        super(MainWindow, self).__init__()
-
-        self.widget_stack = WidgetStack(self)
-        self.layout = QHBoxLayout(self)
-        self.layout.addWidget(self.widget_stack)
-        self.setLayout(self.layout)
-
-        self.setCentralWidget(self.widget_stack)

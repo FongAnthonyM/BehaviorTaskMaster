@@ -27,11 +27,13 @@ Output:
 import sys
 
 # Downloaded Libraries #
+from bidict import bidict
 from PySide2 import QtCore, QtGui
 from PySide2.QtWidgets import QApplication, QWidget
 
 # Local Libraries #
-from .mainmenu import Ui_MainMenu
+from mainUI.mainmenu import Ui_MainMenu
+
 
 ########## Definitions ##########
 
@@ -40,17 +42,22 @@ class MainMenuWidget(QWidget):
     def __init__(self):
         super(MainMenuWidget, self).__init__()
         self.items = dict()
+        self.double_click_action = self.default_double_click
         self.selected_item = None
         self.selected_action = self.default_selected
 
         self.ui = Ui_MainMenu()
         self.ui.setupUi(self)
 
+        self.ui.taskList.doubleClicked.connect(self.double_click)
         self.ui.selectButton.clicked.connect(self.select)
         self.ui.cancelButton.clicked.connect(self.cancel)
 
         self.list_model = QtGui.QStandardItemModel()
         self.ui.taskList.setModel(self.list_model)
+
+    def double_click(self, index):
+        self.double_click_action(index)
 
     def select(self):
         _, self.selected_item, _ = self.current_item()
@@ -58,6 +65,9 @@ class MainMenuWidget(QWidget):
 
     def cancel(self):
         sys.exit()
+
+    def default_double_click(self, index):
+        print(index.row())
 
     def default_selected(self):
         print(self.selected_item)
