@@ -3,7 +3,7 @@
 # Form implementation generated from reading ui file 'emotioncontrol.ui',
 # licensing of 'emotioncontrol.ui' applies.
 #
-# Created: Thu Aug 29 11:10:31 2019
+# Created: Mon Sep 23 14:47:28 2019
 #      by: pyside2-uic  running on PySide2 5.13.0
 #
 # WARNING! All changes made in this file will be lost!
@@ -136,12 +136,13 @@ class Ui_EmotionControl(object):
         self.showButton = QtWidgets.QPushButton(self.groupBox_2)
         self.showButton.setObjectName("showButton")
         self.gridLayout_4.addWidget(self.showButton, 2, 7, 1, 1)
-        self.DurationSlider = QtWidgets.QSlider(self.groupBox_2)
-        self.DurationSlider.setOrientation(QtCore.Qt.Horizontal)
-        self.DurationSlider.setInvertedAppearance(False)
-        self.DurationSlider.setInvertedControls(False)
-        self.DurationSlider.setObjectName("DurationSlider")
-        self.gridLayout_4.addWidget(self.DurationSlider, 1, 0, 1, 8)
+        self.durationSlider = QtWidgets.QSlider(self.groupBox_2)
+        self.durationSlider.setMaximum(100)
+        self.durationSlider.setOrientation(QtCore.Qt.Horizontal)
+        self.durationSlider.setInvertedAppearance(False)
+        self.durationSlider.setInvertedControls(False)
+        self.durationSlider.setObjectName("durationSlider")
+        self.gridLayout_4.addWidget(self.durationSlider, 1, 0, 1, 8)
         self.gridLayout_2.addWidget(self.groupBox_2, 7, 1, 1, 4)
         spacerItem10 = QtWidgets.QSpacerItem(20, 10, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
         self.gridLayout_2.addItem(spacerItem10, 10, 1, 1, 4)
