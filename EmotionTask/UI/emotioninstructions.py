@@ -3,8 +3,8 @@
 # Form implementation generated from reading ui file 'emotioninstructions.ui',
 # licensing of 'emotioninstructions.ui' applies.
 #
-# Created: Wed Jun 26 09:09:04 2019
-#      by: pyside2-uic  running on PySide2 5.12.4
+# Created: Fri Sep 27 09:45:30 2019
+#      by: pyside2-uic  running on PySide2 5.13.0
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -51,6 +51,9 @@ class Ui_EmotionInstructions(object):
         spacerItem4 = QtWidgets.QSpacerItem(20, 10, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
         self.gridLayout.addItem(spacerItem4, 2, 1, 1, 3)
         self.textBrowser = QtWidgets.QTextBrowser(EmotionInstructions)
+        font = QtGui.QFont()
+        font.setPointSize(18)
+        self.textBrowser.setFont(font)
         self.textBrowser.setObjectName("textBrowser")
         self.gridLayout.addWidget(self.textBrowser, 3, 1, 1, 3)
         spacerItem5 = QtWidgets.QSpacerItem(20, 20, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Minimum)

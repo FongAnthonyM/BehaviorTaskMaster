@@ -25,10 +25,12 @@ Output:
 
 # Default Libraries #
 import pathlib
+import time
 import datetime
 import collections.abc
 
 # Downloaded Libraries #
+from bidict import frozenbidict
 import h5py
 import numpy as np
 
@@ -37,17 +39,18 @@ import numpy as np
 # Classes #
 
 class HDF5container:
-    file_attr = {'type': 'Type'}
-    datasets = {}
+    file_attrs = frozenbidict({'type': 'Type'})
+    datasets = frozenbidict({})
 
     def __init__(self, path=None, init=False):
         self._path = None
         self.path = path
         self.is_open = False
+        self.is_updating = False
         self.cargs = {'compression': 'gzip', 'compression_opts': 4}
+        self.default_datasets_parameters = {}
 
         self.h5_fobj = None
-        self.is_updating = False
 
         if self.path.is_file():
             self.open()
@@ -67,9 +70,6 @@ class HDF5container:
         else:
             self._path = pathlib.Path(value)
 
-    def __repr__(self):
-        return repr((self.start))
-
     def __getstate__(self):
         state = self.__dict__.copy()
         name = state['path'].as_posix()
@@ -86,10 +86,7 @@ class HDF5container:
         state['h5_fobj'] = h5py.File(name.as_posix(), 'r+')
         if not open:
             state['h5_fobj'].close()
-        self.__dict__.is_updating(state)
-
-    def __len__(self):
-        return self.n_samples
+        self.__dict__.update(state)
 
     def __getitem__(self, item):
         op = self.is_open
@@ -170,14 +167,78 @@ class HDF5container:
 
         return self.h5_fobj
 
+    def construct_file_attrs(self, file_attrs, items=frozenbidict()):
+        for key, value in file_attrs.items():
+            if key in items:
+                self.h5_fobj.attrs[value] = items[key]
+            else:
+                self.h5_fobj.attrs[value] = None
+        self.h5_fobj.flush()
+
+    def construct_datasets(self, datasets, parameters):
+        for key, value in datasets.items():
+            if key in parameters:
+                self.__setattr__(key, self.h5_fobj.create_dataset(value, **parameters[key]))
+            else:
+                self.__setattr__(key, self.h5_fobj.create_dataset(value, **self.cargs))
+        self.h5_fobj.flush()
+
 
 class EventLogger(HDF5container):
-    file_attr = {'type': 'Type', 'subject': 'Subject'}
-    datasets = {'events', 'Events'}
+    file_attrs = frozenbidict({'type': 'Type'})
+    datasets = frozenbidict({'events', 'Events'})
 
-    def __init__(self, name, subject=None, path=None, init=False):
+    def __init__(self, path=None, init=False):
         super().__init__(path=path, init=init)
 
         self._type = 'EventLog'
-        self._subject = subject
-        
+        self.start_datetime = None
+        self.start_time_counter = None
+
+    def __repr__(self):
+        return repr((self.start_datetime))
+
+    def __len__(self):
+        pass
+
+    def __getitem__(self, item):
+        op = self.is_open
+        self.open()
+
+        data = self.events[item]
+
+        if not op:
+            self.close()
+        return data
+
+    def set_time(self):
+        self.start_datetime = datetime.datetime.now()
+        self.start_time_counter = time.perf_counter()
+        self.append({'Time': self.start_datetime, 'DeltaTime': 0, 'Type': 'TimeSet'})
+
+    def create_event(self,  _type, **kwargs):
+        seconds = round(time.perf_counter() - self.start_time_counter, 6)
+        now = self.start_datetime + datetime.timedelta(seconds=seconds)
+        return {'Time': now, 'DeltaTime': seconds, 'Type': _type, **kwargs}
+
+    def get_event(self, item):
+        pass
+
+    def append(self, _type, **kwargs):
+        if isinstance(_type, dict):
+            super().append(_type)
+        else:
+            event = self.create_event(_type=_type, **kwargs)
+            super().append(event)
+
+    def insert(self, i, _type, **kwargs):
+        if isinstance(_type, dict):
+            super().insert(i, _type)
+        else:
+            event = self.create_event(_type=_type, **kwargs)
+            super().insert(i, event)
+
+
+class SubjectEventLogger(EventLogger):
+    file_attrs = frozenbidict({'type': 'Type', 'subject': 'Subject'})
+    datasets = frozenbidict({'events', 'Events'})

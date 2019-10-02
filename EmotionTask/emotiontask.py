@@ -29,10 +29,12 @@ from abc import ABC, abstractmethod
 import pathlib
 import copy
 import datetime
-import time # use perf_counter
+import time
 
 # Downloaded Libraries #
 from bidict import bidict
+from bidict import frozenbidict
+import toml
 from PySide2 import QtCore, QtGui, QtWidgets, QtMultimedia, QtMultimediaWidgets
 from PySide2.QtCore import Slot, Signal, QObject, QDir
 from PySide2.QtGui import QKeySequence
@@ -43,8 +45,10 @@ from QtUtility.stackedwindow import WidgetStack
 from emotionTask.UI.emotionparameters import Ui_EmotionParameters
 from emotionTask.UI.emotioninstructions import Ui_EmotionInstructions
 from emotionTask.UI.emotionwashout import Ui_EmotionWashout
+from emotionTask.UI.emotionquestionnaire import Ui_EmotionQuestionnaire
 from emotionTask.UI.emotionvideoplayer import Ui_EmotionVideoPlayer
 from emotionTask.UI.emotioncontrol import Ui_EmotionControl
+from emotionTask.UI.emotionfinish import Ui_EmotionFinish
 
 
 ########## Definitions ##########
@@ -66,14 +70,14 @@ class EmotionTask:
         self.control = EmotionControl(events=self.events)
         self.instructions = EmotionInstructions(events=self.events)
         self.video_player = EmotionVideoPlayer(events=self.events)
-        self.questionnaire = None
+        self.questionnaire = EmotionQuestionnaire(events=self.events)
         self.washout = EmotionWashout(events=self.events)
-        self.finished = None
+        self.finished = EmotionFinish(events=self.events)
 
         self.block_widgets = {'instructions': self.instructions, 'video_player': self.video_player,
-                              'questionnaire': self.questionnaire, 'washout': self.washout, 'finished': self.finished}
-        self.sequence_order = ['instructions', '*block*', 'finished']
-        self.block_order = ['video_player', 'questionnaire', 'washout']
+                              'questionnaire': self.questionnaire, 'washout': self.washout, 'finish': self.finished}
+        self.sequence_order = ['instructions', '*block*', 'washout', 'finish']
+        self.block_order = ['washout', 'video_player', 'questionnaire']
 
     def load_task(self, stack=None):
         if stack is not None:
@@ -88,6 +92,8 @@ class EmotionTask:
         self.task_window.load(self.instructions)
         self.task_window.load(self.washout)
         self.task_window.load(self.video_player)
+        self.task_window.load(self.questionnaire)
+        self.task_window.load(self.finished)
 
         self.control.task_window = self.task_window
         self.control.sequencer = self.sequencer
@@ -188,6 +194,10 @@ class WidgetContainerSequencer:
         self.index = self.next_index()
         return output
 
+    def skip(self):
+        self.index = self.next_index()
+        return self.index
+
 
 class TaskWindow(WidgetStack):
     def __init__(self, **kwargs):
@@ -238,7 +248,7 @@ class WidgetContainer(ABC):
 
         self.widget_stack.add(self.widget, name)
 
-    def remove_from_stack(self, stack=None, back=True, clear_widget=False):
+    def remove_from_stack(self, stack=None, back=True, clear_widget=False, **kwargs):
         if stack is not None:
             self.widget_stack = stack
         if back:
@@ -298,7 +308,7 @@ class EmotionParameters(WidgetContainer):
 class ParametersWidget(QWidget):
     header = ('Video', 'Questions', 'Video Path', 'Question Path')
     v_types = ('*.avi', '*.mp4', '*.ogg', '*.qt', '*.wmv', '*.yuv')
-    q_types = ('*.txt',)
+    q_types = ('*.toml',)
 
     def __init__(self):
         super(ParametersWidget, self).__init__()
@@ -306,9 +316,9 @@ class ParametersWidget(QWidget):
         self.back_action = self.default_back
 
         self._parameters = {}
+        self.subject = None
+        self.session = None
         self.blocks = []
-        self.loops = None
-        self.randomize = None
 
         self.ui = Ui_EmotionParameters()
         self.ui.setupUi(self)
@@ -326,9 +336,9 @@ class ParametersWidget(QWidget):
 
     @property
     def parameters(self):
+        self._parameters['subject'] = self.subject
+        self._parameters['session'] = self.session
         self._parameters['blocks'] = self.blocks
-        self._parameters['loops'] = self.loops
-        self._parameters['randomize'] = self.randomize
         return self._parameters
 
     @property
@@ -387,6 +397,7 @@ class ParametersWidget(QWidget):
 
     def find_last_row(self, item=''):
         end = self.list_model.rowCount()
+        index = -1
         for i in reversed(range(0, end)):
             video = self.list_model.item(i, 0).text()
             question = self.list_model.item(i, 1).text()
@@ -399,8 +410,10 @@ class ParametersWidget(QWidget):
             else:
                 break
             if text == '':
-                return i
-        return -1
+                index = i
+            else:
+                break
+        return index
 
     def add_item(self, video='', question='', index=-1):
         # Make Row Objects
@@ -530,8 +543,11 @@ class ParametersWidget(QWidget):
             dir_names = dialog.selectedFiles()
             dir_path = pathlib.Path(dir_names[0])
             files = []
-            for ext in self.q_types:
-                files.extend(dir_path.glob(ext))
+            if len(self.q_types) < 1 or '*' in self.q_types:
+                files = dir_path.iterdir()
+            else:
+                for ext in self.q_types:
+                    files.extend(dir_path.glob(ext))
             for question in files:
                 last = self.find_last_row('question')
                 if last == -1:
@@ -561,7 +577,8 @@ class ParametersWidget(QWidget):
         self.ui.videoList.setColumnWidth(3, 100)
 
     def evaluate(self):
-        self.randomize = self.ui.randomizeVideosBox.isChecked()
+        self.subject = self.ui.subjectIDEdit.text()
+        self.session = self.ui.blockEdit()
         for i in range(0, self.list_model.rowCount()):
             video = pathlib.Path(self.list_model.item(i, 2).text())
             question = pathlib.Path(self.list_model.item(i, 3).text())
@@ -682,6 +699,8 @@ class ControlWidget(QWidget):
         self.volume_icon = self.style().standardIcon(QStyle.SP_MediaVolume)
         self.mute_icon = self.style().standardIcon(QStyle.SP_MediaVolumeMuted)
 
+        self.subject = None
+        self.session = None
         self.events = None
         self.m_duration = 0
         self.mute = False
@@ -697,6 +716,7 @@ class ControlWidget(QWidget):
         self.block_sequence = -1
         self.sequence_order = []
 
+        self.running = False
         self.blocks = None
 
         if init:
@@ -713,6 +733,8 @@ class ControlWidget(QWidget):
             self.media_player = value.media_player
 
     def construct(self):
+        self.subject = self.parameters['subject']
+        self.session = self.parameters['session']
         self._construct_startAction()
         self._construct_backAction()
         self._construct_showAction()
@@ -727,19 +749,24 @@ class ControlWidget(QWidget):
         self.playing_model = QtGui.QStandardItemModel(0, 4)
         self.playing_model.setHorizontalHeaderLabels(self.header)
         self.ui.playingBlock.setModel(self.playing_model)
+        self.ui.playingBlock.setColumnWidth(2, 75)
+        self.ui.playingBlock.setColumnWidth(3, 25)
         self.complete_model = QtGui.QStandardItemModel(0, 4)
         self.complete_model.setHorizontalHeaderLabels(self.header)
         self.ui.completedBlocks.setModel(self.complete_model)
-        self.ui.completedBlocks.setDragDropMode(QAbstractItemView.InternalMove)
-        self.ui.completedBlocks.setSelectionMode(QAbstractItemView.MultiSelection)
-        self.start_sequence()
+        #self.ui.completedBlocks.setDragDropMode(QAbstractItemView.InternalMove)
+        #self.ui.completedBlocks.setSelectionMode(QAbstractItemView.MultiSelection)
+        self.ui.completedBlocks.setColumnWidth(2, 75)
+        self.ui.completedBlocks.setColumnWidth(3, 25)
 
     def _construct_queue(self):
         self.queue_model = QtGui.QStandardItemModel(0, 4)
         self.queue_model.setHorizontalHeaderLabels(self.header)
         self.ui.quequedBlocks.setModel(self.queue_model)
-        self.ui.quequedBlocks.setDragDropMode(QAbstractItemView.InternalMove)
-        self.ui.quequedBlocks.setSelectionMode(QAbstractItemView.MultiSelection)
+        #self.ui.quequedBlocks.setDragDropMode(QAbstractItemView.InternalMove)
+        #self.ui.quequedBlocks.setSelectionMode(QAbstractItemView.MultiSelection)
+        self.ui.quequedBlocks.setColumnWidth(2, 75)
+        self.ui.quequedBlocks.setColumnWidth(3, 25)
         for i, block in enumerate(self.blocks):
             self.add_item(self.queue_model, _id=i, video=block['video'], question=block['questions'], washout=block['washout'])
 
@@ -835,7 +862,14 @@ class ControlWidget(QWidget):
         self.media_player.setMuted(self.mute)
 
     def skip_action(self):
-        pass
+        self.media_player.stop()
+        video = self.block_widgets['video_player'].video
+        if isinstance(video, pathlib.Path):
+            video = video.name
+        event = {'_type': 'Skip', 'Video': video}
+        while self.sequencer.next_index() != 0:
+            self.sequencer.skip()
+        self.advance_block(event=event)
 
     def start_sequence(self):
         self.sequencer.clear()
@@ -851,13 +885,13 @@ class ControlWidget(QWidget):
         self.sequencer.insert(self.block_widgets[last], ok_action=self.advance_block)
 
     def end_sequence(self):
+        block = self.blocks[-1]
         block_sequence = self.sequence_order.index('*block*')
         sequence_order = self.sequence_order[block_sequence+1:]
-
-        last = sequence_order.pop()
-        for item in sequence_order:
-            self.sequencer.insert(self.block_widgets[item], ok_action=self.advance)
-        self.sequencer.insert(self.block_widgets[last], return_action=self.setup_task)
+        
+        self.sequencer.insert(self.block_widgets['washout'], milliseconds=block['washout'] * 1000,
+                              timer_action=self.advance)
+        self.sequencer.insert(self.block_widgets['finish'])
 
     def next_queue(self):
         if self.playing_model.rowCount() > 0:
@@ -883,8 +917,10 @@ class ControlWidget(QWidget):
         play_index = int(self.playing_model.item(0, 3).text())
         block = self.blocks[play_index]
 
+        self.sequencer.insert(self.block_widgets['washout'], milliseconds=block['washout'] * 1000,
+                              timer_action=self.advance)
         self.sequencer.insert(self.block_widgets['video_player'], path=block['video'], finish_action=self.advance)
-        self.sequencer.insert(self.block_widgets['washout'], milliseconds=block['washout']*1000, timer_action=self.advance_block)
+        self.sequencer.insert(self.block_widgets['questionnaire'], path=block['questions'], finish_action=self.advance_block)
 
     def advance(self, event=None, caller=None):
         self.events.append(**event)
@@ -895,22 +931,60 @@ class ControlWidget(QWidget):
         if more_blocks:
             self.next_block()
         else:
-            pass  # self.end_sequence()
+            self.end_sequence()
         self.advance(event=event, caller=caller)
 
     def start(self):
-        self.start_action(caller=self)
+        if self.running:
+            self.running_action(caller=self)
+        else:
+            self.running = True
+            self.start_action(caller=self)
 
     def default_start(self, caller=None):
+        self.start_sequence()
+        self.ui.startButton.setEnabled(False)
+        self.ui.backButton.setText(QtWidgets.QApplication.translate("EmotionControl", 'Stop', None, -1))
         self.sequencer.start()
         self.task_window.show()
         self.events.set_time()
 
+    def running_action(self, caller=None):
+        pass
+
     def back(self):
-        self.back_action(caller=self)
+        if self.running:
+            self.stop()
+        else:
+            self.back_action()
 
     def default_back(self, caller=None):
         sys.exit()
+
+    def stop(self):
+        if self.running:
+            self.media_player.stop()
+            self.sequencer.clear()
+            event = {'_type': 'ManualStop'}
+            self.events.append(**event)
+            self.running = False
+            self.reset()
+            # Todo: Add events reset events or new session
+            self.ui.startButton.setEnabled(True)
+            self.ui.backButton.setText(QtWidgets.QApplication.translate("EmotionControl", 'Back', None, -1))
+
+    def reset(self):
+        if not self.running:
+            self.sequencer.clear()
+            self.complete_model.clear()
+            self.queue_model.clear()
+            self.playing_model.clear()
+            self.complete_model.setHorizontalHeaderLabels(self.header)
+            self.queue_model.setHorizontalHeaderLabels(self.header)
+            self.playing_model.setHorizontalHeaderLabels(self.header)
+            for i, block in enumerate(self.blocks):
+                self.add_item(self.queue_model, _id=i, video=block['video'], question=block['questions'],
+                              washout=block['washout'])
 
 
 class EmotionInstructions(WidgetContainer):
@@ -960,7 +1034,7 @@ class EmotionInstructions(WidgetContainer):
 
 class InstructionsWidget(QWidget):
     def __init__(self):
-        super(InstructionsWidget, self).__init__()
+        super().__init__()
         self.ok_action = self.default_ok
         self.back_action = self.default_back
 
@@ -1055,11 +1129,416 @@ class WashoutWidget(QWidget):
         self.timer.start(self.milliseconds)
 
     def timeout(self):
-        event = {'_type': 'WashoutFinished', 'duration': self.milliseconds/1000}
+        event = {'_type': 'Washout', 'SubType': 'Finished', 'Duration': self.milliseconds/1000}
         self.timer_action(event=event, caller=self)
 
     def default_timer_action(self, event=None, caller=None):
         print("Time is up!")
+
+
+class EmotionQuestionnaire(WidgetContainer):
+    def __init__(self, name="Questionnaire", path=None, events=None, init=False):
+        super().__init__(name, init)
+        WidgetContainer.__init__(self, name, init)
+        self._next_action = self.next_question
+        self._finish_action = None
+        self._previous_action = self.previous_question
+        self._back_action = None
+        self._answer_action = self.answer_selected
+
+        self.events = events
+
+        self._path = None
+        if path is None:
+            self._path = pathlib.Path.cwd().joinpath('emotionTask', 'instructions.txt')
+        else:
+            self.path = path
+
+    @property
+    def path(self):
+        return self._path
+
+    @path.setter
+    def path(self, value):
+        if isinstance(value, pathlib.Path) or value is None:
+            self._path = value
+        else:
+            self._path = pathlib.Path(value)
+
+    @property
+    def next_action(self):
+        try:
+            out = self.widget.next_action
+        except AttributeError:
+            out = self._next_action
+        return out
+
+    @next_action.setter
+    def next_action(self, value):
+        self._next_action = value
+        if self.widget is not None:
+            self.widget.next_action = value
+
+    @property
+    def finish_action(self):
+        try:
+            out = self.widget.finish_action
+        except AttributeError:
+            out = self._finish_action
+        return out
+
+    @finish_action.setter
+    def finish_action(self, value):
+        self._finish_action = value
+        if self.widget is not None:
+            self.widget.finish_action = value
+
+    @property
+    def previous_action(self):
+        try:
+            out = self.widget.previous_action
+        except AttributeError:
+            out = self._previous_action
+        return out
+
+    @previous_action.setter
+    def previous_action(self, value):
+        self._previous_action = value
+        if self.widget is not None:
+            self.widget.previous_action = value
+
+    @property
+    def back_action(self):
+        try:
+            out = self.widget.back_action
+        except AttributeError:
+            out = self._back_action
+        return out
+
+    @back_action.setter
+    def back_action(self, value):
+        self._back_action = value
+        if self.widget is not None:
+            self.widget.back_action = value
+
+    @property
+    def answer_action(self):
+        try:
+            out = self.widget.answer_action
+        except AttributeError:
+            out = self._answer_action
+        return out
+
+    @answer_action.setter
+    def answer_action(self, value):
+        self._answer_action = value
+        if self.widget is not None:
+            self.widget.answer_action = value
+
+    def construct_widget(self):
+        self.widget = QuestionnaireWidget(self._next_action, self._finish_action, self._previous_action, self._back_action, self._answer_action)
+
+    def run(self, path=None, next_action=None, finish_action=None, previous_action=None, back_action=None, answer_action=None,):
+        if path is not None:
+            self.path = path
+        if next_action is not None:
+            self.next_action = next_action
+        if finish_action is not None:
+            self.finish_action = finish_action
+        if previous_action is not None:
+            self.previous_action = previous_action
+        if back_action is not None:
+            self.back_action = back_action
+        if answer_action is not None:
+            self.answer_action = answer_action
+
+        self.widget.load_file(self.path)
+        super().run()
+
+    def next_question(self, event=None, caller=None):
+        self.events.append(**event)
+        self.widget.default_next(event=event, caller=caller)
+
+    def previous_question(self, event=None, caller=None):
+        self.events.append(**event)
+        self.widget.default_previous(event=event, caller=caller)
+
+    def answer_selected(self, event=None, caller=None):
+        self.events.append(**event)
+        
+
+class QuestionnaireWidget(QWidget):
+    number_key = frozenbidict({0: QtCore.Qt.Key_0, 1: QtCore.Qt.Key_1, 2: QtCore.Qt.Key_2, 3: QtCore.Qt.Key_3,
+                               4: QtCore.Qt.Key_4, 5: QtCore.Qt.Key_5, 6: QtCore.Qt.Key_6, 7: QtCore.Qt.Key_7,
+                               8: QtCore.Qt.Key_8, 9: QtCore.Qt.Key_9})
+
+    def __init__(self, next_action=None, finish_action=None, previous_action=None, back_action=None, answer_action=None, **kwargs):
+        super().__init__(**kwargs)
+        if next_action is None:
+            self.next_action = self.default_next
+        else:
+            self.next_action = next_action
+        if finish_action is None:
+            self.finish_action = self.default_finish
+        else:
+            self.finish_action = finish_action
+        if previous_action is None:
+            self.previous_action = self.default_previous
+        else:
+            self.previous_action = previous_action
+        if back_action is None:
+            self.back_action = self.default_back
+        else:
+            self.back_action = back_action
+        if answer_action is None:
+            self.answer_action = self.default_answer
+        else:
+            self.answer_action = answer_action
+
+        self.ui = Ui_EmotionQuestionnaire()
+        self.ui.setupUi(self)
+
+        self.ui.continueButton.clicked.connect(self._continue)
+        self.ui.backButton.clicked.connect(self.previous)
+
+        self.continueAction = QAction("Continue", self)
+        self.continueAction.setShortcut(QKeySequence("Shift+Return"))
+        self.continueAction.triggered.connect(self._continue)
+        self.addAction(self.continueAction)
+
+        self._path = None
+        self.text = None
+        self.qa = []
+        self.answers = []
+        self.answer_key = bidict()
+        self.q_index = 0
+
+        self.multi_answers = 1
+        self.current_question = None
+        self.current_answers = None
+        self.selected_answer = None
+
+    @property
+    def path(self):
+        return self._path
+
+    @path.setter
+    def path(self, value):
+        if isinstance(value, pathlib.Path) or value is None:
+            self._path = value
+        else:
+            self._path = pathlib.Path(value)
+
+    def load_file(self, file):
+        if file is not None:
+            self.path = file
+        q_file = toml.load(self.path)
+        self.qa = q_file['Questions']
+        self.q_index = 0
+        qa = self.qa[self.q_index]
+        self.set_question(qa['question'])
+        self.set_answers(qa['answers'])
+
+    def set_question(self, question):
+        self.ui.questionBrowser.setText(question)
+        self.current_question = question
+
+    def set_answers(self, answers):
+        self.remove_answers()
+        self.current_answers = answers
+        size = (2, -(-len(answers)//2))
+        b_size = (4, size[1]+2)
+        topSpacer = QtWidgets.QSpacerItem(20, 5, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
+        bottomSpacer = QtWidgets.QSpacerItem(20, 5, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
+        leftSpacer = QtWidgets.QSpacerItem(5, 20, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Minimum)
+        rightSpacer = QtWidgets.QSpacerItem(5, 20, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Minimum)
+        self.ui.answersLayout.addItem(topSpacer, 0, 0, 1, b_size[1])
+        self.ui.answersLayout.addItem(bottomSpacer, b_size[1], 0, 1, b_size[1])
+        self.ui.answersLayout.addItem(leftSpacer, 1, 0, size[1], 1)
+        self.ui.answersLayout.addItem(rightSpacer, 1, size[1]+1, size[1], 1)
+
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        font = QtGui.QFont()
+        font.setPointSize(18)
+        self.ui.answerChecks = []
+        for i in range(0, size[0]):
+            for j in range(0, size[1]):
+                a_index = i*size[1]+j
+                if a_index <= len(answers):
+                    answer_check = QtWidgets.QCheckBox(self.ui.answersBox)
+                    sizePolicy.setHeightForWidth(answer_check.sizePolicy().hasHeightForWidth())
+                    answer_check.setSizePolicy(sizePolicy)
+                    answer_check.setFont(font)
+                    answer_check.setObjectName('answer_check_'+str(a_index))
+                    answer_check.setText(QtWidgets.QApplication.translate("EmotionQuestionnaire", answers[a_index], None, -1))
+                    answer_check.clicked.connect(self.generate_answer_function(answer_check))
+                    self.ui.answerChecks.append(answer_check)
+                    self.ui.answersLayout.addWidget(answer_check, i+1, j+1, 1, 1)
+                    self.answer_key[answers[a_index]] = answer_check
+
+    def remove_answers(self):
+        self.answer_key.clear()
+        while not self.ui.answersLayout.isEmpty():
+            item = self.ui.answersLayout.takeAt(0)
+            if not item.isEmpty():
+                widget = item.widget()
+                widget.deleteLater()
+                del widget
+            self.ui.answersLayout.removeItem(item)
+
+    def generate_answer_function(self, answer_check):
+        return lambda v: self.answer_toggle(answer_check, v)
+
+    def answer_toggle(self, answer_check, value):
+        self.answer(answer_check, value)
+        if self.multi_answers > 0:
+            self.limit_answer(self.multi_answers, answer_check)
+
+    def answer(self, check_widget, value):
+        answer = self.answer_key.inverse[check_widget]
+        self.selected_answer = answer
+        event = {'_type': 'Questionnaire', 'SubType': 'AnswerSelected', 'File': self.path.name, 'Question': self.current_question, 'Answer': answer, 'Value': value}
+        self.answer_action(event=event, caller=self)
+
+    def limit_answer(self, limit, last):
+        available = limit
+        other_answers = self.answer_key.copy()
+        other_answers.inverse.pop(last)
+        for answer in other_answers.values():
+            if answer.isChecked():
+                if available > 1:
+                    available -= 1
+                else:
+                    answer.setChecked(False)
+
+    def default_answer(self, event=None, caller=None):
+        pass
+
+    def keyPressEvent(self, event):
+        key = event.key()
+        if key in self.number_key.inverse:
+            number = self.number_key.inverse[key]
+            if number < len(self.current_answers):
+                check_widget = self.answer_key[self.current_answers[number]]
+                check_widget.setChecked(True)
+                self.answer_toggle(check_widget, True)
+        elif key == QtCore.Qt.Key_Enter or key == QtCore.Qt.Key_Return:
+            self._continue()
+        elif key == QtCore.Qt.Key_Backspace:
+            self.previous()
+        event.accept()
+
+    def _continue(self):
+        self.q_index += 1
+        event = {'_type': 'Questionnaire', 'Subtype': 'AnswerConfirmed', 'File': self.path.name, 'Question': self.current_question, 'Answer': self.selected_answer}
+        if self.q_index < len(self.qa):
+            self.next_action(event=event, caller=self)
+        else:
+            self.finish_action(event=event, caller=self)
+
+    def default_next(self, event=None, caller=None):
+        if self.q_index < len(self.qa)-1:
+            self.ui.continueButton.setText(QtWidgets.QApplication.translate("EmotionQuestionnaire", "Next", None, -1))
+            self.ui.backButton.setText(QtWidgets.QApplication.translate("EmotionQuestionnaire", "Previous", None, -1))
+        else:
+            self.ui.continueButton.setText(QtWidgets.QApplication.translate("EmotionQuestionnaire", "Done", None, -1))
+            self.ui.backButton.setText(QtWidgets.QApplication.translate("EmotionQuestionnaire", "Previous", None, -1))
+        qa = self.qa[self.q_index]
+        self.current_question = qa['question']
+        self.current_answers = qa['answers']
+        self.set_question(self.current_question)
+        self.set_answers(self.current_answers)
+
+    def default_finish(self, event=None, caller=None):
+        print("Not Connected")
+    
+    def previous(self):
+        if self.q_index > 0:
+            self.q_index -= 1
+            event = {'_type': 'Questionnaire', 'Subtype': 'AnswerRetracted', 'File': self.path.name, 'Question': self.qa[self.q_index]['question']}
+            self.previous_action(event=event, caller=self)
+        else:
+            event = {'_type': 'Questionnaire', 'Subtype': 'Exited', 'File': self.path.name}
+            self.back_action(event=event, caller=self)
+            
+    def default_previous(self, event=None, caller=None):
+        if self.q_index > 0:
+            self.ui.continueButton.setText(QtWidgets.QApplication.translate("EmotionQuestionnaire", "Next", None, -1))
+            self.ui.backButton.setText(QtWidgets.QApplication.translate("EmotionQuestionnaire", "Previous", None, -1))
+        else:
+            self.ui.continueButton.setText(QtWidgets.QApplication.translate("EmotionQuestionnaire", "Next", None, -1))
+            self.ui.backButton.setText(QtWidgets.QApplication.translate("EmotionQuestionnaire", "Exit", None, -1))
+        qa = self.qa[self.q_index]
+        self.current_question = qa['question']
+        self.current_answers = qa['answers']
+        self.set_question(self.current_question)
+        self.set_answers(self.current_answers)
+
+    def default_back(self, event=None, caller=None):
+        print('There is no going back')
+
+
+class EmotionFinish(WidgetContainer):
+    def __init__(self, name="Finish", path=None, events=None, init=False):
+        WidgetContainer.__init__(self, name, init)
+
+        self.events = events
+
+        self._path = None
+        if path is None:
+            self._path = pathlib.Path.cwd().joinpath('emotionTask', 'end.jpg')
+        else:
+            self.path = path
+
+    @property
+    def path(self):
+        return self._path
+
+    @path.setter
+    def path(self, value):
+        if isinstance(value, pathlib.Path) or value is None:
+            self._path = value
+        else:
+            self._path = pathlib.Path(value)
+
+    def construct_widget(self):
+        self.widget = FinishWidget()
+
+    def run(self, path=None):
+        if path is not None:
+            self.path = path
+        self.widget.load_file(self.path)
+        super().run()
+
+
+class FinishWidget(QWidget):
+    def __init__(self):
+        super().__init__()
+        self._path = None
+
+        self.ui = Ui_EmotionFinish()
+        self.ui.setupUi(self)
+
+        self.text = None
+
+    @property
+    def path(self):
+        return self._path
+
+    @path.setter
+    def path(self, value):
+        if isinstance(value, pathlib.Path) or value is None:
+            self._path = value
+        else:
+            self._path = pathlib.Path(value)
+
+    def load_file(self, file):
+        if file is not None:
+            self.path = file
+        pixmap = QtGui.QPixmap(self.path.as_posix())
+        self.ui.imageSpace.setPixmap(pixmap)
 
 
 class EmotionVideoPlayer(WidgetContainer):
@@ -1075,7 +1554,7 @@ class EmotionVideoPlayer(WidgetContainer):
         
         self._path = None
         if path is None:
-            self._path = pathlib.Path.cwd().joinpath('emotionTask', 'instructions.mp4')
+            self._path = pathlib.Path.cwd().joinpath('emotionTask', 'default.mp4')
         else:
             self.path = path
 
@@ -1185,18 +1664,21 @@ class EmotionVideoPlayer(WidgetContainer):
 
     def frame_process(self, frame=None, number=None, event=None, caller=None):
         # could use frame metadata if is exists: print(frame.metaData(str_name))
-        self.events.append('Frame', video=self.video, frame=number)
+        self.events.append(**event)
         print(self.events[-1])
 
 
 class VideoPlayerWidget(QWidget):
-    def __init__(self, frame_action=None, **kwargs):
+    def __init__(self, frame_action=None, finish_action=None, **kwargs):
         super(VideoPlayerWidget, self).__init__(**kwargs)
         if frame_action is None:
             self.frame_action = self.default_frame
         else:
             self.frame_action = frame_action
-        self.finish_action = self.default_finish
+        if finish_action is None:
+            self.finish_action = self.default_finish
+        else:
+            self.finish_action = finish_action
 
         self.ui = Ui_EmotionVideoPlayer()
         self.ui.setupUi(self)
@@ -1230,7 +1712,7 @@ class VideoPlayerWidget(QWidget):
 
     def frame(self, frame):
         self.frame_number += 1
-        event = {'_type': 'Frame', 'video': self.video, 'frame': self.frame_number}
+        event = {'_type': 'Video', 'SubType': 'Frame', 'Video': self.video.name, 'FrameNumber': self.frame_number}
         self.frame_action(frame, self.frame_number, event=event, caller=self)
 
     def default_frame(self, frame=None, number=None, event=None, caller=None):
@@ -1241,7 +1723,7 @@ class VideoPlayerWidget(QWidget):
             self.finish()
 
     def finish(self):
-        event = {'_type': 'VideoFinished', 'video': self.video}
+        event = {'_type': 'Video', 'SubType': 'Finished', 'Video': self.video}
         self.finish_action(event=event, caller=self)
 
     def default_finish(self, event=None, caller=None):

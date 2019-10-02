@@ -3,7 +3,7 @@
 # Form implementation generated from reading ui file 'emotionparameters.ui',
 # licensing of 'emotionparameters.ui' applies.
 #
-# Created: Wed Aug 28 11:41:42 2019
+# Created: Tue Oct  1 11:52:45 2019
 #      by: pyside2-uic  running on PySide2 5.13.0
 #
 # WARNING! All changes made in this file will be lost!
@@ -13,7 +13,7 @@ from PySide2 import QtCore, QtGui, QtWidgets
 class Ui_EmotionParameters(object):
     def setupUi(self, EmotionParameters):
         EmotionParameters.setObjectName("EmotionParameters")
-        EmotionParameters.resize(800, 600)
+        EmotionParameters.resize(836, 600)
         self.gridLayout = QtWidgets.QGridLayout(EmotionParameters)
         self.gridLayout.setObjectName("gridLayout")
         self.okButton = QtWidgets.QPushButton(EmotionParameters)
@@ -114,6 +114,23 @@ class Ui_EmotionParameters(object):
         self.addVideoButton = QtWidgets.QPushButton(self.groupBox)
         self.addVideoButton.setObjectName("addVideoButton")
         self.gridLayout_2.addWidget(self.addVideoButton, 2, 1, 1, 3)
+        self.groupBox_3 = QtWidgets.QGroupBox(self.groupBox)
+        self.groupBox_3.setObjectName("groupBox_3")
+        self.gridLayout_3 = QtWidgets.QGridLayout(self.groupBox_3)
+        self.gridLayout_3.setObjectName("gridLayout_3")
+        self.subjectIDEdit = QtWidgets.QLineEdit(self.groupBox_3)
+        self.subjectIDEdit.setObjectName("subjectIDEdit")
+        self.gridLayout_3.addWidget(self.subjectIDEdit, 0, 1, 1, 1)
+        self.label = QtWidgets.QLabel(self.groupBox_3)
+        self.label.setObjectName("label")
+        self.gridLayout_3.addWidget(self.label, 0, 0, 1, 1)
+        self.blockEdit = QtWidgets.QLineEdit(self.groupBox_3)
+        self.blockEdit.setObjectName("blockEdit")
+        self.gridLayout_3.addWidget(self.blockEdit, 1, 1, 1, 1)
+        self.label_3 = QtWidgets.QLabel(self.groupBox_3)
+        self.label_3.setObjectName("label_3")
+        self.gridLayout_3.addWidget(self.label_3, 1, 0, 1, 1)
+        self.gridLayout_2.addWidget(self.groupBox_3, 5, 1, 1, 6)
         self.groupBox_2 = QtWidgets.QGroupBox(self.groupBox)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Minimum)
         sizePolicy.setHorizontalStretch(0)
@@ -121,28 +138,17 @@ class Ui_EmotionParameters(object):
         sizePolicy.setHeightForWidth(self.groupBox_2.sizePolicy().hasHeightForWidth())
         self.groupBox_2.setSizePolicy(sizePolicy)
         self.groupBox_2.setMaximumSize(QtCore.QSize(16777215, 100))
-        self.groupBox_2.setTitle("")
         self.groupBox_2.setObjectName("groupBox_2")
         self.gridLayout_4 = QtWidgets.QGridLayout(self.groupBox_2)
         self.gridLayout_4.setObjectName("gridLayout_4")
-        self.randomizeVideosBox = QtWidgets.QCheckBox(self.groupBox_2)
-        self.randomizeVideosBox.setObjectName("randomizeVideosBox")
-        self.gridLayout_4.addWidget(self.randomizeVideosBox, 2, 0, 1, 1)
-        self.washoutBox = QtWidgets.QDoubleSpinBox(self.groupBox_2)
-        self.washoutBox.setObjectName("washoutBox")
-        self.gridLayout_4.addWidget(self.washoutBox, 0, 0, 1, 1)
-        self.label = QtWidgets.QLabel(self.groupBox_2)
-        self.label.setObjectName("label")
-        self.gridLayout_4.addWidget(self.label, 1, 1, 1, 1)
-        self.spinBox = QtWidgets.QSpinBox(self.groupBox_2)
-        self.spinBox.setMinimum(1)
-        self.spinBox.setMaximum(9999)
-        self.spinBox.setObjectName("spinBox")
-        self.gridLayout_4.addWidget(self.spinBox, 1, 0, 1, 1)
         self.label_2 = QtWidgets.QLabel(self.groupBox_2)
         self.label_2.setObjectName("label_2")
         self.gridLayout_4.addWidget(self.label_2, 0, 1, 1, 1)
-        self.gridLayout_2.addWidget(self.groupBox_2, 5, 1, 1, 5)
+        self.washoutBox = QtWidgets.QDoubleSpinBox(self.groupBox_2)
+        self.washoutBox.setProperty("value", 3.0)
+        self.washoutBox.setObjectName("washoutBox")
+        self.gridLayout_4.addWidget(self.washoutBox, 0, 0, 1, 1)
+        self.gridLayout_2.addWidget(self.groupBox_2, 5, 8, 1, 3)
         self.gridLayout.addWidget(self.groupBox, 3, 1, 1, 3)
 
         self.retranslateUi(EmotionParameters)
@@ -160,7 +166,10 @@ class Ui_EmotionParameters(object):
         self.videosLabel.setText(QtWidgets.QApplication.translate("EmotionParameters", "Videos and Questions", None, -1))
         self.videoDirectory.setText(QtWidgets.QApplication.translate("EmotionParameters", "Video Directory", None, -1))
         self.addVideoButton.setText(QtWidgets.QApplication.translate("EmotionParameters", "Add Video", None, -1))
-        self.randomizeVideosBox.setText(QtWidgets.QApplication.translate("EmotionParameters", "Randomized Videos", None, -1))
-        self.label.setText(QtWidgets.QApplication.translate("EmotionParameters", "Task Loops", None, -1))
+        self.groupBox_3.setTitle(QtWidgets.QApplication.translate("EmotionParameters", "Subject Information", None, -1))
+        self.subjectIDEdit.setText(QtWidgets.QApplication.translate("EmotionParameters", "EC", None, -1))
+        self.label.setText(QtWidgets.QApplication.translate("EmotionParameters", "Subject ID", None, -1))
+        self.label_3.setText(QtWidgets.QApplication.translate("EmotionParameters", "Block", None, -1))
+        self.groupBox_2.setTitle(QtWidgets.QApplication.translate("EmotionParameters", "Task Prpperities", None, -1))
         self.label_2.setText(QtWidgets.QApplication.translate("EmotionParameters", "Washout Time (s)", None, -1))
 
