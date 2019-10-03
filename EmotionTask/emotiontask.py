@@ -316,8 +316,8 @@ class ParametersWidget(QWidget):
         self.back_action = self.default_back
 
         self._parameters = {}
-        self.subject = None
-        self.session = None
+        self.subject = []
+        self.session = []
         self.blocks = []
 
         self.ui = Ui_EmotionParameters()
@@ -577,8 +577,10 @@ class ParametersWidget(QWidget):
         self.ui.videoList.setColumnWidth(3, 100)
 
     def evaluate(self):
-        self.subject = self.ui.subjectIDEdit.text()
-        self.session = self.ui.blockEdit()
+        self.subject.clear()
+        self.session.clear()
+        self.subject.append(self.ui.subjectIDEdit.text())
+        self.session.append(self.ui.blockEdit.text())
         for i in range(0, self.list_model.rowCount()):
             video = pathlib.Path(self.list_model.item(i, 2).text())
             question = pathlib.Path(self.list_model.item(i, 3).text())
@@ -699,6 +701,7 @@ class ControlWidget(QWidget):
         self.volume_icon = self.style().standardIcon(QStyle.SP_MediaVolume)
         self.mute_icon = self.style().standardIcon(QStyle.SP_MediaVolumeMuted)
 
+        self._path = None
         self.subject = None
         self.session = None
         self.events = None
@@ -723,6 +726,17 @@ class ControlWidget(QWidget):
             self.construct()
 
     @property
+    def path(self):
+        return self._path
+
+    @path.setter
+    def path(self, value):
+        if isinstance(value, pathlib.Path) or value is None:
+            self._path = value
+        else:
+            self._path = pathlib.Path(value)
+
+    @property
     def player(self):
         return self._player
 
@@ -742,6 +756,11 @@ class ControlWidget(QWidget):
         self._construct_player_controls()
         self._construct_volume_controls()
         self.update_buttons(self.media_player.state())
+
+    def construct_path(self):
+        now = datetime.datetime.now().isoformat('_', 'seconds').replace(':', '~')
+        file_name = self.parameters['subject'][0]+'_'+self.parameters['session'][0]+'_'+now+'.csv'
+        return pathlib.Path().cwd().joinpath(file_name)
 
     def construct_blocks(self):
         self.blocks = self.parameters['blocks']
@@ -947,6 +966,7 @@ class ControlWidget(QWidget):
         self.ui.backButton.setText(QtWidgets.QApplication.translate("EmotionControl", 'Stop', None, -1))
         self.sequencer.start()
         self.task_window.show()
+        self.events.path = self.construct_path()
         self.events.set_time()
 
     def running_action(self, caller=None):
@@ -969,12 +989,12 @@ class ControlWidget(QWidget):
             self.events.append(**event)
             self.running = False
             self.reset()
-            # Todo: Add events reset events or new session
             self.ui.startButton.setEnabled(True)
             self.ui.backButton.setText(QtWidgets.QApplication.translate("EmotionControl", 'Back', None, -1))
 
     def reset(self):
         if not self.running:
+            self.events.clear()
             self.sequencer.clear()
             self.complete_model.clear()
             self.queue_model.clear()
@@ -1483,6 +1503,7 @@ class QuestionnaireWidget(QWidget):
 class EmotionFinish(WidgetContainer):
     def __init__(self, name="Finish", path=None, events=None, init=False):
         WidgetContainer.__init__(self, name, init)
+        self._run_action = self.finish_process
 
         self.events = events
 
@@ -1503,20 +1524,41 @@ class EmotionFinish(WidgetContainer):
         else:
             self._path = pathlib.Path(value)
 
+    @property
+    def run_action(self):
+        try:
+            out = self.widget.run_action
+        except AttributeError:
+            out = self._run_action
+        return out
+
+    @run_action.setter
+    def run_action(self, value):
+        self._run_action = value
+        if self.widget is not None:
+            self.widget.run_action = value
+
     def construct_widget(self):
         self.widget = FinishWidget()
+        self.widget.run_action = self._run_action
 
     def run(self, path=None):
         if path is not None:
             self.path = path
         self.widget.load_file(self.path)
         super().run()
+        self.widget.start()
+
+    def finish_process(self, event=None, caller=None):
+        self.events.append(**event)
+        self.events.save_csv()
 
 
 class FinishWidget(QWidget):
     def __init__(self):
         super().__init__()
         self._path = None
+        self.run_action = self.default_run
 
         self.ui = Ui_EmotionFinish()
         self.ui.setupUi(self)
@@ -1539,6 +1581,13 @@ class FinishWidget(QWidget):
             self.path = file
         pixmap = QtGui.QPixmap(self.path.as_posix())
         self.ui.imageSpace.setPixmap(pixmap)
+        
+    def start(self):
+        event = {'_type': 'Finished'}
+        self.run_action(event=event, caller=self)
+        
+    def default_run(self, event=None, caller=None):
+        print('finish')
 
 
 class EmotionVideoPlayer(WidgetContainer):
@@ -1731,6 +1780,7 @@ class VideoPlayerWidget(QWidget):
 
 
 import collections
+import csv
 
 
 class EventLogger(collections.UserList):
@@ -1738,6 +1788,18 @@ class EventLogger(collections.UserList):
         super().__init__(**kwargs)
         self.start_datetime = None
         self.start_time_counter = None
+        self._path = None
+
+    @property
+    def path(self):
+        return self._path
+
+    @path.setter
+    def path(self, value):
+        if isinstance(value, pathlib.Path) or value is None:
+            self._path = value
+        else:
+            self._path = pathlib.Path(value)
 
     def set_time(self):
         self.start_datetime = datetime.datetime.now()
@@ -1762,3 +1824,27 @@ class EventLogger(collections.UserList):
         else:
             event = self.create_event(_type=_type, **kwargs)
             super().insert(i, event)
+
+    def clear(self):
+        self.start_datetime = None
+        self.start_time_counter = None
+        self._path = None
+        super().clear()
+
+    def save_csv(self, path=None):
+        if path is not None:
+            self.path = path
+        with self.path.open('w') as file:
+            writer = csv.writer(file, delimiter=',', quotechar='"')
+            for event in self.data:
+                writer.writerow(self.event2list(event))
+    
+    @staticmethod
+    def event2list(event):
+        result = []
+        for key, value in event.items():
+            if isinstance(value, datetime.datetime):
+                value = value.timestamp()
+            result.append(key+': '+str(value))
+        return result
+
