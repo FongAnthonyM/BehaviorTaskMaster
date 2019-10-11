@@ -1134,6 +1134,9 @@ class WashoutWidget(QWidget):
         self.timer.setSingleShot(True)
         self.timer.timeout.connect(self.timeout)
         self.milliseconds = 0
+        self.color = 'rgb'+str((224, 224, 224))
+
+        self.ui.colorSpacer.setStyleSheet('background-color:'+self.color)
 
     def set_text(self, t):
         self.ui.label.setText(t)
@@ -1272,8 +1275,12 @@ class EmotionQuestionnaire(WidgetContainer):
         if answer_action is not None:
             self.answer_action = answer_action
 
-        self.widget.load_file(self.path)
-        super().run()
+        if self.path.as_posix() == '.':
+            event = {'_type': 'Questionnaire', 'SubType': 'NoFile'}
+            self.widget.finish_action(event=event, caller=self)
+        else:
+            self.widget.load_file(self.path)
+            super().run()
 
     def next_question(self, event=None, caller=None):
         self.events.append(**event)
@@ -1336,6 +1343,7 @@ class QuestionnaireWidget(QWidget):
         self.multi_answers = 1
         self.current_question = None
         self.current_answers = None
+        self.current_color = None
         self.selected_answer = None
 
     @property
@@ -1352,22 +1360,32 @@ class QuestionnaireWidget(QWidget):
     def load_file(self, file):
         if file is not None:
             self.path = file
-        q_file = toml.load(self.path)
-        self.qa = q_file['Questions']
-        self.q_index = 0
-        qa = self.qa[self.q_index]
-        self.set_question(qa['question'])
-        self.set_answers(qa['answers'])
+        if self.path.as_posix() != '.':
+            q_file = toml.load(self.path)
+            self.qa = q_file['Questions']
+            self.q_index = 0
+            qa = self.qa[self.q_index]
+            self.set_color(qa['color'])
+            self.set_question(qa['question'])
+            self.set_answers(qa['answers'], qa['format'])
+
+    def set_color(self, color):
+        if color is not None:
+            self.ui.colorSpacer.setStyleSheet('background-color:rgb('+color+')')
+            self.current_color = color
 
     def set_question(self, question):
         self.ui.questionBrowser.setText(question)
         self.current_question = question
 
-    def set_answers(self, answers):
+    def set_answers(self, answers, _format=None):
         self.remove_answers()
         self.current_answers = answers
-        size = (2, -(-len(answers)//2))
-        b_size = (4, size[1]+2)
+        if _format == 'scale':
+            size = (1, len(answers))
+        else:
+            size = (2, -(-len(answers)//2))
+        b_size = (size[0] + 2, size[1] + 2)
         topSpacer = QtWidgets.QSpacerItem(20, 5, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
         bottomSpacer = QtWidgets.QSpacerItem(20, 5, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
         leftSpacer = QtWidgets.QSpacerItem(5, 20, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Minimum)
@@ -1386,7 +1404,7 @@ class QuestionnaireWidget(QWidget):
         for i in range(0, size[0]):
             for j in range(0, size[1]):
                 a_index = i*size[1]+j
-                if a_index <= len(answers):
+                if a_index < len(answers):
                     answer_check = QtWidgets.QCheckBox(self.ui.answersBox)
                     sizePolicy.setHeightForWidth(answer_check.sizePolicy().hasHeightForWidth())
                     answer_check.setSizePolicy(sizePolicy)
@@ -1466,10 +1484,9 @@ class QuestionnaireWidget(QWidget):
             self.ui.continueButton.setText(QtWidgets.QApplication.translate("EmotionQuestionnaire", "Done", None, -1))
             self.ui.backButton.setText(QtWidgets.QApplication.translate("EmotionQuestionnaire", "Previous", None, -1))
         qa = self.qa[self.q_index]
-        self.current_question = qa['question']
-        self.current_answers = qa['answers']
-        self.set_question(self.current_question)
-        self.set_answers(self.current_answers)
+        self.set_color(qa['color'])
+        self.set_question(qa['question'])
+        self.set_answers(qa['answers'], qa['format'])
 
     def default_finish(self, event=None, caller=None):
         print("Not Connected")
@@ -1491,10 +1508,9 @@ class QuestionnaireWidget(QWidget):
             self.ui.continueButton.setText(QtWidgets.QApplication.translate("EmotionQuestionnaire", "Next", None, -1))
             self.ui.backButton.setText(QtWidgets.QApplication.translate("EmotionQuestionnaire", "Exit", None, -1))
         qa = self.qa[self.q_index]
-        self.current_question = qa['question']
-        self.current_answers = qa['answers']
-        self.set_question(self.current_question)
-        self.set_answers(self.current_answers)
+        self.set_color(qa['color'])
+        self.set_question(qa['question'])
+        self.set_answers(qa['answers'], qa['format'])
 
     def default_back(self, event=None, caller=None):
         print('There is no going back')
@@ -1731,9 +1747,13 @@ class VideoPlayerWidget(QWidget):
 
         self.ui = Ui_EmotionVideoPlayer()
         self.ui.setupUi(self)
+        self.backgroundPalette = QtGui.QPalette()
+        self.backgroundPalette.setColor(QtGui.QPalette.Background, QtGui.QColor(0, 0, 0))
+        self.setAutoFillBackground(True)
+        self.setPalette(self.backgroundPalette)
 
         self.ui.videoPlayer = QtMultimediaWidgets.QVideoWidget()
-        self.ui.gridLayout.addWidget(self.ui.videoPlayer, 0, 0, 1, 1)
+        self.ui.gridLayout.addWidget(self.ui.videoPlayer, 1, 1, 1, 1)
 
         self.mediaPlayer = QtMultimedia.QMediaPlayer(self, QtMultimedia.QMediaPlayer.VideoSurface)
         self.video_item = QtMultimediaWidgets.QGraphicsVideoItem()
