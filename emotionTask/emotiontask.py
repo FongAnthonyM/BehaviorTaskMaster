@@ -36,7 +36,7 @@ from bidict import bidict
 from bidict import frozenbidict
 import toml
 from PySide2 import QtCore, QtGui, QtWidgets, QtMultimedia, QtMultimediaWidgets
-from PySide2.QtCore import Slot, Signal, QObject, QDir
+from PySide2.QtCore import QDir
 from PySide2.QtGui import QKeySequence
 from PySide2.QtWidgets import QWidget, QAction, QFileDialog, QAbstractItemView, QStyle
 
@@ -579,6 +579,7 @@ class ParametersWidget(QWidget):
     def evaluate(self):
         self.subject.clear()
         self.session.clear()
+        self.blocks.clear()
         self.subject.append(self.ui.subjectIDEdit.text())
         self.session.append(self.ui.blockEdit.text())
         for i in range(0, self.list_model.rowCount()):
