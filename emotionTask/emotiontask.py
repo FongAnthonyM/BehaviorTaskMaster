@@ -41,6 +41,7 @@ from PySide2.QtGui import QKeySequence
 from PySide2.QtWidgets import QWidget, QAction, QFileDialog, QAbstractItemView, QStyle
 
 # Local Libraries #
+from utility.iotriggers import AudioTrigger
 from QtUtility.stackedwindow import WidgetStack
 from emotionTask.UI.emotionparameters import Ui_EmotionParameters
 from emotionTask.UI.emotioninstructions import Ui_EmotionInstructions
@@ -60,8 +61,12 @@ class EmotionTask:
         self.widget_stack = stack
         self.return_widget = r_widget
 
+        self.trigger = AudioTrigger()
+        self.trigger.add_square_wave('square_wave', amplitude=2, samples=1000)
+        self.trigger.current_waveform = 'square_wave'
+
         self.task_window = TaskWindow()
-        self.events = EventLogger()
+        self.events = EventLogger(io_trigger=self.trigger)
         
         self.sequencer = WidgetContainerSequencer()
         self.task_window.sequencer = self.sequencer
@@ -944,6 +949,7 @@ class ControlWidget(QWidget):
 
     def advance(self, event=None, caller=None):
         self.events.append(**event)
+        self.events.trigger()
         next(self.sequencer)
 
     def advance_block(self, event=None, caller=None):
@@ -1282,14 +1288,17 @@ class EmotionQuestionnaire(WidgetContainer):
         else:
             self.widget.load_file(self.path)
             super().run()
+            self.events.trigger()
 
     def next_question(self, event=None, caller=None):
         self.events.append(**event)
         self.widget.default_next(event=event, caller=caller)
+        self.events.trigger()
 
     def previous_question(self, event=None, caller=None):
         self.events.append(**event)
         self.widget.default_previous(event=event, caller=caller)
+        self.events.trigger()
 
     def answer_selected(self, event=None, caller=None):
         self.events.append(**event)
@@ -1720,6 +1729,7 @@ class EmotionVideoPlayer(WidgetContainer):
 
         self.load_video()
         super().run()
+        self.events.trigger()
         self.widget.play()
 
     def load_video(self, video=None):
@@ -1731,7 +1741,7 @@ class EmotionVideoPlayer(WidgetContainer):
     def frame_process(self, frame=None, number=None, event=None, caller=None):
         # could use frame metadata if is exists: print(frame.metaData(str_name))
         self.events.append(**event)
-        print(self.events[-1])
+        # print(self.events[-1])
 
 
 class VideoPlayerWidget(QWidget):
@@ -1804,12 +1814,19 @@ import collections
 import csv
 
 
+
+
+
 class EventLogger(collections.UserList):
-    def __init__(self, **kwargs):
+    def __init__(self, io_trigger=None, **kwargs):
         super().__init__(**kwargs)
         self.start_datetime = None
         self.start_time_counter = None
         self._path = None
+        if io_trigger is None:
+            self.io_trigger = AudioTrigger()
+        else:
+            self.io_trigger = io_trigger
 
     @property
     def path(self):
@@ -1851,6 +1868,9 @@ class EventLogger(collections.UserList):
         self.start_time_counter = None
         self._path = None
         super().clear()
+
+    def trigger(self):
+        self.io_trigger.trigger()
 
     def save_csv(self, path=None):
         if path is not None:
