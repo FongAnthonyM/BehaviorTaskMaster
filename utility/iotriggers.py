@@ -42,10 +42,7 @@ from utility.audiodevice import AudioDevice
 # Classes #
 class IndexableDict(collections.OrderedDict):
     def __init__(self, **kwargs):
-        self._map = bidict()
         super().__init__(**kwargs)
-        for i, key in enumerate(self.keys()):
-            self._map[i] = key
 
     def __getitem__(self, item):
         if isinstance(item, slice):
@@ -144,7 +141,7 @@ class AudioTrigger:
                 sample_rate = self.waveforms[waveform]['sample_rate']
             waveform = self.waveforms[waveform]['waveform']
         if sample_rate is None:
-            sample_rate = self.waveforms[self.current_waveform][sample_rate]
+            sample_rate = self.waveforms[self.current_waveform]['sample_rate']
         self.audio_device.play(waveform, sample_rate)
 
     @staticmethod
