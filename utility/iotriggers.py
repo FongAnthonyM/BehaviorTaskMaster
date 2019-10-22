@@ -151,8 +151,7 @@ class AudioTrigger:
             presamples = int(sample_rate * preseconds)
             samples = int(sample_rate * seconds)
             postsamples = int(sample_rate * postseconds)
-        return [0] * presamples + [amplitude
-                                   ] * samples + [0] * postsamples
+        return [0.0] * presamples + [float(amplitude)] * samples + [0.0] * postsamples
 
 
 
