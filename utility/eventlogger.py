@@ -24,23 +24,105 @@ Output:
 ########## Libraries, Imports, & Setup ##########
 
 # Default Libraries #
+from abc import ABC, abstractmethod
 import pathlib
 import time
 import datetime
+import collections
 import collections.abc
+import csv
 
 # Downloaded Libraries #
 from bidict import frozenbidict
 import h5py
 import numpy as np
 
+# Local Libraries #
+from utility.iotriggers import AudioTrigger
+
 ########## Definitions ##########
 
 # Classes #
+class EventLoggerCSV(collections.UserList):
+    def __init__(self, io_trigger=None, **kwargs):
+        super().__init__(**kwargs)
+        self.start_datetime = None
+        self.start_time_counter = None
+        self._path = None
+        if io_trigger is None:
+            self.io_trigger = AudioTrigger()
+        else:
+            self.io_trigger = io_trigger
+
+    @property
+    def path(self):
+        return self._path
+
+    @path.setter
+    def path(self, value):
+        if isinstance(value, pathlib.Path) or value is None:
+            self._path = value
+        else:
+            self._path = pathlib.Path(value)
+
+    def set_time(self):
+        self.start_datetime = datetime.datetime.now()
+        self.start_time_counter = time.perf_counter()
+        self.append({'Time': self.start_datetime, 'DeltaTime': 0, 'Type': 'TimeSet'})
+
+    def create_event(self, _type, **kwargs):
+        seconds = round(time.perf_counter() - self.start_time_counter, 6)
+        now = self.start_datetime + datetime.timedelta(seconds=seconds)
+        return {'Time': now, 'DeltaTime': seconds, 'Type': _type, **kwargs}
+
+    def append(self, _type, **kwargs):
+        if isinstance(_type, dict):
+            super().append(_type)
+        else:
+            event = self.create_event(_type=_type, **kwargs)
+            super().append(event)
+
+    def insert(self, i, _type, **kwargs):
+        if isinstance(_type, dict):
+            super().insert(i, _type)
+        else:
+            event = self.create_event(_type=_type, **kwargs)
+            super().insert(i, event)
+
+    def clear(self):
+        self.start_datetime = None
+        self.start_time_counter = None
+        self._path = None
+        super().clear()
+
+    def trigger(self):
+        self.io_trigger.trigger()
+
+    def trigger_event(self, **kwargs):
+        self.trigger()
+        self.append(_type='Trigger', **kwargs)
+
+    def save_csv(self, path=None):
+        if path is not None:
+            self.path = path
+        with self.path.open('w') as file:
+            writer = csv.writer(file, delimiter=',', quotechar='"')
+            for event in self.data:
+                writer.writerow(self.event2list(event))
+
+    @staticmethod
+    def event2list(event):
+        result = []
+        for key, value in event.items():
+            if isinstance(value, datetime.datetime):
+                value = value.timestamp()
+            result.append(key + ': ' + str(value))
+        return result
+
 
 class HDF5container:
-    file_attrs = frozenbidict({'type': 'Type'})
-    datasets = frozenbidict({})
+    file_attrs = frozenbidict(type='Type')
+    datasets = frozenbidict()
 
     def __init__(self, path=None, init=False):
         self._path = None
@@ -185,8 +267,8 @@ class HDF5container:
 
 
 class EventLogger(HDF5container):
-    file_attrs = frozenbidict({'type': 'Type'})
-    datasets = frozenbidict({'events', 'Events'})
+    file_attrs = frozenbidict(type='Type')
+    datasets = frozenbidict(events='Events')
 
     def __init__(self, path=None, init=False):
         super().__init__(path=path, init=init)
@@ -240,5 +322,5 @@ class EventLogger(HDF5container):
 
 
 class SubjectEventLogger(EventLogger):
-    file_attrs = frozenbidict({'type': 'Type', 'subject': 'Subject'})
-    datasets = frozenbidict({'events', 'Events'})
+    file_attrs = frozenbidict(type='Type', subject='Subject')
+    datasets = frozenbidict(events='Events')

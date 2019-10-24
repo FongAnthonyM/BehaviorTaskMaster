@@ -33,7 +33,7 @@ from PySide2.QtWidgets import QApplication, QAction
 # Local Libraries #
 from QtUtility.stackedwindow import MainStackedWindow
 from mainUI.mainUI import MainMenuWidget
-from emotionTask.emotiontask import EmotionTask
+from emotionTasks.emotionCategorization.emotioncategorizationtask import EmotionCategorizationTask
 
 
 ########## Definitions ##########
@@ -88,7 +88,7 @@ if __name__ == "__main__":
     app = QApplication(sys.argv)
 
     window = BehaviorTaskWindow()
-    window.add_task(EmotionTask(window), "EmotionItem", "Emotion Task")
+    window.add_task(EmotionCategorizationTask(window), "EmotionCategorizationItem", "Emotion Categorization")
 
     window.show()
 
