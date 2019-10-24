@@ -31,9 +31,10 @@ from PySide2.QtGui import QKeySequence
 from PySide2.QtWidgets import QApplication, QAction
 
 # Local Libraries #
-from QtUtility.stackedwindow import MainStackedWindow
+from QtUtility.utilitywidgets import MainStackedWindow
 from mainUI.mainUI import MainMenuWidget
 from emotionTasks.emotionCategorization.emotioncategorizationtask import EmotionCategorizationTask
+from emotionTasks.emotionDial.emotiondialtask import EmotionDialTask
 
 
 ########## Definitions ##########
@@ -89,6 +90,7 @@ if __name__ == "__main__":
 
     window = BehaviorTaskWindow()
     window.add_task(EmotionCategorizationTask(window), "EmotionCategorizationItem", "Emotion Categorization")
+    window.add_task(EmotionDialTask(window), "EmotionDialTask", "Emotion Dial")
 
     window.show()
 

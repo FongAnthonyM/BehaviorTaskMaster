@@ -41,14 +41,14 @@ from utility.eventlogger import EventLoggerCSV
 from QtUtility.utilitywidgets import WidgetContainer, WidgetContainerSequencer
 from QtUtility.taskwidgets import TaskWindow
 from emotionTasks.emotionwidgets import EmotionInstructions, EmotionWashout, EmotionQuestionnaire, EmotionFinish, EmotionVideoPlayer
-from emotionTasks.UI.emotionparameters import Ui_EmotionParameters
+from emotionTasks.UI.emotiondialparameters import Ui_EmotionParameters
 from emotionTasks.UI.emotioncontrol import Ui_EmotionControl
 
 
 ########## Definitions ##########
 
 # Classes #
-class EmotionCategorizationTask:
+class EmotionDialTask:
     def __init__(self, parent=None, stack=None, r_widget=None):
         self.parent = parent
         self.widget_stack = stack
@@ -69,12 +69,11 @@ class EmotionCategorizationTask:
         self.control = EmotionControl(events=self.events)
         self.instructions = EmotionInstructions(path=pathlib.Path(__file__).parent.joinpath('instructions.txt'), events=self.events)
         self.video_player = EmotionVideoPlayer(events=self.events)
-        self.questionnaire = EmotionQuestionnaire(events=self.events)
         self.washout = EmotionWashout(events=self.events)
         self.finished = EmotionFinish(events=self.events)
 
         self.block_widgets = {'instructions': self.instructions, 'video_player': self.video_player,
-                              'questionnaire': self.questionnaire, 'washout': self.washout, 'finish': self.finished}
+                              'washout': self.washout, 'finish': self.finished}
         self.sequence_order = ['instructions', '*block*', 'washout', 'finish']
         self.block_order = ['washout', 'video_player', 'questionnaire']
 
@@ -91,7 +90,6 @@ class EmotionCategorizationTask:
         self.task_window.load(self.instructions)
         self.task_window.load(self.washout)
         self.task_window.load(self.video_player)
-        self.task_window.load(self.questionnaire)
         self.task_window.load(self.finished)
 
         self.control.task_window = self.task_window
@@ -112,7 +110,6 @@ class EmotionCategorizationTask:
         self.task_window.unload(self.instructions, back=False, clear_widget=clear_widget)
         self.task_window.unload(self.washout, back=False, clear_widget=clear_widget)
         self.task_window.unload(self.video_player, back=False, clear_widget=clear_widget)
-        self.task_window.unload(self.questionnaire, back=False, clear_widget=clear_widget)
 
     def setup_task(self):
         self.parameters.run(self.control_task, self.unload_task)
@@ -161,9 +158,8 @@ class EmotionParameters(WidgetContainer):
 
 
 class ParametersWidget(QWidget):
-    header = ('Video', 'Questions', 'Video Path', 'Question Path')
+    header = ('Video', 'Video Path')
     v_types = ('*.avi', '*.mp4', '*.ogg', '*.qt', '*.wmv', '*.yuv')
-    q_types = ('*.toml',)
 
     def __init__(self):
         super(ParametersWidget, self).__init__()
@@ -204,21 +200,17 @@ class ParametersWidget(QWidget):
         return copy.deepcopy(self._parameters)
 
     def _construct_video_list(self):
-        self.list_model = QtGui.QStandardItemModel(0, 4)
+        self.list_model = QtGui.QStandardItemModel(0, 2)
         self.list_model.setHorizontalHeaderLabels(self.header)
         self.ui.videoList.setModel(self.list_model)
         self.ui.videoList.setDragDropMode(QAbstractItemView.InternalMove)
         self.ui.videoList.setSelectionMode(QAbstractItemView.MultiSelection)
         self.ui.videoList.setColumnWidth(0, 200)
-        self.ui.videoList.setColumnWidth(1, 200)
-        self.ui.videoList.setColumnWidth(2, 100)
-        self.ui.videoList.setColumnWidth(3, 100)
+        self.ui.videoList.setColumnWidth(1, 100)
 
         self.ui.videoList.doubleClicked.connect(self.double_click)
         self.ui.addVideoButton.clicked.connect(self.add_videos)
-        self.ui.addQuestionsButton.clicked.connect(self.add_questions)
         self.ui.videoDirectory.clicked.connect(self.video_directory)
-        self.ui.questionDirectory.clicked.connect(self.question_directory)
         self.ui.deleteLastButton.clicked.connect(self.delete_last)
         self.ui.clearAll.clicked.connect(self.clear_all)
 
@@ -255,13 +247,8 @@ class ParametersWidget(QWidget):
         index = -1
         for i in reversed(range(0, end)):
             video = self.list_model.item(i, 0).text()
-            question = self.list_model.item(i, 1).text()
             if item == 'video':
                 text = video
-            elif item == 'question':
-                text = question
-            elif item == 'video&question':
-                text = video + question
             else:
                 break
             if text == '':
@@ -270,54 +257,39 @@ class ParametersWidget(QWidget):
                 break
         return index
 
-    def add_item(self, video='', question='', index=-1):
+    def add_item(self, video='', index=-1):
         # Make Row Objects
         video_name = QtGui.QStandardItem(pathlib.Path(video).name)
-        questions_name = QtGui.QStandardItem(pathlib.Path(question).name)
         videos = QtGui.QStandardItem(video)
-        questions = QtGui.QStandardItem(question)
 
         # Row Settings
         video_name.setEditable(False)
         video_name.setDragEnabled(True)
         video_name.setDropEnabled(False)
-        questions_name.setEditable(False)
-        questions_name.setDropEnabled(False)
         videos.setEditable(False)
         videos.setDropEnabled(False)
-        questions.setEditable(False)
 
         if index == -1:
             index = self.list_model.rowCount()
             self.list_model.appendRow(video_name)
         else:
             self.list_model.insertRow(index, video_name)
-        self.list_model.setItem(index, 1, questions_name)
-        self.list_model.setItem(index, 2, videos)
-        self.list_model.setItem(index, 3, questions)
+        self.list_model.setItem(index, 1, videos)
 
-    def edit_item(self, index=None, video='', question=''):
+    def edit_item(self, index=None, video=''):
         if index is None:
             item = ''
-            if video != '' and question != '':
-                item = 'video&question'
-            elif video != '':
+            if video != '':
                 item = 'video'
-            elif question != '':
-                item = 'question'
+
             index = self.find_last_row(item=item)
 
         videos_name = self.list_model.item(index, 0)
-        questions_name = self.list_model.item(index, 1)
-        videos = self.list_model.item(index, 2)
-        questions = self.list_model.item(index, 3)
+        videos = self.list_model.item(index, 1)
 
         if video != '':
             videos_name.setText(pathlib.Path(video).name)
             videos.setText(video)
-        if question != '':
-            questions_name.setText(pathlib.Path(question).name)
-            questions.setText(question)
 
     def change_video(self, row):
         dialog = QFileDialog(self, caption="Open Video", directory=QDir.homePath())
@@ -330,18 +302,6 @@ class ParametersWidget(QWidget):
             v = dialog.selectedFiles()[0]
             video_name.setText(pathlib.Path(v).name)
             videos.setText(v)
-
-    def change_question(self, row):
-        dialog = QFileDialog(self, caption="Open Question", directory=QDir.homePath())
-        dialog.setFileMode(QFileDialog.ExistingFile)
-        dialog.setViewMode(QFileDialog.Detail)
-
-        if dialog.exec_():
-            questions_name = self.list_model.item(row, 1)
-            questions = self.list_model.item(row, 3)
-            q = dialog.selectedFiles()[0]
-            questions_name.setText(pathlib.Path(q).name)
-            questions.setText(q)
 
     def add_videos(self):
         dialog = QFileDialog(self, caption="Open Video", directory=QDir.homePath())
@@ -356,20 +316,6 @@ class ParametersWidget(QWidget):
                     self.add_item(video=video)
                 else:
                     self.edit_item(index=last, video=video)
-
-    def add_questions(self):
-        dialog = QFileDialog(self, caption="Open Questions", directory=QDir.homePath())
-        dialog.setFileMode(QFileDialog.ExistingFiles)
-        dialog.setViewMode(QFileDialog.Detail)
-
-        if dialog.exec_():
-            question_names = dialog.selectedFiles()
-            for question in question_names:
-                last = self.find_last_row('question')
-                if last == -1:
-                    self.add_item(question=question)
-                else:
-                    self.edit_item(index=last, question=question)
 
     def video_directory(self):
         dialog = QFileDialog(self, caption="Open Video Directory", directory=QDir.homePath())
@@ -388,27 +334,6 @@ class ParametersWidget(QWidget):
                     self.add_item(video=str(video))
                 else:
                     self.edit_item(index=last, video=str(video))
-
-    def question_directory(self):
-        dialog = QFileDialog(self, caption="Open Questions Directory", directory=QDir.homePath())
-        dialog.setFileMode(QFileDialog.Directory)
-        dialog.setViewMode(QFileDialog.Detail)
-
-        if dialog.exec_():
-            dir_names = dialog.selectedFiles()
-            dir_path = pathlib.Path(dir_names[0])
-            files = []
-            if len(self.q_types) < 1 or '*' in self.q_types:
-                files = dir_path.iterdir()
-            else:
-                for ext in self.q_types:
-                    files.extend(dir_path.glob(ext))
-            for question in files:
-                last = self.find_last_row('question')
-                if last == -1:
-                    self.add_item(question=str(question))
-                else:
-                    self.edit_item(index=last, question=str(question))
 
     def delete_last(self):
         last = self.list_model.rowCount() - 1
@@ -438,10 +363,9 @@ class ParametersWidget(QWidget):
         self.subject.append(self.ui.subjectIDEdit.text())
         self.session.append(self.ui.blockEdit.text())
         for i in range(0, self.list_model.rowCount()):
-            video = pathlib.Path(self.list_model.item(i, 2).text())
-            question = pathlib.Path(self.list_model.item(i, 3).text())
+            video = pathlib.Path(self.list_model.item(i, 1).text())
             washout = self.ui.washoutBox.value()
-            self.blocks.append({'video': video, 'questions': question, 'washout': washout})
+            self.blocks.append({'video': video, 'washout': washout})
 
     def ok(self):
         self.evaluate()
@@ -540,7 +464,7 @@ class EmotionControl(WidgetContainer):
 
 
 class ControlWidget(QWidget):
-    header = ('Video', 'Questions', 'Washout', '')
+    header = ('Video', '')
 
     def __init__(self, player=None, init=False, **kwargs):
         super().__init__(**kwargs)
@@ -621,12 +545,12 @@ class ControlWidget(QWidget):
     def construct_blocks(self):
         self.blocks = self.parameters['blocks']
         self._construct_queue()
-        self.playing_model = QtGui.QStandardItemModel(0, 4)
+        self.playing_model = QtGui.QStandardItemModel(0, 2)
         self.playing_model.setHorizontalHeaderLabels(self.header)
         self.ui.playingBlock.setModel(self.playing_model)
         self.ui.playingBlock.setColumnWidth(2, 75)
         self.ui.playingBlock.setColumnWidth(3, 25)
-        self.complete_model = QtGui.QStandardItemModel(0, 4)
+        self.complete_model = QtGui.QStandardItemModel(0, 2)
         self.complete_model.setHorizontalHeaderLabels(self.header)
         self.ui.completedBlocks.setModel(self.complete_model)
         # self.ui.completedBlocks.setDragDropMode(QAbstractItemView.InternalMove)
@@ -635,7 +559,7 @@ class ControlWidget(QWidget):
         self.ui.completedBlocks.setColumnWidth(3, 25)
 
     def _construct_queue(self):
-        self.queue_model = QtGui.QStandardItemModel(0, 4)
+        self.queue_model = QtGui.QStandardItemModel(0, 2)
         self.queue_model.setHorizontalHeaderLabels(self.header)
         self.ui.quequedBlocks.setModel(self.queue_model)
         # self.ui.quequedBlocks.setDragDropMode(QAbstractItemView.InternalMove)
@@ -643,25 +567,18 @@ class ControlWidget(QWidget):
         self.ui.quequedBlocks.setColumnWidth(2, 75)
         self.ui.quequedBlocks.setColumnWidth(3, 25)
         for i, block in enumerate(self.blocks):
-            self.add_item(self.queue_model, _id=i, video=block['video'], question=block['questions'],
-                          washout=block['washout'])
+            self.add_item(self.queue_model, _id=i, video=block['video'])
 
     @staticmethod
-    def add_item(model, _id=0, video=pathlib.Path, question=pathlib.Path, washout=0, index=-1):
+    def add_item(model, _id=0, video=pathlib.Path, index=-1):
         # Make Row Objects
         id_number = QtGui.QStandardItem(str(_id))
         video_name = QtGui.QStandardItem(video.name)
-        questions_name = QtGui.QStandardItem(question.name)
-        washout_name = QtGui.QStandardItem(str(washout) + "s")
 
         # Row Settings
         video_name.setEditable(False)
         video_name.setDragEnabled(True)
         video_name.setDropEnabled(False)
-        questions_name.setEditable(False)
-        questions_name.setDropEnabled(False)
-        washout_name.setEditable(False)
-        washout_name.setDropEnabled(False)
         id_number.setEnabled(False)
         id_number.setDropEnabled(False)
 
@@ -670,9 +587,7 @@ class ControlWidget(QWidget):
             model.appendRow(video_name)
         else:
             model.insertRow(index, video_name)
-        model.setItem(index, 1, questions_name)
-        model.setItem(index, 2, washout_name)
-        model.setItem(index, 3, id_number)
+        model.setItem(index,  1, id_number)
 
     def _construct_startAction(self):
         self.ui.startButton.clicked.connect(self.start)
@@ -749,6 +664,7 @@ class ControlWidget(QWidget):
 
     def start_sequence(self):
         self.sequencer.clear()
+        block = self.blocks[0]
         block_sequence = self.sequence_order.index('*block*')
         sequence_order = self.sequence_order[:block_sequence]
 
@@ -758,7 +674,8 @@ class ControlWidget(QWidget):
         last = sequence_order.pop()
         for item in sequence_order:
             self.sequencer.insert(self.block_widgets[item], ok_action=self.advance)
-        self.sequencer.insert(self.block_widgets[last], ok_action=self.advance_block)
+        self.sequencer.insert(self.block_widgets[last], ok_action=self.advance)
+        self.sequencer.insert(self.block_widgets['washout'], milliseconds=block['washout'] * 1000, timer_action=self.advance_block)
 
     def end_sequence(self):
         block = self.blocks[-1]
@@ -771,19 +688,17 @@ class ControlWidget(QWidget):
 
     def next_queue(self):
         if self.playing_model.rowCount() > 0:
-            complete_index = int(self.playing_model.item(0, 3).text())
+            complete_index = int(self.playing_model.item(0, 1).text())
             complete = self.blocks[complete_index]
-            self.add_item(self.complete_model, _id=complete_index, video=complete['video'],
-                          question=complete['questions'], washout=complete['washout'])
+            self.add_item(self.complete_model, _id=complete_index, video=complete['video'])
 
         self.playing_model.clear()
         self.playing_model.setHorizontalHeaderLabels(self.header)
         if self.queue_model.rowCount() > 0:
-            play_index = int(self.queue_model.item(0, 3).text())
+            play_index = int(self.queue_model.item(0, 1).text())
             block = self.blocks[play_index]
 
-            self.add_item(self.playing_model, _id=play_index, video=block['video'], question=block['questions'],
-                          washout=block['washout'])
+            self.add_item(self.playing_model, _id=play_index, video=block['video'])
             self.queue_model.removeRow(0)
             flag = True
         else:
@@ -792,14 +707,10 @@ class ControlWidget(QWidget):
         return flag
 
     def next_block(self):
-        play_index = int(self.playing_model.item(0, 3).text())
+        play_index = int(self.playing_model.item(0, 1).text())
         block = self.blocks[play_index]
 
-        self.sequencer.insert(self.block_widgets['washout'], milliseconds=block['washout'] * 1000,
-                              timer_action=self.advance)
-        self.sequencer.insert(self.block_widgets['video_player'], path=block['video'], finish_action=self.advance)
-        self.sequencer.insert(self.block_widgets['questionnaire'], path=block['questions'],
-                              finish_action=self.advance_block)
+        self.sequencer.insert(self.block_widgets['video_player'], path=block['video'], finish_action=self.advance_block)
 
     def advance(self, event=None, caller=None):
         self.events.append(**event)
@@ -863,5 +774,4 @@ class ControlWidget(QWidget):
             self.queue_model.setHorizontalHeaderLabels(self.header)
             self.playing_model.setHorizontalHeaderLabels(self.header)
             for i, block in enumerate(self.blocks):
-                self.add_item(self.queue_model, _id=i, video=block['video'], question=block['questions'],
-                              washout=block['washout'])
+                self.add_item(self.queue_model, _id=i, video=block['video'])
