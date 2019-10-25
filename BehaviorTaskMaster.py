@@ -1,27 +1,16 @@
-"""
-.py
-
-Last Edited:
-
-Lead Author[s]: Anthony Fong
-Contributor[s]:
-
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+""" BehaviorTaskMaster.py
 Description:
-
-
-Machine I/O
-Input:
-Output:
-
-User I/O
-Input:
-Output:
-
-
 """
-########################################################################################################################
-
-########## Libraries, Imports, & Setup ##########
+__author__ = "Anthony Fong"
+__copyright__ = "Copyright 2019, Anthony Fong"
+__credits__ = ["Anthony Fong"]
+__license__ = ""
+__version__ = "1.0.0"
+__maintainer__ = "Anthony Fong"
+__email__ = ""
+__status__ = "Prototype"
 
 # Default Libraries #
 import sys
@@ -37,8 +26,7 @@ from emotionTasks.emotionCategorization.emotioncategorizationtask import Emotion
 from emotionTasks.emotionDial.emotiondialtask import EmotionDialTask
 
 
-########## Definitions ##########
-
+# Definitions #
 # Classes #
 class BehaviorTaskWindow(MainStackedWindow):
     def __init__(self):

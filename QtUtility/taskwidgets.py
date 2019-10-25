@@ -1,27 +1,16 @@
-"""
-.py
-
-Last Edited:
-
-Lead Author[s]: Anthony Fong
-Contributor[s]:
-
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+""" taskwidgets.py
 Description:
-
-
-Machine I/O
-Input:
-Output:
-
-User I/O
-Input:
-Output:
-
-
 """
-########################################################################################################################
-
-########## Libraries, Imports, & Setup ##########
+__author__ = "Anthony Fong"
+__copyright__ = "Copyright 2019, Anthony Fong"
+__credits__ = ["Anthony Fong"]
+__license__ = ""
+__version__ = "1.0.0"
+__maintainer__ = "Anthony Fong"
+__email__ = ""
+__status__ = "Prototype"
 
 # Default Libraries #
 import sys
@@ -44,8 +33,7 @@ from QtUtility.UI.emotionvideoplayer import Ui_EmotionVideoPlayer
 from QtUtility.UI.emotionfinish import Ui_EmotionFinish
 
 
-########## Definitions ##########
-
+# Definitions #
 # Classes #
 class TaskWindow(WidgetStack):
     def __init__(self, **kwargs):

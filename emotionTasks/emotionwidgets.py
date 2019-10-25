@@ -1,27 +1,16 @@
-"""
-.py
-
-Last Edited:
-
-Lead Author[s]: Anthony Fong
-Contributor[s]:
-
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+""" emotionwidgets.py
 Description:
-
-
-Machine I/O
-Input:
-Output:
-
-User I/O
-Input:
-Output:
-
-
 """
-########################################################################################################################
-
-########## Libraries, Imports, & Setup ##########
+__author__ = "Anthony Fong"
+__copyright__ = "Copyright 2019, Anthony Fong"
+__credits__ = ["Anthony Fong"]
+__license__ = ""
+__version__ = "1.0.0"
+__maintainer__ = "Anthony Fong"
+__email__ = ""
+__status__ = "Prototype"
 
 # Default Libraries #
 import pathlib
@@ -34,8 +23,7 @@ from QtUtility.utilitywidgets import WidgetContainer
 from QtUtility.taskwidgets import InstructionsWidget, WashoutWidget, QuestionnaireWidget, FinishWidget, VideoPlayerWidget
 
 
-########## Definitions ##########
-
+# Definitions #
 # Classes #
 class EmotionInstructions(WidgetContainer):
     def __init__(self, name="Instructions", path=None, events=None, init=False):

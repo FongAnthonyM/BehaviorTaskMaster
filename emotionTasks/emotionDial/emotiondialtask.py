@@ -1,27 +1,16 @@
-"""
-.py
-
-Last Edited:
-
-Lead Author[s]: Anthony Fong
-Contributor[s]:
-
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+""" emotiondialtask.py
 Description:
-
-
-Machine I/O
-Input:
-Output:
-
-User I/O
-Input:
-Output:
-
-
 """
-########################################################################################################################
-
-########## Libraries, Imports, & Setup ##########
+__author__ = "Anthony Fong"
+__copyright__ = "Copyright 2019, Anthony Fong"
+__credits__ = ["Anthony Fong"]
+__license__ = ""
+__version__ = "1.0.0"
+__maintainer__ = "Anthony Fong"
+__email__ = ""
+__status__ = "Prototype"
 
 # Default Libraries #
 import sys
@@ -40,13 +29,12 @@ from utility.iotriggers import AudioTrigger
 from utility.eventlogger import EventLoggerCSV
 from QtUtility.utilitywidgets import WidgetContainer, WidgetContainerSequencer
 from QtUtility.taskwidgets import TaskWindow
-from emotionTasks.emotionwidgets import EmotionInstructions, EmotionWashout, EmotionQuestionnaire, EmotionFinish, EmotionVideoPlayer
+from emotionTasks.emotionwidgets import EmotionInstructions, EmotionWashout, EmotionFinish, EmotionVideoPlayer
 from emotionTasks.UI.emotiondialparameters import Ui_EmotionParameters
 from emotionTasks.UI.emotioncontrol import Ui_EmotionControl
 
 
-########## Definitions ##########
-
+# Definitions #
 # Classes #
 class EmotionDialTask:
     def __init__(self, parent=None, stack=None, r_widget=None):

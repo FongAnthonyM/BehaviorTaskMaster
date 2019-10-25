@@ -1,27 +1,16 @@
-"""
-.py
-
-Last Edited:
-
-Lead Author[s]: Anthony Fong
-Contributor[s]:
-
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+""" emotioncategorizationtask.py
 Description:
-
-
-Machine I/O
-Input:
-Output:
-
-User I/O
-Input:
-Output:
-
-
 """
-########################################################################################################################
-
-########## Libraries, Imports, & Setup ##########
+__author__ = "Anthony Fong"
+__copyright__ = "Copyright 2019, Anthony Fong"
+__credits__ = ["Anthony Fong"]
+__license__ = ""
+__version__ = "1.0.0"
+__maintainer__ = "Anthony Fong"
+__email__ = ""
+__status__ = "Prototype"
 
 # Default Libraries #
 import sys
@@ -45,8 +34,7 @@ from emotionTasks.UI.emotionparameters import Ui_EmotionParameters
 from emotionTasks.UI.emotioncontrol import Ui_EmotionControl
 
 
-########## Definitions ##########
-
+# Definitions #
 # Classes #
 class EmotionCategorizationTask:
     def __init__(self, parent=None, stack=None, r_widget=None):

@@ -1,27 +1,16 @@
-"""
-.py
-
-Last Edited:
-
-Lead Author[s]: Anthony Fong
-Contributor[s]:
-
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+""" utilitywidgets.py
 Description:
-
-
-Machine I/O
-Input:
-Output:
-
-User I/O
-Input:
-Output:
-
-
 """
-########################################################################################################################
-
-########## Libraries, Imports, & Setup ##########
+__author__ = "Anthony Fong"
+__copyright__ = "Copyright 2019, Anthony Fong"
+__credits__ = ["Anthony Fong"]
+__license__ = ""
+__version__ = "1.0.0"
+__maintainer__ = "Anthony Fong"
+__email__ = ""
+__status__ = "Prototype"
 
 # Default Libraries #
 from abc import ABC, abstractmethod
@@ -33,8 +22,7 @@ from PySide2.QtWidgets import QMainWindow, QHBoxLayout, QStackedWidget
 # Local Libraries #
 
 
-########## Definitions ##########
-
+# Definitions #
 # Classes #
 class WidgetStack(QStackedWidget):
     def __init__(self, parent=None):
