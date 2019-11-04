@@ -30,7 +30,7 @@ from utility.eventlogger import EventLoggerCSV
 from QtUtility.utilitywidgets import WidgetContainer, WidgetContainerSequencer
 from QtUtility.taskwidgets import TaskWindow
 from emotionTasks.emotionwidgets import EmotionInstructions, EmotionWashout, EmotionFinish, EmotionVideoPlayer
-from emotionTasks.UI.emotiondialparameters import Ui_EmotionParameters
+from emotionTasks.emotionDial.UI.emotiondialparameters import Ui_EmotionParameters
 from emotionTasks.UI.emotioncontrol import Ui_EmotionControl
 
 

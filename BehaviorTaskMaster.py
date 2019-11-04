@@ -23,7 +23,9 @@ from PySide2.QtWidgets import QApplication, QAction
 from QtUtility.utilitywidgets import MainStackedWindow
 from mainUI.mainUI import MainMenuWidget
 from emotionTasks.emotionCategorization.emotioncategorizationtask import EmotionCategorizationTask
+from emotionTasks.emotionCategorizationDial.emotioncategorizationdialtask import EmotionCategorizationDialTask
 from emotionTasks.emotionDial.emotiondialtask import EmotionDialTask
+from emotionTasks.emotionDialQuestions.emotiondialquestionstask import EmotionDialQuestionsTask
 
 
 # Definitions #
@@ -77,8 +79,10 @@ if __name__ == "__main__":
     app = QApplication(sys.argv)
 
     window = BehaviorTaskWindow()
-    window.add_task(EmotionCategorizationTask(window), "EmotionCategorizationItem", "Emotion Categorization")
+    window.add_task(EmotionCategorizationTask(window), "EmotionCategorizationTask", "Emotion Categorization")
+    window.add_task(EmotionCategorizationDialTask(window), "EmotionCategorizationDialTask", "Emotion Categorization with Dial")
     window.add_task(EmotionDialTask(window), "EmotionDialTask", "Emotion Dial")
+    window.add_task(EmotionDialQuestionsTask(window), "EmotionDialQuestions", "Emotion Dial Alternative")
 
     window.show()
 

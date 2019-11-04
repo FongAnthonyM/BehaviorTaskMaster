@@ -20,7 +20,7 @@ from PySide2.QtCore import QUrl
 
 # Local Libraries #
 from QtUtility.utilitywidgets import WidgetContainer
-from QtUtility.taskwidgets import InstructionsWidget, WashoutWidget, QuestionnaireWidget, FinishWidget, VideoPlayerWidget
+from QtUtility.taskwidgets import InstructionsWidget, WashoutWidget, QuestionnaireWidget, FinishWidget, VideoPlayerWidget, QuestionnaireImageWidget
 
 
 # Definitions #
@@ -119,7 +119,7 @@ class EmotionQuestionnaire(WidgetContainer):
 
         self._path = None
         if path is None:
-            self._path = pathlib.Path(__file__).parent.joinpath('instructions.txt')
+            self._path = pathlib.Path(__file__).parent
         else:
             self.path = path
 
@@ -246,6 +246,11 @@ class EmotionQuestionnaire(WidgetContainer):
 
     def answer_selected(self, event=None, caller=None):
         self.events.append(**event)
+
+
+class EmotionQuestionnaireImage(EmotionQuestionnaire):
+    def construct_widget(self):
+        self.widget = QuestionnaireImageWidget(self._next_action, self._finish_action, self._previous_action, self._back_action, self._answer_action)
 
 
 class EmotionFinish(WidgetContainer):

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-""" emotioncategorizationtask.py
+""" emotiondialtask.py
 Description:
 """
 __author__ = "Anthony Fong"
@@ -29,14 +29,14 @@ from utility.iotriggers import AudioTrigger
 from utility.eventlogger import EventLoggerCSV
 from QtUtility.utilitywidgets import WidgetContainer, WidgetContainerSequencer
 from QtUtility.taskwidgets import TaskWindow
-from emotionTasks.emotionwidgets import EmotionInstructions, EmotionWashout, EmotionQuestionnaire, EmotionFinish, EmotionVideoPlayer
+from emotionTasks.emotionwidgets import EmotionInstructions, EmotionWashout, EmotionFinish, EmotionVideoPlayer, EmotionQuestionnaireImage
 from emotionTasks.emotionCategorization.UI.emotionparameters import Ui_EmotionParameters
 from emotionTasks.UI.emotioncontrol import Ui_EmotionControl
 
 
 # Definitions #
 # Classes #
-class EmotionCategorizationTask:
+class EmotionCategorizationDialTask:
     def __init__(self, parent=None, stack=None, r_widget=None):
         self.parent = parent
         self.widget_stack = stack
@@ -49,15 +49,16 @@ class EmotionCategorizationTask:
 
         self.task_window = TaskWindow()
         self.events = EventLoggerCSV(io_trigger=self.trigger)
-        
+
         self.sequencer = WidgetContainerSequencer()
         self.task_window.sequencer = self.sequencer
 
         self.parameters = EmotionParameters()
         self.control = EmotionControl(events=self.events)
-        self.instructions = EmotionInstructions(path=pathlib.Path(__file__).parent.joinpath('instructions.txt'), events=self.events)
+        self.instructions = EmotionInstructions(path=pathlib.Path(__file__).parent.joinpath('instructions.txt'),
+                                                events=self.events)
         self.video_player = EmotionVideoPlayer(events=self.events)
-        self.questionnaire = EmotionQuestionnaire(events=self.events)
+        self.questionnaire = EmotionQuestionnaireImage(events=self.events)
         self.washout = EmotionWashout(events=self.events)
         self.finished = EmotionFinish(events=self.events)
 
@@ -529,6 +530,7 @@ class EmotionControl(WidgetContainer):
 
 class ControlWidget(QWidget):
     header = ('Video', 'Questions', 'Washout', '')
+    base_washout = 60
 
     def __init__(self, player=None, init=False, **kwargs):
         super().__init__(**kwargs)
@@ -631,16 +633,29 @@ class ControlWidget(QWidget):
         self.ui.quequedBlocks.setColumnWidth(2, 75)
         self.ui.quequedBlocks.setColumnWidth(3, 25)
         for i, block in enumerate(self.blocks):
-            self.add_item(self.queue_model, _id=i, video=block['video'], question=block['questions'],
-                          washout=block['washout'])
+            self.add_item(self.queue_model, _id=i, video=block['video'], washout=block['washout'])
+        self.add_item(self.queue_model, _id=0, washout=self.base_washout)
+        for i, block in enumerate(self.blocks):
+            self.add_item(self.queue_model, _id=i, question=block['questions'])
 
     @staticmethod
-    def add_item(model, _id=0, video=pathlib.Path, question=pathlib.Path, washout=0, index=-1):
+    def add_item(model, _id=0, video=None, question=None, washout=0, index=-1):
         # Make Row Objects
         id_number = QtGui.QStandardItem(str(_id))
-        video_name = QtGui.QStandardItem(video.name)
-        questions_name = QtGui.QStandardItem(question.name)
-        washout_name = QtGui.QStandardItem(str(washout) + "s")
+        if video is None or video == '':
+            video_name = QtGui.QStandardItem('')
+        else:
+            video_name = QtGui.QStandardItem(pathlib.Path(video).name)
+        if question is None or question == '':
+            questions_name = QtGui.QStandardItem('')
+        else:
+            questions_name = QtGui.QStandardItem(pathlib.Path(question).name)
+        if washout == 0:
+            washout_name = QtGui.QStandardItem('')
+        elif isinstance(washout, str):
+            washout_name = QtGui.QStandardItem(washout)
+        else:
+            washout_name = QtGui.QStandardItem(str(washout) + "s")
 
         # Row Settings
         video_name.setEditable(False)
@@ -737,6 +752,7 @@ class ControlWidget(QWidget):
 
     def start_sequence(self):
         self.sequencer.clear()
+        block = self.blocks[0]
         block_sequence = self.sequence_order.index('*block*')
         sequence_order = self.sequence_order[:block_sequence]
 
@@ -746,7 +762,8 @@ class ControlWidget(QWidget):
         last = sequence_order.pop()
         for item in sequence_order:
             self.sequencer.insert(self.block_widgets[item], ok_action=self.advance)
-        self.sequencer.insert(self.block_widgets[last], ok_action=self.advance_block)
+        self.sequencer.insert(self.block_widgets[last], ok_action=self.advance)
+        self.sequencer.insert(self.block_widgets['washout'], milliseconds=self.base_washout * 1000, timer_action=self.advance_block)
 
     def end_sequence(self):
         block = self.blocks[-1]
@@ -760,18 +777,21 @@ class ControlWidget(QWidget):
     def next_queue(self):
         if self.playing_model.rowCount() > 0:
             complete_index = int(self.playing_model.item(0, 3).text())
-            complete = self.blocks[complete_index]
-            self.add_item(self.complete_model, _id=complete_index, video=complete['video'],
-                          question=complete['questions'], washout=complete['washout'])
+            video = self.playing_model.item(0, 0).text()
+            question = self.playing_model.item(0, 1).text()
+            washout = self.playing_model.item(0, 2).text()
+            self.playing_model.item(0, 3).text()
+            self.add_item(self.complete_model, _id=complete_index, video=video, question=question, washout=washout)
 
         self.playing_model.clear()
         self.playing_model.setHorizontalHeaderLabels(self.header)
         if self.queue_model.rowCount() > 0:
             play_index = int(self.queue_model.item(0, 3).text())
-            block = self.blocks[play_index]
+            video = self.queue_model.item(0, 0).text()
+            question = self.queue_model.item(0, 1).text()
+            washout = self.queue_model.item(0, 2).text()
 
-            self.add_item(self.playing_model, _id=play_index, video=block['video'], question=block['questions'],
-                          washout=block['washout'])
+            self.add_item(self.playing_model, _id=play_index, video=video, question=question, washout=washout)
             self.queue_model.removeRow(0)
             flag = True
         else:
@@ -781,13 +801,18 @@ class ControlWidget(QWidget):
 
     def next_block(self):
         play_index = int(self.playing_model.item(0, 3).text())
+        video = self.playing_model.item(0, 0).text()
+        questions = self.playing_model.item(0, 1).text()
+        washout = self.playing_model.item(0, 2).text()
         block = self.blocks[play_index]
 
-        self.sequencer.insert(self.block_widgets['washout'], milliseconds=block['washout'] * 1000,
-                              timer_action=self.advance)
-        self.sequencer.insert(self.block_widgets['video_player'], path=block['video'], finish_action=self.advance)
-        self.sequencer.insert(self.block_widgets['questionnaire'], path=block['questions'],
-                              finish_action=self.advance_block)
+        if video != '':
+            self.sequencer.insert(self.block_widgets['video_player'], path=block['video'], finish_action=self.advance)
+            self.sequencer.insert(self.block_widgets['washout'], milliseconds=block['washout'] * 1000, timer_action=self.advance_block)
+        elif questions != '':
+            self.sequencer.insert(self.block_widgets['questionnaire'], path=block['questions'], finish_action=self.advance_block)
+        elif washout != '':
+            self.sequencer.insert(self.block_widgets['washout'], milliseconds=(self.base_washout-block['washout']) * 1000, timer_action=self.advance_block)
 
     def advance(self, event=None, caller=None):
         self.events.append(**event)
@@ -851,5 +876,7 @@ class ControlWidget(QWidget):
             self.queue_model.setHorizontalHeaderLabels(self.header)
             self.playing_model.setHorizontalHeaderLabels(self.header)
             for i, block in enumerate(self.blocks):
-                self.add_item(self.queue_model, _id=i, video=block['video'], question=block['questions'],
-                              washout=block['washout'])
+                self.add_item(self.queue_model, _id=i, video=block['video'], washout=block['washout'])
+            self.add_item(self.queue_model, _id=0, washout=self.base_washout)
+            for i, block in enumerate(self.blocks):
+                self.add_item(self.queue_model, _id=i, question=block['questions'])
