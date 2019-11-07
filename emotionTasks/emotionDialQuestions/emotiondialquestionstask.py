@@ -769,8 +769,6 @@ class ControlWidget(QWidget):
         block_sequence = self.sequence_order.index('*block*')
         sequence_order = self.sequence_order[block_sequence + 1:]
 
-        self.sequencer.insert(self.block_widgets['washout'], milliseconds=block['washout'] * 1000,
-                              timer_action=self.advance)
         self.sequencer.insert(self.block_widgets['finish'])
 
     def next_queue(self):

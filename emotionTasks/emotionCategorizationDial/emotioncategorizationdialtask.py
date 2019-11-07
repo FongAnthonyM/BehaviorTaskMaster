@@ -763,15 +763,13 @@ class ControlWidget(QWidget):
         for item in sequence_order:
             self.sequencer.insert(self.block_widgets[item], ok_action=self.advance)
         self.sequencer.insert(self.block_widgets[last], ok_action=self.advance)
-        self.sequencer.insert(self.block_widgets['washout'], milliseconds=self.base_washout * 1000, timer_action=self.advance_block)
+        self.sequencer.insert(self.block_widgets['washout'], milliseconds=(self.base_washout-block['washout']) * 1000, timer_action=self.advance_block)
 
     def end_sequence(self):
         block = self.blocks[-1]
         block_sequence = self.sequence_order.index('*block*')
         sequence_order = self.sequence_order[block_sequence + 1:]
 
-        self.sequencer.insert(self.block_widgets['washout'], milliseconds=block['washout'] * 1000,
-                              timer_action=self.advance)
         self.sequencer.insert(self.block_widgets['finish'])
 
     def next_queue(self):
@@ -807,12 +805,12 @@ class ControlWidget(QWidget):
         block = self.blocks[play_index]
 
         if video != '':
-            self.sequencer.insert(self.block_widgets['video_player'], path=block['video'], finish_action=self.advance)
-            self.sequencer.insert(self.block_widgets['washout'], milliseconds=block['washout'] * 1000, timer_action=self.advance_block)
+            self.sequencer.insert(self.block_widgets['washout'], milliseconds=block['washout'] * 1000, timer_action=self.advance)
+            self.sequencer.insert(self.block_widgets['video_player'], path=block['video'], finish_action=self.advance_block)
         elif questions != '':
             self.sequencer.insert(self.block_widgets['questionnaire'], path=block['questions'], finish_action=self.advance_block)
         elif washout != '':
-            self.sequencer.insert(self.block_widgets['washout'], milliseconds=(self.base_washout-block['washout']) * 1000, timer_action=self.advance_block)
+            self.sequencer.insert(self.block_widgets['washout'], milliseconds=self.base_washout * 1000, timer_action=self.advance_block)
 
     def advance(self, event=None, caller=None):
         self.events.append(**event)
