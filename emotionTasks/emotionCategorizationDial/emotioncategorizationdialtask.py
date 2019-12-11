@@ -805,7 +805,8 @@ class ControlWidget(QWidget):
         block = self.blocks[play_index]
 
         if video != '':
-            self.sequencer.insert(self.block_widgets['washout'], milliseconds=block['washout'] * 1000, timer_action=self.advance)
+            if block['washout'] > 0:
+                self.sequencer.insert(self.block_widgets['washout'], milliseconds=block['washout'] * 1000, timer_action=self.advance)
             self.sequencer.insert(self.block_widgets['video_player'], path=block['video'], finish_action=self.advance_block)
         elif questions != '':
             self.sequencer.insert(self.block_widgets['questionnaire'], path=block['questions'], finish_action=self.advance_block)
