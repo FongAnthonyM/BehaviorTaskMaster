@@ -35,7 +35,6 @@ import time
 import uuid
 from warnings import warn
 
-
 # Downloaded Libraries #
 from bidict import bidict
 import h5py
@@ -44,8 +43,8 @@ import numpy as np
 # Local Libraries #
 from utility.iotriggers import AudioTrigger
 
-########## Definitions ##########
 
+########## Definitions ##########
 
 # Classes #
 class EventLoggerCSV(collections.UserList):
@@ -163,6 +162,15 @@ class HDF5container(object):
     def is_open(self):
         return bool(self.h5_fobj)
 
+    @property
+    def file_attrs_names(self):
+        self.load_attributes()
+        return self._file_attrs
+
+    @property
+    def dataset_names(self):
+        return self.get_dataset_names()
+
     def __copy__(self):
         new = type(self)()
         new.__dict__.update(self.__dict__)
@@ -242,8 +250,9 @@ class HDF5container(object):
     # Context Managers
     def __enter__(self):
         if self.h5_fobj is None:
-            self.construct()
-        self.open()
+            self.construct(open_=True)
+        else:
+            self.open()
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
@@ -352,6 +361,16 @@ class HDF5container(object):
             self.close()
         return super().__getattribute__(_item)
 
+    def get_file_attributes(self):
+        op = self.is_open
+        self.open()
+
+        attr = dict(self.h5_fobj.attrs.items())
+
+        if not op:
+            self.close()
+        return attr
+
     def set_file_attribute(self, key, value):
         op = self.is_open
         self.open()
@@ -400,6 +419,10 @@ class HDF5container(object):
             _item = "_" + key
             self._file_attrs.update((key,))
             super().__setattr__(_item, value)
+
+    def list_attributes(self):
+        self.load_attributes()
+        return list(self._file_attrs)
 
     # Datasets
     def create_dataset(self, name, data=None, **kwargs):
@@ -473,6 +496,14 @@ class HDF5container(object):
             _item = "_" + name
             self._datasets.update((name,))
             super().__setattr__(_item, value)
+
+    def get_dataset_names(self):
+        self.load_datasets()
+        return self._datasets
+
+    def list_dataset_names(self):
+        self.load_datasets()
+        return list(self._datasets)
 
     #  Mapping Items Methods
     def items(self):
@@ -1204,10 +1235,37 @@ class HDF5hierarchicalDatasets(object):
 
         array = self.parent_dataset[self.child_name_field]
 
-        for child in array.flatten().tolist():
-            self.add_child_dataset(child, self.h5_container[child])
+        if array.size > 0:
+            for child in array.flatten().tolist():
+                if child not in self.child_datasets:
+                    self.add_child_dataset(child, self.h5_container[child])
 
     # Item Getter and Setters
+    def get_dataset(self, name, id_info=False):
+        data = self.parent_dataset
+        child_names = data[self.child_name_field]
+        if name != self.parent_name:
+            data = data[child_names == name]
+            child_names = data[self.child_name_field]
+        link_ids = data[self.parent_link_name]
+        if isinstance(data, np.void):
+            return self.get_data(link_ids, child_names, id_info)
+        else:
+            shape = data.shape
+
+            loops = [range(0, x) for x in shape]
+
+            return recursive_looping(loops, self.arrays_to_items, names=child_names, ids=link_ids, id_info=id_info)
+
+    def get_item(self, index, name=None, id_info=False):
+        if name is None or name == self.parent_name:
+            parent_index = index
+            child_name = self.parent_dataset[parent_index][self.child_name_field]
+        else:
+            parent_index = self.dataset_links.get_linked_indices(name, index, self.parent_name)[self.parent_name]
+            child_name = name
+        return self.get_data(parent_index, child_name, id_info)
+
     def get_items(self, indices, id_info=False):
         data = self.parent_dataset[indices]
         child_names = data[self.child_name_field]
@@ -1230,15 +1288,6 @@ class HDF5hierarchicalDatasets(object):
             parent_id = parent_id.tolist()[0]
         return self.get_data(parent_id, child_name, id_info)
 
-    def get_item(self, index, name=None, id_info=False):
-        if name is None or name == self.parent_name:
-            parent_index = index
-            child_name = self.parent_dataset[parent_index][self.child_name_field]
-        else:
-            parent_index = self.dataset_links.get_linked_indices(name, index, self.parent_name)[self.parent_name]
-            child_name = name
-        return self.get_data(parent_index, child_name, id_info)
-
     def get_data(self, parent_ref, child_name, id_info=False):
         parent_link = self.dataset_links.references[self.parent_name].reference_field
         child_link = self.dataset_links.references[child_name].reference_field
@@ -1256,6 +1305,7 @@ class HDF5hierarchicalDatasets(object):
                 result.pop(child_link)
 
         return result
+
 
     def add_item(self, item, index):
         parent_item = []
@@ -1415,13 +1465,23 @@ class HDF5eventLogger(HDF5container):
         self.append({"Time": now_datatime, "DeltaTime": self.start_time_offset,
                      "StartTime": self.start_datetime, self.TYPE_NAME: "ResumeTime"})
 
-    def find_event(self, time_, bisect_="bisect"):
+    def get_event_type(self, name, id_info=False):
+        return self.hierarchy.get_dataset(name, id_info)
+
+    # Event Querying
+    def find_event(self, time_, type_=None, bisect_="bisect"):
         if isinstance(time_, datetime.datetime):
             time_stamp = time_.timestamp()
         else:
             time_stamp = time_
 
-        times = self.Events[self.TIME_NAME]
+        if type_ is None or type_ == "Events":
+            events = self
+            times = self.Events[self.TIME_NAME]
+        else:
+            events = self.hierarchy.get_dataset(name=type_)
+            times = [e[self.TIME_NAME] for e in events]
+
         index = bisect.bisect_left(times, time_stamp)
         if index >= len(times):
             index -= 1
@@ -1438,13 +1498,18 @@ class HDF5eventLogger(HDF5container):
         else:
             return -1, None
 
-        return index, self[index]
+        return index, events[index]
 
-    def find_event_range(self, start, end):
-        first, _ = self.find_event(start, bisect_="right")
-        last, _ = self.find_event(end, bisect_="left")
+    def find_event_range(self, start, end, type_=None):
+        if type_ is None or type_ == "Events":
+            events = self
+        else:
+            events = self.hierarchy.get_dataset(name=type_)
 
-        return range(first, last+1), self[first:last+1]
+        first, _ = self.find_event(start, type_=type_, bisect_="right")
+        last, _ = self.find_event(end, type_=type_, bisect_="left")
+
+        return range(first, last+1), events[first:last+1]
 
     # Trigger Methods
     def trigger(self):
@@ -1492,6 +1557,9 @@ class SubjectEventLogger(HDF5eventLogger):
     # Constructors
     def construct(self, open_=False, **kwargs):
         super().construct(open_=open_, **kwargs)
+
+    def create_file(self, open_=False):
+        super().create_file(open_=open_)
         self.add_file_attributes({self.SUBJECT_NAME: self._subject, self.EXPERIMENT_NAME: self._experiment_name,
                                   self.EXPERIMENT_NUMBER: self._experiment_number})
 
@@ -1558,13 +1626,22 @@ def recursive_looping(loops, func, previous=None, size=None, **kwargs):
 
 
 if __name__ == "__main__":
+    test_path = pathlib.Path("C:/Users/ChangLab/Documents/PycharmProjects/BehaviorTaskMaster/emotionTasks/emotionCategorizationDial").joinpath("ECwork_B0w0_2020-01-16_11~58~09.h5")
     path = pathlib.Path.cwd().joinpath("test.h5")
+    '''
+    meth = SubjectEventLogger(test_path)
+    with meth:
+        meth.file_attrs
+        print(meth.Subject)
+
+    '''
     debug = SubjectEventLogger(path, subject="ECtest")
     with debug:
         debug.set_time()
         debug.append(**{"type_": "ThisChild", "1stField": 0})
         debug.resume_time(index=0)
         debug.append(**{"type_": "ThisChild", "1stField": 1})
-        debug.find_event(1579041281.5)
-        i, f = debug.find_event_range(1579041281.5, datetime.datetime.now())
+        debug.get_event_type("ThisChild")
+        debug.find_event(1579041281.5, type_="ThisChild")
+        i, f = debug.find_event_range(1579041281.5, datetime.datetime.now(),"ThisChild")
         print(debug[0])

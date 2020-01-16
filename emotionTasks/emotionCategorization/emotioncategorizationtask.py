@@ -596,8 +596,8 @@ class ControlWidget(QWidget):
             self.media_player = value.media_player
 
     def construct(self):
-        self.subject = self.parameters['subject']
-        self.session = self.parameters['session']
+        self.subject = self.parameters['subject'][0]
+        self.session = self.parameters['session'][0]
         self._construct_startAction()
         self._construct_backAction()
         self._construct_showAction()
