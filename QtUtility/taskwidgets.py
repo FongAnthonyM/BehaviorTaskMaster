@@ -79,14 +79,14 @@ class InstructionsWidget(QWidget):
         self.ui.textBrowser.setText(self.text)
 
     def ok(self):
-        event = {'_type': 'Instructions', 'Accepted': True}
+        event = {'type_': 'Instructions', 'Accepted': True}
         self.ok_action(event=event, caller=self)
 
     def default_ok(self, event=None, caller=None):
         print("Not Connected")
 
     def back(self):
-        event = {'_type': 'Instructions', 'Accepted': False}
+        event = {'type_': 'Instructions', 'Accepted': False}
         self.back_action(event=event, caller=self)
 
     def default_back(self, event=None, caller=None):
@@ -123,7 +123,7 @@ class WashoutWidget(QWidget):
         self.timer.start(self.milliseconds)
 
     def timeout(self):
-        event = {'_type': 'Washout', 'SubType': 'Finished', 'Duration': self.milliseconds / 1000}
+        event = {'type_': 'Washout_Finished', 'Duration': self.milliseconds / 1000}
         self.timer_action(event=event, caller=self)
 
     def default_timer_action(self, event=None, caller=None):
@@ -275,7 +275,7 @@ class QuestionnaireWidget(QWidget):
     def answer(self, check_widget, value):
         answer = self.answer_key.inverse[check_widget]
         self.selected_answer = answer
-        event = {'_type': 'Questionnaire', 'SubType': 'AnswerSelected', 'File': self.path.name,
+        event = {'type_': 'Questionnaire_AnswerSelected', 'File': self.path.name,
                  'Question': self.current_question, 'Answer': answer, 'Value': value}
         self.answer_action(event=event, caller=self)
 
@@ -309,7 +309,7 @@ class QuestionnaireWidget(QWidget):
 
     def _continue(self):
         self.q_index += 1
-        event = {'_type': 'Questionnaire', 'Subtype': 'AnswerConfirmed', 'File': self.path.name,
+        event = {'type_': 'Questionnaire_AnswerConfirmed', 'File': self.path.name,
                  'Question': self.current_question, 'Answer': self.selected_answer}
         if self.q_index < len(self.qa):
             self.next_action(event=event, caller=self)
@@ -334,11 +334,11 @@ class QuestionnaireWidget(QWidget):
     def previous(self):
         if self.q_index > 0:
             self.q_index -= 1
-            event = {'_type': 'Questionnaire', 'Subtype': 'AnswerRetracted', 'File': self.path.name,
+            event = {'type_': 'Questionnaire_AnswerRetracted', 'File': self.path.name,
                      'Question': self.qa[self.q_index]['question']}
             self.previous_action(event=event, caller=self)
         else:
-            event = {'_type': 'Questionnaire', 'Subtype': 'Exited', 'File': self.path.name}
+            event = {'type_': 'Questionnaire_Exited', 'File': self.path.name}
             self.back_action(event=event, caller=self)
 
     def default_previous(self, event=None, caller=None):
@@ -511,7 +511,7 @@ class QuestionnaireImageWidget(QWidget):
     def answer(self, check_widget, value):
         answer = self.answer_key.inverse[check_widget]
         self.selected_answer = answer
-        event = {'_type': 'Questionnaire', 'SubType': 'AnswerSelected', 'File': self.path.name,
+        event = {'type_': 'Questionnaire_AnswerSelected', 'File': self.path.name,
                  'Question': self.current_question, 'Answer': answer, 'Value': value}
         self.answer_action(event=event, caller=self)
 
@@ -545,7 +545,7 @@ class QuestionnaireImageWidget(QWidget):
 
     def _continue(self):
         self.q_index += 1
-        event = {'_type': 'Questionnaire', 'Subtype': 'AnswerConfirmed', 'File': self.path.name,
+        event = {'type_': 'Questionnaire_AnswerConfirmed', 'File': self.path.name,
                  'Question': self.current_question, 'Answer': self.selected_answer}
         if self.q_index < len(self.qa):
             self.next_action(event=event, caller=self)
@@ -572,11 +572,11 @@ class QuestionnaireImageWidget(QWidget):
     def previous(self):
         if self.q_index > 0:
             self.q_index -= 1
-            event = {'_type': 'Questionnaire', 'Subtype': 'AnswerRetracted', 'File': self.path.name,
+            event = {'type_': 'Questionnaire_AnswerRetracted', 'File': self.path.name,
                      'Question': self.qa[self.q_index]['question']}
             self.previous_action(event=event, caller=self)
         else:
-            event = {'_type': 'Questionnaire', 'Subtype': 'Exited', 'File': self.path.name}
+            event = {'type_': 'Questionnaire_Exited', 'File': self.path.name}
             self.back_action(event=event, caller=self)
 
     def default_previous(self, event=None, caller=None):
@@ -626,7 +626,7 @@ class FinishWidget(QWidget):
         self.ui.imageSpace.setPixmap(pixmap)
 
     def start(self):
-        event = {'_type': 'Finished'}
+        event = {'type_': 'Finished'}
         self.run_action(event=event, caller=self)
 
     def default_run(self, event=None, caller=None):
@@ -681,7 +681,7 @@ class VideoPlayerWidget(QWidget):
 
     def frame(self, frame):
         self.frame_number += 1
-        event = {'_type': 'Video', 'SubType': 'Frame', 'Video': self.video.name, 'FrameNumber': self.frame_number}
+        event = {'type_': 'Video_Frame', 'Video': self.video.name, 'FrameNumber': self.frame_number}
         self.frame_action(frame, self.frame_number, event=event, caller=self)
 
     def default_frame(self, frame=None, number=None, event=None, caller=None):
@@ -692,7 +692,7 @@ class VideoPlayerWidget(QWidget):
             self.finish()
 
     def finish(self):
-        event = {'_type': 'Video', 'SubType': 'Finished', 'Video': self.video}
+        event = {'type_': 'Video_Finished', 'Video': self.video}
         self.finish_action(event=event, caller=self)
 
     def default_finish(self, event=None, caller=None):

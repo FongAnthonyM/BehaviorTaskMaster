@@ -306,7 +306,7 @@ class EmotionFinish(WidgetContainer):
 
     def finish_process(self, event=None, caller=None):
         self.events.append(**event)
-        self.events.save_csv()
+        self.events.close()
 
 
 class EmotionVideoPlayer(WidgetContainer):

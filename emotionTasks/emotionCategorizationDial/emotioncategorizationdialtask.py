@@ -26,7 +26,7 @@ from PySide2.QtWidgets import QWidget, QAction, QFileDialog, QAbstractItemView, 
 
 # Local Libraries #
 from utility.iotriggers import AudioTrigger
-from utility.eventlogger import EventLoggerCSV
+from utility.eventlogger import SubjectEventLogger
 from QtUtility.utilitywidgets import WidgetContainer, WidgetContainerSequencer
 from QtUtility.taskwidgets import TaskWindow
 from emotionTasks.emotionwidgets import EmotionInstructions, EmotionWashout, EmotionFinish, EmotionVideoPlayer, EmotionQuestionnaireImage
@@ -35,8 +35,14 @@ from emotionTasks.UI.emotioncontrol import Ui_EmotionControl
 
 
 # Definitions #
+# Constants #
+START_DIR = ""
+
+
 # Classes #
 class EmotionCategorizationDialTask:
+    EXPERIMENT_NAME = "Emotion Categorization with Dial"
+
     def __init__(self, parent=None, stack=None, r_widget=None):
         self.parent = parent
         self.widget_stack = stack
@@ -48,13 +54,13 @@ class EmotionCategorizationDialTask:
         self.trigger.current_waveform = 'square_wave'
 
         self.task_window = TaskWindow()
-        self.events = EventLoggerCSV(io_trigger=self.trigger)
+        self.events = SubjectEventLogger(io_trigger=self.trigger)
 
         self.sequencer = WidgetContainerSequencer()
         self.task_window.sequencer = self.sequencer
 
         self.parameters = EmotionParameters()
-        self.control = EmotionControl(events=self.events)
+        self.control = EmotionControl(events=self.events, x_name=self.EXPERIMENT_NAME)
         self.instructions = EmotionInstructions(path=pathlib.Path(__file__).parent.joinpath('instructions.txt'),
                                                 events=self.events)
         self.video_player = EmotionVideoPlayer(events=self.events)
@@ -309,7 +315,11 @@ class ParametersWidget(QWidget):
             questions.setText(question)
 
     def change_video(self, row):
-        dialog = QFileDialog(self, caption="Open Video", directory=QDir.homePath())
+        start_dir = pathlib.Path.home()
+        other = start_dir.joinpath(START_DIR)
+        if other.is_dir():
+            start_dir = other
+        dialog = QFileDialog(self, caption="Open Video", directory=start_dir.as_posix())
         dialog.setFileMode(QFileDialog.ExistingFile)
         dialog.setViewMode(QFileDialog.Detail)
 
@@ -321,7 +331,11 @@ class ParametersWidget(QWidget):
             videos.setText(v)
 
     def change_question(self, row):
-        dialog = QFileDialog(self, caption="Open Question", directory=QDir.homePath())
+        start_dir = pathlib.Path.home()
+        other = start_dir.joinpath(START_DIR)
+        if other.is_dir():
+            start_dir = other
+        dialog = QFileDialog(self, caption="Open Question", directory=start_dir.as_posix())
         dialog.setFileMode(QFileDialog.ExistingFile)
         dialog.setViewMode(QFileDialog.Detail)
 
@@ -333,7 +347,11 @@ class ParametersWidget(QWidget):
             questions.setText(q)
 
     def add_videos(self):
-        dialog = QFileDialog(self, caption="Open Video", directory=QDir.homePath())
+        start_dir = pathlib.Path.home()
+        other = start_dir.joinpath(START_DIR)
+        if other.is_dir():
+            start_dir = other
+        dialog = QFileDialog(self, caption="Open Video", directory=start_dir.as_posix())
         dialog.setFileMode(QFileDialog.ExistingFiles)
         dialog.setViewMode(QFileDialog.Detail)
 
@@ -347,7 +365,11 @@ class ParametersWidget(QWidget):
                     self.edit_item(index=last, video=video)
 
     def add_questions(self):
-        dialog = QFileDialog(self, caption="Open Questions", directory=QDir.homePath())
+        start_dir = pathlib.Path.home()
+        other = start_dir.joinpath(START_DIR)
+        if other.is_dir():
+            start_dir = other
+        dialog = QFileDialog(self, caption="Open Questions", directory=start_dir.as_posix())
         dialog.setFileMode(QFileDialog.ExistingFiles)
         dialog.setViewMode(QFileDialog.Detail)
 
@@ -361,7 +383,11 @@ class ParametersWidget(QWidget):
                     self.edit_item(index=last, question=question)
 
     def video_directory(self):
-        dialog = QFileDialog(self, caption="Open Video Directory", directory=QDir.homePath())
+        start_dir = pathlib.Path.home()
+        other = start_dir.joinpath(START_DIR)
+        if other.is_dir():
+            start_dir = other
+        dialog = QFileDialog(self, caption="Open Video Directory", directory=start_dir.as_posix())
         dialog.setFileMode(QFileDialog.Directory)
         dialog.setViewMode(QFileDialog.Detail)
 
@@ -379,7 +405,11 @@ class ParametersWidget(QWidget):
                     self.edit_item(index=last, video=str(video))
 
     def question_directory(self):
-        dialog = QFileDialog(self, caption="Open Questions Directory", directory=QDir.homePath())
+        start_dir = pathlib.Path.home()
+        other = start_dir.joinpath(START_DIR)
+        if other.is_dir():
+            start_dir = other
+        dialog = QFileDialog(self, caption="Open Questions Directory", directory=start_dir.as_posix())
         dialog.setFileMode(QFileDialog.Directory)
         dialog.setViewMode(QFileDialog.Detail)
 
@@ -447,9 +477,10 @@ class ParametersWidget(QWidget):
 
 
 class EmotionControl(WidgetContainer):
-    def __init__(self, name="EmotionControl", events=None, init=False):
+    def __init__(self, name="EmotionControl",  x_name="", events=None, init=False):
         WidgetContainer.__init__(self, name, init)
         self.back_action = self.remove_from_stack
+        self.experiment_name = x_name
         self._events = events
 
     @property
@@ -517,6 +548,7 @@ class EmotionControl(WidgetContainer):
     def construct_widget(self):
         self.widget = ControlWidget()
         self.widget.events = self._events
+        self.widget.experiment_name = self.experiment_name
 
     def run(self, back_action=None):
         if back_action is not None:
@@ -550,6 +582,7 @@ class ControlWidget(QWidget):
         self._path = None
         self.subject = None
         self.session = None
+        self.experiment_name = None
         self.events = None
         self.m_duration = 0
         self.mute = False
@@ -605,7 +638,7 @@ class ControlWidget(QWidget):
 
     def construct_path(self):
         now = datetime.datetime.now().isoformat('_', 'seconds').replace(':', '~')
-        file_name = self.parameters['subject'][0] + '_' + self.parameters['session'][0] + '_' + now + '.csv'
+        file_name = self.parameters['subject'][0] + '_' + self.parameters['session'][0] + '_' + now + '.h5'
         return pathlib.Path(__file__).parent.joinpath(file_name)
 
     def construct_blocks(self):
@@ -745,7 +778,7 @@ class ControlWidget(QWidget):
         video = self.block_widgets['video_player'].video
         if isinstance(video, pathlib.Path):
             video = video.name
-        event = {'_type': 'Skip', 'Video': video}
+        event = {"type_": 'Skip', 'Video': video}
         while self.sequencer.next_index() != 0:
             self.sequencer.skip()
         self.advance_block(event=event)
@@ -833,13 +866,18 @@ class ControlWidget(QWidget):
             self.start_action(caller=self)
 
     def default_start(self, caller=None):
+        self.events.path = self.construct_path()
+        self.events.construct()
+        self.events.Subject = self.subject
+        self.events.Task = self.experiment_name
+        self.events.Block = self.session
+        self.events.open()
         self.events.set_time()
         self.start_sequence()
         self.ui.startButton.setEnabled(False)
         self.ui.backButton.setText(QtWidgets.QApplication.translate("EmotionControl", 'Stop', None, -1))
         self.sequencer.start()
         self.task_window.show()
-        self.events.path = self.construct_path()
 
     def running_action(self, caller=None):
         pass
@@ -857,7 +895,7 @@ class ControlWidget(QWidget):
         if self.running:
             self.media_player.stop()
             self.sequencer.clear()
-            event = {'_type': 'ManualStop'}
+            event = {"type_": 'ManualStop'}
             self.events.append(**event)
             self.running = False
             self.reset()
