@@ -37,8 +37,7 @@ from bidict import bidict
 from .audiodevice import AudioDevice
 
 
-########## Definitions ##########
-
+# Definitions #
 # Classes #
 class IndexableDict(collections.OrderedDict):
     def __init__(self, **kwargs):
@@ -152,8 +151,3 @@ class AudioTrigger:
             samples = int(sample_rate * seconds)
             postsamples = int(sample_rate * postseconds)
         return [0.0] * presamples + [float(amplitude)] * samples + [0.0] * postsamples
-
-
-
-
-

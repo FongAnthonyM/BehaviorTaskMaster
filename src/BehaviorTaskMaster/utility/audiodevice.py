@@ -34,8 +34,8 @@ import sounddevice
 
 # Local Libraries #
 
-########## Definitions ##########
 
+# Definitions #
 # Classes #
 class AudioDevice:
     _sd = sounddevice

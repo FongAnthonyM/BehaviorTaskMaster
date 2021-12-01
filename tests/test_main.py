@@ -1,17 +1,45 @@
-"""Test cases for the __main__ module."""
-import pytest
-from click.testing import CliRunner
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+""" test_main.py
+Description:
+"""
+# Package Header #
+from src.BehaviorTaskMaster.__header__ import *
 
-from BehaviorTaskMaster import __main__
+# Header #
+__author__ = __author__
+__credits__ = __credits__
+__maintainer__ = __maintainer__
+__email__ = __email__
 
 
-@pytest.fixture
-def runner() -> CliRunner:
-    """Fixture for invoking command-line interfaces."""
-    return CliRunner()
+# Imports #
+# Standard Libraries #
+import sys
+
+# Downloaded Libraries #
+from PySide2.QtWidgets import QApplication
+
+# Local Libraries #
+from src.BehaviorTaskMaster.emotionTasks.emotionCategorization.emotioncategorizationtask import EmotionCategorizationTask
+from src.BehaviorTaskMaster.emotionTasks.emotionCategorizationDial.emotioncategorizationdialtask import EmotionCategorizationDialTask
+from src.BehaviorTaskMaster.emotionTasks.emotionDial.emotiondialtask import EmotionDialTask
+from src.BehaviorTaskMaster.emotionTasks.emotionDialQuestions.emotiondialquestionstask import EmotionDialQuestionsTask
+from src.BehaviorTaskMaster import BehaviorTaskWindow
 
 
-def test_main_succeeds(runner: CliRunner) -> None:
-    """It exits with a status code of zero."""
-    result = runner.invoke(__main__.main)
-    assert result.exit_code == 0
+# Definitions #
+# Classes #
+if __name__ == "__main__":
+    app = QApplication(sys.argv)
+
+    window = BehaviorTaskWindow()
+    window.add_task(EmotionCategorizationTask(window), "EmotionCategorizationTask", "Emotion Categorization")
+    window.add_task(EmotionCategorizationDialTask(window), "EmotionCategorizationDialTask", "Emotion Categorization with Dial")
+    window.add_task(EmotionDialTask(window), "EmotionDialTask", "Emotion Dial")
+    window.add_task(EmotionDialQuestionsTask(window), "EmotionDialQuestions", "Emotion Dial Alternative")
+
+    window.show()
+
+    sys.exit(app.exec_())
+

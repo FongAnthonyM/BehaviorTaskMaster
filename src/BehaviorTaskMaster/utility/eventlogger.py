@@ -44,8 +44,7 @@ import numpy as np
 from .iotriggers import AudioTrigger
 
 
-########## Definitions ##########
-
+# Definitions #
 # Classes #
 class EventLoggerCSV(collections.UserList):
     def __init__(self, io_trigger=None, **kwargs):
@@ -1305,7 +1304,6 @@ class HDF5hierarchicalDatasets(object):
                 result.pop(child_link)
 
         return result
-
 
     def add_item(self, item, index):
         parent_item = []
