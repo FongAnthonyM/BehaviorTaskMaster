@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "BehaviorTaskMaster"
-version = "0.0.0"
+version = "0.1.0"
 description = "Behaviortaskmaster"
 authors = ["Anthony Fong <FongAnthonyM@gmail.com>"]
 license = "MIT"
@@ -16,8 +16,13 @@ classifiers = [
 Changelog = "https://github.com/fonganthonym/BehaviorTaskMaster/releases"
 
 [tool.poetry.dependencies]
-python = "^3.7"
+python = "^3.8"
 click = "^8.0.1"
+bidict = "^0.21.4"
+numpy = "^1.21.1"
+sounddevice = "^0.4.3"
+pyside2 = "^5.15.2"
+toml = "^0.10.2"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2.5"
