@@ -19,8 +19,8 @@ import pathlib
 from PySide2.QtCore import QUrl
 
 # Local Libraries #
-from QtUtility.utilitywidgets import WidgetContainer
-from QtUtility.taskwidgets import InstructionsWidget, WashoutWidget, QuestionnaireWidget, FinishWidget, VideoPlayerWidget, QuestionnaireImageWidget
+from ..QtUtility.utilitywidgets import WidgetContainer
+from ..QtUtility.taskwidgets import InstructionsWidget, WashoutWidget, QuestionnaireWidget, FinishWidget, VideoPlayerWidget, QuestionnaireImageWidget
 
 
 # Definitions #

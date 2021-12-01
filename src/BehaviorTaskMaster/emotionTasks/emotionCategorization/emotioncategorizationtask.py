@@ -25,13 +25,13 @@ from PySide2.QtGui import QKeySequence
 from PySide2.QtWidgets import QWidget, QAction, QFileDialog, QAbstractItemView, QStyle
 
 # Local Libraries #
-from utility.iotriggers import AudioTrigger
-from utility.eventlogger import SubjectEventLogger
-from QtUtility.utilitywidgets import WidgetContainer, WidgetContainerSequencer
-from QtUtility.taskwidgets import TaskWindow
-from emotionTasks.emotionwidgets import EmotionInstructions, EmotionWashout, EmotionQuestionnaire, EmotionFinish, EmotionVideoPlayer
-from emotionTasks.emotionCategorization.UI.emotionparameters import Ui_EmotionParameters
-from emotionTasks.UI.emotioncontrol import Ui_EmotionControl
+from ...utility.iotriggers import AudioTrigger
+from ...utility.eventlogger import SubjectEventLogger
+from ...QtUtility.utilitywidgets import WidgetContainer, WidgetContainerSequencer
+from ...QtUtility.taskwidgets import TaskWindow
+from ..emotionwidgets import EmotionInstructions, EmotionWashout, EmotionQuestionnaire, EmotionFinish, EmotionVideoPlayer
+from .UI.emotionparameters import Ui_EmotionParameters
+from ..UI.emotioncontrol import Ui_EmotionControl
 
 
 # Definitions #

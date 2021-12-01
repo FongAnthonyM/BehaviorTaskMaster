@@ -25,13 +25,13 @@ from PySide2.QtGui import QKeySequence
 from PySide2.QtWidgets import QWidget, QAction
 
 # Local Libraries #
-from QtUtility.utilitywidgets import WidgetStack
-from QtUtility.UI.emotioninstructions import Ui_EmotionInstructions
-from QtUtility.UI.emotionwashout import Ui_EmotionWashout
-from QtUtility.UI.emotionquestionnaire import Ui_EmotionQuestionnaire
-from QtUtility.UI.emotionquestionnaireimage import Ui_EmotionQuestionnaireImage
-from QtUtility.UI.emotionvideoplayer import Ui_EmotionVideoPlayer
-from QtUtility.UI.emotionfinish import Ui_EmotionFinish
+from .utilitywidgets import WidgetStack
+from .UI.emotioninstructions import Ui_EmotionInstructions
+from .UI.emotionwashout import Ui_EmotionWashout
+from .UI.emotionquestionnaire import Ui_EmotionQuestionnaire
+from .UI.emotionquestionnaireimage import Ui_EmotionQuestionnaireImage
+from .UI.emotionvideoplayer import Ui_EmotionVideoPlayer
+from .UI.emotionfinish import Ui_EmotionFinish
 
 
 # Definitions #

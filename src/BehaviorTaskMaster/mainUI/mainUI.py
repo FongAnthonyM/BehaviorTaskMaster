@@ -21,7 +21,7 @@ from PySide2 import QtCore, QtGui
 from PySide2.QtWidgets import QApplication, QWidget
 
 # Local Libraries #
-from mainUI.mainmenu import Ui_MainMenu
+from .mainmenu import Ui_MainMenu
 
 
 # Definitions #
