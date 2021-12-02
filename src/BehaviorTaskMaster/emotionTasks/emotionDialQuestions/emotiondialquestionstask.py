@@ -45,7 +45,7 @@ class EmotionDialQuestionsTask:
         self.return_widget = r_widget
 
         self.trigger = AudioTrigger()
-        self.trigger.audio_device.device = 'Headphones 1'
+        # self.trigger.audio_device.device = 'Headphones 1'
         self.trigger.add_square_wave('square_wave', amplitude=5, samples=22000)
         self.trigger.current_waveform = 'square_wave'
 

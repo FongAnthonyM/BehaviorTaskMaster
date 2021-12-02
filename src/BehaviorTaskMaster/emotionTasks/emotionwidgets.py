@@ -64,7 +64,8 @@ class EmotionInstructions(WidgetContainer):
         self.load_text()
         event = {'SubType': 'InstructionsStart'}
         super().run()
-        self.events.trigger_event(**event)
+        # self.events.trigger_event(**event)
+        self.events.append(type_="General", **event)
 
     def load_text(self):
         with self.path.open('r') as file:
@@ -96,7 +97,8 @@ class EmotionWashout(WidgetContainer):
         self.widget.milliseconds = self.milliseconds
         event = {'SubType': 'WashoutStart'}
         super().run()
-        self.events.trigger_event(**event)
+        # self.events.trigger_event(**event)
+        self.events.append(type_="General", **event)
         self.widget.start()
 
     def setup(self):
@@ -230,19 +232,22 @@ class EmotionQuestionnaire(WidgetContainer):
             self.widget.load_file(self.path)
             event = {'SubType': 'QuestionsStart'}
             super().run()
-            self.events.trigger_event(**event)
+            # self.events.trigger_event(**event)
+            self.events.append(type_="General", **event)
 
     def next_question(self, event=None, caller=None):
         self.events.append(**event)
         self.widget.default_next(event=event, caller=caller)
         t_event = {'SubType': 'QuestionNext', 'Question': event['Question']}
-        self.events.trigger_event(**t_event)
+        # self.events.trigger_event(**event)
+        self.events.append(type_="General", **event)
 
     def previous_question(self, event=None, caller=None):
         self.events.append(**event)
         self.widget.default_previous(event=event, caller=caller)
         t_event = {'SubType': 'QuestionPrevious', 'Question': event['Question']}
-        self.events.trigger_event(**t_event)
+        # self.events.trigger_event(**event)
+        self.events.append(type_="General", **event)
 
     def answer_selected(self, event=None, caller=None):
         self.events.append(**event)
@@ -301,7 +306,8 @@ class EmotionFinish(WidgetContainer):
         self.widget.load_file(self.path)
         event = {'SubType': 'Finished'}
         super().run()
-        self.events.trigger_event(**event)
+        # self.events.trigger_event(**event)
+        self.events.append(type_="General", **event)
         self.widget.start()
 
     def finish_process(self, event=None, caller=None):
