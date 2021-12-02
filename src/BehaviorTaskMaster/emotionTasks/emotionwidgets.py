@@ -370,7 +370,7 @@ class EmotionVideoPlayer(WidgetContainer):
 
     @property
     def video(self):
-        if self.source is "url":
+        if self.source == "url":
             return self._url
         else:
             return self._path

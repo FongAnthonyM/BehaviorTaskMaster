@@ -1420,7 +1420,6 @@ class HDF5eventLogger(HDF5container):
         self.start_datetime = None
         self.start_time_counter = None
         self._path = None
-        super().clear()
 
     # User Event Methods
     def create_event(self,  type_, **kwargs):

@@ -661,7 +661,7 @@ class VideoPlayerWidget(QWidget):
         self.mediaPlayer.mediaStatusChanged.connect(self.status_check)
 
         self.frameProbe = QtMultimedia.QVideoProbe(self)
-        self.frameProbe.videoFrameProbed.connect(self.frame)
+        # self.frameProbe.videoFrameProbed.connect(self.frame)
         self.frameProbe.setSource(self.mediaPlayer)
         self.frame_number = 0
 
@@ -692,7 +692,7 @@ class VideoPlayerWidget(QWidget):
             self.finish()
 
     def finish(self):
-        event = {'type_': 'Video_Finished', 'Video': self.video}
+        event = {'type_': 'Video_Finished', 'Video': self.video.as_posix()}
         self.finish_action(event=event, caller=self)
 
     def default_finish(self, event=None, caller=None):
