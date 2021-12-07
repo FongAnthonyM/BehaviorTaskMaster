@@ -238,7 +238,7 @@ class EmotionQuestionnaire(WidgetContainer):
     def next_question(self, event=None, caller=None):
         self.events.append(**event)
         self.widget.default_next(event=event, caller=caller)
-        t_event = {'SubType': 'QuestionNext', 'Question': event['Question']}
+        event = {'SubType': 'QuestionNext', 'Question': event['Question']}
         # self.events.trigger_event(**event)
         self.events.append(type_="General", **event)
 

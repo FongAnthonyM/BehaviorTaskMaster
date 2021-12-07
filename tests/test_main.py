@@ -25,6 +25,7 @@ from src.BehaviorTaskMaster.emotionTasks.emotionCategorization.emotioncategoriza
 from src.BehaviorTaskMaster.emotionTasks.emotionCategorizationDial.emotioncategorizationdialtask import EmotionCategorizationDialTask
 from src.BehaviorTaskMaster.emotionTasks.emotionDial.emotiondialtask import EmotionDialTask
 from src.BehaviorTaskMaster.emotionTasks.emotionDialQuestions.emotiondialquestionstask import EmotionDialQuestionsTask
+from src.BehaviorTaskMaster.emotionTasks.emotionStim.emotionstimtask import EmotionStimTask
 from src.BehaviorTaskMaster import BehaviorTaskWindow
 
 
@@ -38,6 +39,7 @@ if __name__ == "__main__":
     window.add_task(EmotionCategorizationDialTask(window), "EmotionCategorizationDialTask", "Emotion Categorization with Dial")
     window.add_task(EmotionDialTask(window), "EmotionDialTask", "Emotion Dial")
     window.add_task(EmotionDialQuestionsTask(window), "EmotionDialQuestions", "Emotion Dial Alternative")
+    window.add_task(EmotionStimTask(window), "EmotionStim", "Emotion Stimulation Control")
 
     window.show()
 

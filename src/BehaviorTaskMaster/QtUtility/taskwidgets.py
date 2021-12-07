@@ -181,7 +181,7 @@ class QuestionnaireWidget(QWidget):
         self.current_question = None
         self.current_answers = None
         self.current_color = None
-        self.selected_answer = None
+        self.selected_answer = ""
 
     @property
     def path(self):
@@ -274,6 +274,8 @@ class QuestionnaireWidget(QWidget):
 
     def answer(self, check_widget, value):
         answer = self.answer_key.inverse[check_widget]
+        if answer is None:
+            answer = ""
         self.selected_answer = answer
         event = {'type_': 'Questionnaire_AnswerSelected', 'File': self.path.name,
                  'Question': self.current_question, 'Answer': answer, 'Value': value}
@@ -408,7 +410,7 @@ class QuestionnaireImageWidget(QWidget):
         self.current_question = None
         self.current_answers = None
         self.current_color = None
-        self.selected_answer = None
+        self.selected_answer = ""
 
     @property
     def path(self):
@@ -510,6 +512,8 @@ class QuestionnaireImageWidget(QWidget):
 
     def answer(self, check_widget, value):
         answer = self.answer_key.inverse[check_widget]
+        if answer is None:
+            answer = ""
         self.selected_answer = answer
         event = {'type_': 'Questionnaire_AnswerSelected', 'File': self.path.name,
                  'Question': self.current_question, 'Answer': answer, 'Value': value}

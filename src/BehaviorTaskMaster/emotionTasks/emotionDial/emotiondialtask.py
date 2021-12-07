@@ -45,7 +45,7 @@ class EmotionDialTask:
         self.return_widget = r_widget
 
         self.trigger = AudioTrigger()
-        # self.trigger.audio_device.device = 'Headphones 1'
+        self.trigger.audio_device.device = 'Headphones 1'
         self.trigger.add_square_wave('square_wave', amplitude=5, samples=22000)
         self.trigger.current_waveform = 'square_wave'
 
@@ -532,7 +532,7 @@ class ControlWidget(QWidget):
 
     def construct_path(self):
         now = datetime.datetime.now().isoformat('_', 'seconds').replace(':', '~')
-        file_name = self.parameters['subject'][0] + '_' + self.parameters['session'][0] + '_' + now + '.csv'
+        file_name = self.parameters['subject'][0] + '_' + self.parameters['session'][0] + '_' + now + '.h5'
         return pathlib.Path(__file__).parent.joinpath(file_name)
 
     def construct_blocks(self):
@@ -703,10 +703,15 @@ class ControlWidget(QWidget):
         play_index = int(self.playing_model.item(0, 1).text())
         block = self.blocks[play_index]
 
-        self.sequencer.insert(self.block_widgets['video_player'], path=block['video'], finish_action=self.advance_block)
+        self.sequencer.insert(self.block_widgets['video_player'], path=block['video'], finish_action=self.advance_block_trigger)
 
     def advance(self, event=None, caller=None):
         self.events.append(**event)
+        next(self.sequencer)
+
+    def advance_trigger(self, event=None, caller=None):
+        event = {'SubType': event["type_"]}
+        self.events.trigger_event(**event)
         next(self.sequencer)
 
     def advance_block(self, event=None, caller=None):
@@ -716,6 +721,14 @@ class ControlWidget(QWidget):
         else:
             self.end_sequence()
         self.advance(event=event, caller=caller)
+
+    def advance_block_trigger(self, event=None, caller=None):
+        more_blocks = self.next_queue()
+        if more_blocks:
+            self.next_block()
+        else:
+            self.end_sequence()
+        self.advance_trigger(event=event, caller=caller)
 
     def start(self):
         if self.running:

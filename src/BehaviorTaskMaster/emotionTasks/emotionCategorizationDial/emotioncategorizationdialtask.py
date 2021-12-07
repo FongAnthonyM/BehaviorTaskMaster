@@ -49,7 +49,7 @@ class EmotionCategorizationDialTask:
         self.return_widget = r_widget
 
         self.trigger = AudioTrigger()
-        # self.trigger.audio_device.device = 'Headphones 1'
+        self.trigger.audio_device.device = 'Headphones 1'
         self.trigger.add_square_wave('square_wave', amplitude=5, samples=22000)
         self.trigger.current_waveform = 'square_wave'
 
@@ -840,7 +840,7 @@ class ControlWidget(QWidget):
         if video != '':
             if block['washout'] > 0:
                 self.sequencer.insert(self.block_widgets['washout'], milliseconds=block['washout'] * 1000, timer_action=self.advance)
-            self.sequencer.insert(self.block_widgets['video_player'], path=block['video'], finish_action=self.advance_block)
+            self.sequencer.insert(self.block_widgets['video_player'], path=block['video'], finish_action=self.advance_block_trigger)
         elif questions != '':
             self.sequencer.insert(self.block_widgets['questionnaire'], path=block['questions'], finish_action=self.advance_block)
         elif washout != '':
@@ -850,6 +850,11 @@ class ControlWidget(QWidget):
         self.events.append(**event)
         next(self.sequencer)
 
+    def advance_trigger(self, event=None, caller=None):
+        event = {'SubType': event["type_"]}
+        self.events.trigger_event(**event)
+        next(self.sequencer)
+
     def advance_block(self, event=None, caller=None):
         more_blocks = self.next_queue()
         if more_blocks:
@@ -857,6 +862,14 @@ class ControlWidget(QWidget):
         else:
             self.end_sequence()
         self.advance(event=event, caller=caller)
+
+    def advance_block_trigger(self, event=None, caller=None):
+        more_blocks = self.next_queue()
+        if more_blocks:
+            self.next_block()
+        else:
+            self.end_sequence()
+        self.advance_trigger(event=event, caller=caller)
 
     def start(self):
         if self.running:

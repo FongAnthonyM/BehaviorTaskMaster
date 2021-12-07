@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-""" emotioncategorizationtask.py
+""" emotionstimtask.py
 Description:
 """
 __author__ = "Anthony Fong"
@@ -25,17 +25,23 @@ from PySide2.QtGui import QKeySequence
 from PySide2.QtWidgets import QWidget, QAction, QFileDialog, QAbstractItemView, QStyle
 
 # Local Libraries #
-from ...utility import AudioTrigger, SubjectEventLogger
-from ...QtUtility import WidgetContainer, WidgetContainerSequencer, TaskWindow
-from ..emotionwidgets import EmotionInstructions, EmotionWashout, EmotionQuestionnaire, EmotionFinish, EmotionVideoPlayer
-from .UI.emotionparameters import Ui_EmotionParameters
+from ...utility.iotriggers import AudioTrigger
+from ...utility.eventlogger import SubjectEventLogger
+from ...QtUtility.utilitywidgets import WidgetContainer, WidgetContainerSequencer
+from ...QtUtility.taskwidgets import TaskWindow
+from ..emotionwidgets import EmotionInstructions, EmotionWashout, EmotionFinish, EmotionVideoPlayer, EmotionQuestionnaireImage
+from ..emotionCategorization.UI.emotionparameters import Ui_EmotionParameters
 from ..UI.emotioncontrol import Ui_EmotionControl
 
 
 # Definitions #
+# Constants #
+START_DIR = ""
+
+
 # Classes #
-class EmotionCategorizationTask:
-    EXPERIMENT_NAME = "Emotion Categorization"
+class EmotionStimTask:
+    EXPERIMENT_NAME = "Emotion Stimulation Control"
 
     def __init__(self, parent=None, stack=None, r_widget=None):
         self.parent = parent
@@ -49,22 +55,23 @@ class EmotionCategorizationTask:
 
         self.task_window = TaskWindow()
         self.events = SubjectEventLogger(io_trigger=self.trigger)
-        
+
         self.sequencer = WidgetContainerSequencer()
         self.task_window.sequencer = self.sequencer
 
         self.parameters = EmotionParameters()
         self.control = EmotionControl(events=self.events, x_name=self.EXPERIMENT_NAME)
-        self.instructions = EmotionInstructions(path=pathlib.Path(__file__).parent.joinpath('instructions.txt'), events=self.events)
+        self.instructions = EmotionInstructions(path=pathlib.Path(__file__).parent.joinpath('instructions.txt'),
+                                                events=self.events)
         self.video_player = EmotionVideoPlayer(events=self.events)
-        self.questionnaire = EmotionQuestionnaire(events=self.events)
+        self.questionnaire = EmotionQuestionnaireImage(events=self.events)
         self.washout = EmotionWashout(events=self.events)
         self.finished = EmotionFinish(events=self.events)
 
         self.block_widgets = {'instructions': self.instructions, 'video_player': self.video_player,
                               'questionnaire': self.questionnaire, 'washout': self.washout, 'finish': self.finished}
         self.sequence_order = ['instructions', '*block*', 'washout', 'finish']
-        self.block_order = ['washout', 'video_player', 'questionnaire']
+        self.block_order = ['questionnaire']
 
     def load_task(self, stack=None):
         if stack is not None:
@@ -150,8 +157,8 @@ class EmotionParameters(WidgetContainer):
 
 class ParametersWidget(QWidget):
     header = ('Video', 'Questions', 'Video Path', 'Question Path')
-    vtype_s = ('*.avi', '*.mp4', '*.ogg', '*.qt', '*.wmv', '*.yuv')
-    qtype_s = ('*.toml',)
+    v_types = ('*.avi', '*.mp4', '*.ogg', '*.qt', '*.wmv', '*.yuv')
+    q_types = ('*.toml',)
 
     def __init__(self):
         super(ParametersWidget, self).__init__()
@@ -308,7 +315,11 @@ class ParametersWidget(QWidget):
             questions.setText(question)
 
     def change_video(self, row):
-        dialog = QFileDialog(self, caption="Open Video", directory=QDir.homePath())
+        start_dir = pathlib.Path.home()
+        other = start_dir.joinpath(START_DIR)
+        if other.is_dir():
+            start_dir = other
+        dialog = QFileDialog(self, caption="Open Video", directory=start_dir.as_posix())
         dialog.setFileMode(QFileDialog.ExistingFile)
         dialog.setViewMode(QFileDialog.Detail)
 
@@ -320,7 +331,11 @@ class ParametersWidget(QWidget):
             videos.setText(v)
 
     def change_question(self, row):
-        dialog = QFileDialog(self, caption="Open Question", directory=QDir.homePath())
+        start_dir = pathlib.Path.home()
+        other = start_dir.joinpath(START_DIR)
+        if other.is_dir():
+            start_dir = other
+        dialog = QFileDialog(self, caption="Open Question", directory=start_dir.as_posix())
         dialog.setFileMode(QFileDialog.ExistingFile)
         dialog.setViewMode(QFileDialog.Detail)
 
@@ -332,7 +347,11 @@ class ParametersWidget(QWidget):
             questions.setText(q)
 
     def add_videos(self):
-        dialog = QFileDialog(self, caption="Open Video", directory=QDir.homePath())
+        start_dir = pathlib.Path.home()
+        other = start_dir.joinpath(START_DIR)
+        if other.is_dir():
+            start_dir = other
+        dialog = QFileDialog(self, caption="Open Video", directory=start_dir.as_posix())
         dialog.setFileMode(QFileDialog.ExistingFiles)
         dialog.setViewMode(QFileDialog.Detail)
 
@@ -346,7 +365,11 @@ class ParametersWidget(QWidget):
                     self.edit_item(index=last, video=video)
 
     def add_questions(self):
-        dialog = QFileDialog(self, caption="Open Questions", directory=QDir.homePath())
+        start_dir = pathlib.Path.home()
+        other = start_dir.joinpath(START_DIR)
+        if other.is_dir():
+            start_dir = other
+        dialog = QFileDialog(self, caption="Open Questions", directory=start_dir.as_posix())
         dialog.setFileMode(QFileDialog.ExistingFiles)
         dialog.setViewMode(QFileDialog.Detail)
 
@@ -360,7 +383,11 @@ class ParametersWidget(QWidget):
                     self.edit_item(index=last, question=question)
 
     def video_directory(self):
-        dialog = QFileDialog(self, caption="Open Video Directory", directory=QDir.homePath())
+        start_dir = pathlib.Path.home()
+        other = start_dir.joinpath(START_DIR)
+        if other.is_dir():
+            start_dir = other
+        dialog = QFileDialog(self, caption="Open Video Directory", directory=start_dir.as_posix())
         dialog.setFileMode(QFileDialog.Directory)
         dialog.setViewMode(QFileDialog.Detail)
 
@@ -368,7 +395,7 @@ class ParametersWidget(QWidget):
             dir_names = dialog.selectedFiles()
             dir_path = pathlib.Path(dir_names[0])
             files = []
-            for ext in self.vtype_s:
+            for ext in self.v_types:
                 files.extend(dir_path.glob(ext))
             for video in files:
                 last = self.find_last_row('video')
@@ -378,7 +405,11 @@ class ParametersWidget(QWidget):
                     self.edit_item(index=last, video=str(video))
 
     def question_directory(self):
-        dialog = QFileDialog(self, caption="Open Questions Directory", directory=QDir.homePath())
+        start_dir = pathlib.Path.home()
+        other = start_dir.joinpath(START_DIR)
+        if other.is_dir():
+            start_dir = other
+        dialog = QFileDialog(self, caption="Open Questions Directory", directory=start_dir.as_posix())
         dialog.setFileMode(QFileDialog.Directory)
         dialog.setViewMode(QFileDialog.Detail)
 
@@ -386,10 +417,10 @@ class ParametersWidget(QWidget):
             dir_names = dialog.selectedFiles()
             dir_path = pathlib.Path(dir_names[0])
             files = []
-            if len(self.qtype_s) < 1 or '*' in self.qtype_s:
+            if len(self.q_types) < 1 or '*' in self.q_types:
                 files = dir_path.iterdir()
             else:
-                for ext in self.qtype_s:
+                for ext in self.q_types:
                     files.extend(dir_path.glob(ext))
             for question in files:
                 last = self.find_last_row('question')
@@ -762,10 +793,15 @@ class ControlWidget(QWidget):
 
     def next_queue(self):
         if self.playing_model.rowCount() > 0:
-            complete_index = int(self.playing_model.item(0, 3).text())
-            complete = self.blocks[complete_index]
-            self.add_item(self.complete_model, _id=complete_index, video=complete['video'],
-                          question=complete['questions'], washout=complete['washout'])
+            self.complete_model.clear()
+            self.queue_model.clear()
+            self.playing_model.clear()
+            self.complete_model.setHorizontalHeaderLabels(self.header)
+            self.queue_model.setHorizontalHeaderLabels(self.header)
+            self.playing_model.setHorizontalHeaderLabels(self.header)
+            for i, block in enumerate(self.blocks):
+                self.add_item(self.queue_model, _id=i, video=block['video'], question=block['questions'],
+                              washout=block['washout'])
 
         self.playing_model.clear()
         self.playing_model.setHorizontalHeaderLabels(self.header)
@@ -786,9 +822,6 @@ class ControlWidget(QWidget):
         play_index = int(self.playing_model.item(0, 3).text())
         block = self.blocks[play_index]
 
-        self.sequencer.insert(self.block_widgets['washout'], milliseconds=block['washout'] * 1000,
-                              timer_action=self.advance)
-        self.sequencer.insert(self.block_widgets['video_player'], path=block['video'], finish_action=self.advance_trigger)
         self.sequencer.insert(self.block_widgets['questionnaire'], path=block['questions'],
                               finish_action=self.advance_block)
 
@@ -797,7 +830,7 @@ class ControlWidget(QWidget):
         next(self.sequencer)
 
     def advance_trigger(self, event=None, caller=None):
-        event = {'SubType': event["type_"]}
+        event = {'SubType': 'VideoEnd'}
         self.events.trigger_event(**event)
         next(self.sequencer)
 
@@ -808,14 +841,6 @@ class ControlWidget(QWidget):
         else:
             self.end_sequence()
         self.advance(event=event, caller=caller)
-
-    def advance_block_trigger(self, event=None, caller=None):
-        more_blocks = self.next_queue()
-        if more_blocks:
-            self.next_block()
-        else:
-            self.end_sequence()
-        self.advance_trigger(event=event, caller=caller)
 
     def start(self):
         if self.running:
