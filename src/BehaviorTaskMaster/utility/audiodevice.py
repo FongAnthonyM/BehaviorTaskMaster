@@ -65,7 +65,7 @@ class AudioDevice:
         except Exception as e:
             warn('Could not set sound device due to error: '+str(e), stacklevel=2)
 
-    def play(self, data, samplerate=None, mapping=None, blocking=False, loop=False, **kwargs):
+    def play(self, data, samplerate=None, mapping=None, blocking=True, loop=False, **kwargs):
         if samplerate is None:
             samplerate = self.samplerate
         self._sd.default.device = self._device

@@ -32,6 +32,7 @@ import pathlib
 
 # Downloaded Libraries #
 from bidict import bidict
+import numpy as np
 
 # Local Libraries #
 from .audiodevice import AudioDevice
@@ -141,13 +142,21 @@ class AudioTrigger:
             waveform = self.waveforms[waveform]['waveform']
         if sample_rate is None:
             sample_rate = self.waveforms[self.current_waveform]['sample_rate']
-        self.audio_device.play(waveform, sample_rate)
+        self.audio_device.play(waveform, sample_rate, mapping=[1, 2])
 
     @staticmethod
     def square_wave(amplitude=1, presamples=0, samples=10, postsamples=0,
-                    preseconds=None, seconds=None, postseconds=None, sample_rate=None):
+                    preseconds=None, seconds=None, postseconds=None, sample_rate=None, channels=2):
         if preseconds is not None and seconds is not None and postseconds is not None and sample_rate is not None:
             presamples = int(sample_rate * preseconds)
             samples = int(sample_rate * seconds)
             postsamples = int(sample_rate * postseconds)
-        return [0.0] * presamples + [float(amplitude)] * samples + [0.0] * postsamples
+
+        waveform = [0.0] * presamples + [float(amplitude)] * samples + [0.0] * postsamples
+
+        if channels == 1:
+            waveforms = np.array([waveform, [0.0] * (presamples + samples + postsamples)])
+        else:
+            waveforms = np.array(waveform)
+
+        return waveforms.T

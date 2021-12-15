@@ -696,6 +696,8 @@ class VideoPlayerWidget(QWidget):
             self.finish()
 
     def finish(self):
+        self.mediaPlayer.stop()
+        self.mediaPlayer.setMedia(self.mediaPlayer.media())
         event = {'type_': 'Video_Finished', 'Video': self.video.as_posix()}
         self.finish_action(event=event, caller=self)
 
