@@ -429,7 +429,8 @@ class EmotionVideoPlayer(WidgetContainer):
         self.load_video()
         event = {'SubType': 'VideoStart'}
         super().run()
-        self.events.trigger_event(**event)
+        # self.events.trigger_event(**event)
+        self.events.append(type_="General", **event)
         self.widget.play()
 
     def load_video(self, video=None):
