@@ -838,8 +838,7 @@ class ControlWidget(QWidget):
             self.next_block()
         else:
             self.end_sequence()
-        # self.advance_trigger(event=event, caller=caller)
-        self.advance(event=event, caller=caller)
+        self.advance_trigger(event=event, caller=caller)
 
     def start(self):
         if self.running:
