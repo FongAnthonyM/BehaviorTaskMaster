@@ -703,7 +703,7 @@ class ControlWidget(QWidget):
         play_index = int(self.playing_model.item(0, 1).text())
         block = self.blocks[play_index]
 
-        self.sequencer.insert(self.block_widgets['video_player'], path=block['video'], finish_action=self.advance_block_trigger)
+        self.sequencer.insert(self.block_widgets['video_player'], path=block['video'], finish_action=self.advance_block)
 
     def advance(self, event=None, caller=None):
         self.events.append(**event)

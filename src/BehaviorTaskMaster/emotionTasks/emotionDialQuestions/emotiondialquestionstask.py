@@ -811,7 +811,7 @@ class ControlWidget(QWidget):
         if washout != '':
             self.sequencer.insert(self.block_widgets['washout'], milliseconds=block['washout'] * 1000, timer_action=self.advance_block)
         if video != '':
-            self.sequencer.insert(self.block_widgets['video_player'], path=block['video'], finish_action=self.advance_block_trigger)
+            self.sequencer.insert(self.block_widgets['video_player'], path=block['video'], finish_action=self.advance_block)
         if questions != '':
             self.sequencer.insert(self.block_widgets['questionnaire'], path=block['questions'], finish_action=self.advance_block)
 
