@@ -13,18 +13,18 @@ from PySide2.QtGui import *
 from PySide2.QtWidgets import *
 
 
-class Ui_EmotionQuestionnaire(object):
-    def setupUi(self, EmotionQuestionnaire):
-        if not EmotionQuestionnaire.objectName():
-            EmotionQuestionnaire.setObjectName(u"EmotionQuestionnaire")
-        EmotionQuestionnaire.resize(1024, 768)
-        self.widgetLayout = QGridLayout(EmotionQuestionnaire)
+class Ui_EmotionRating(object):
+    def setupUi(self, EmotionRating):
+        if not EmotionRating.objectName():
+            EmotionRating.setObjectName(u"EmotionRating")
+        EmotionRating.resize(1024, 768)
+        self.widgetLayout = QGridLayout(EmotionRating)
         self.widgetLayout.setObjectName(u"widgetLayout")
         self.horizontalSpacerButtons = QSpacerItem(40, 20, QSizePolicy.Preferred, QSizePolicy.Minimum)
 
         self.widgetLayout.addItem(self.horizontalSpacerButtons, 9, 3, 1, 1)
 
-        self.titleLabel = QLabel(EmotionQuestionnaire)
+        self.titleLabel = QLabel(EmotionRating)
         self.titleLabel.setObjectName(u"titleLabel")
         sizePolicy = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
@@ -50,7 +50,7 @@ class Ui_EmotionQuestionnaire(object):
 
         self.widgetLayout.addItem(self.horizontalSpacer, 10, 5, 1, 1)
 
-        self.backButton = QPushButton(EmotionQuestionnaire)
+        self.backButton = QPushButton(EmotionRating)
         self.backButton.setObjectName(u"backButton")
         sizePolicy1 = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
         sizePolicy1.setHorizontalStretch(0)
@@ -67,7 +67,7 @@ class Ui_EmotionQuestionnaire(object):
 
         self.widgetLayout.addItem(self.verticalSpacerTop, 0, 2, 1, 3)
 
-        self.continueButton = QPushButton(EmotionQuestionnaire)
+        self.continueButton = QPushButton(EmotionRating)
         self.continueButton.setObjectName(u"continueButton")
         sizePolicy1.setHeightForWidth(self.continueButton.sizePolicy().hasHeightForWidth())
         self.continueButton.setSizePolicy(sizePolicy1)
@@ -79,7 +79,7 @@ class Ui_EmotionQuestionnaire(object):
 
         self.widgetLayout.addItem(self.verticalSpacerBottom, 10, 2, 1, 3)
 
-        self.answersBox = QGroupBox(EmotionQuestionnaire)
+        self.answersBox = QGroupBox(EmotionRating)
         self.answersBox.setObjectName(u"answersBox")
         sizePolicy2 = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         sizePolicy2.setHorizontalStretch(0)
@@ -119,7 +119,7 @@ class Ui_EmotionQuestionnaire(object):
 
         self.widgetLayout.addItem(self.horizontalSpacerLeft, 4, 0, 7, 1)
 
-        self.colorSpacer = QPushButton(EmotionQuestionnaire)
+        self.colorSpacer = QPushButton(EmotionRating)
         self.colorSpacer.setObjectName(u"colorSpacer")
         self.colorSpacer.setEnabled(False)
         sizePolicy3 = QSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
@@ -130,7 +130,7 @@ class Ui_EmotionQuestionnaire(object):
 
         self.widgetLayout.addWidget(self.colorSpacer, 0, 5, 4, 1)
 
-        self.instructionsLabel = QLabel(EmotionQuestionnaire)
+        self.instructionsLabel = QLabel(EmotionRating)
         self.instructionsLabel.setObjectName(u"instructionsLabel")
         sizePolicy.setHeightForWidth(self.instructionsLabel.sizePolicy().hasHeightForWidth())
         self.instructionsLabel.setSizePolicy(sizePolicy)
@@ -148,18 +148,18 @@ class Ui_EmotionQuestionnaire(object):
         self.widgetLayout.addItem(self.leftTitleSpacer, 4, 1, 1, 1)
 
 
-        self.retranslateUi(EmotionQuestionnaire)
+        self.retranslateUi(EmotionRating)
 
-        QMetaObject.connectSlotsByName(EmotionQuestionnaire)
+        QMetaObject.connectSlotsByName(EmotionRating)
     # setupUi
 
-    def retranslateUi(self, EmotionQuestionnaire):
-        EmotionQuestionnaire.setWindowTitle(QCoreApplication.translate("EmotionQuestionnaire", u"EmotionTaskQuestionnaire", None))
-        self.titleLabel.setText(QCoreApplication.translate("EmotionQuestionnaire", u"Emotion Rating", None))
+    def retranslateUi(self, EmotionRating):
+        EmotionRating.setWindowTitle(QCoreApplication.translate("EmotionRating", u"EmotionTaskRating", None))
+        self.titleLabel.setText(QCoreApplication.translate("EmotionRating", u"Emotion Rating", None))
         self.backButton.setText("")
-        self.continueButton.setText(QCoreApplication.translate("EmotionQuestionnaire", u"Next", None))
+        self.continueButton.setText(QCoreApplication.translate("EmotionRating", u"Next", None))
         self.answersBox.setTitle("")
         self.colorSpacer.setText("")
-        self.instructionsLabel.setText(QCoreApplication.translate("EmotionQuestionnaire", u"Please rate how you felt while watching the video:", None))
+        self.instructionsLabel.setText(QCoreApplication.translate("EmotionRating", u"Please rate how you felt while watching the video:", None))
     # retranslateUi
 
