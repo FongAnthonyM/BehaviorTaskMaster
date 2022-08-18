@@ -22,7 +22,9 @@ from PySide2.QtWidgets import QApplication
 
 # Local Libraries #
 from src.BehaviorTaskMaster.emotionTasks.emotionCategorization.emotioncategorizationtask import EmotionCategorizationTask
+from src.BehaviorTaskMaster.emotionTasks.emotionRating.emotionratingtask import EmotionRatingTask
 from src.BehaviorTaskMaster.emotionTasks.emotionCategorizationDial.emotioncategorizationdialtask import EmotionCategorizationDialTask
+from src.BehaviorTaskMaster.emotionTasks.emotionRatingDial.emotionratingdialtask import EmotionRatingDialTask
 from src.BehaviorTaskMaster.emotionTasks.emotionDial.emotiondialtask import EmotionDialTask
 from src.BehaviorTaskMaster.emotionTasks.emotionDialQuestions.emotiondialquestionstask import EmotionDialQuestionsTask
 from src.BehaviorTaskMaster.emotionTasks.emotionStim.emotionstimtask import EmotionStimTask
@@ -36,7 +38,9 @@ if __name__ == "__main__":
 
     window = BehaviorTaskWindow()
     window.add_task(EmotionCategorizationTask(window), "EmotionCategorizationTask", "Emotion Categorization")
+    window.add_task(EmotionCategorizationTask(window), "EmotionRatingTask", "Emotion Rating")
     window.add_task(EmotionCategorizationDialTask(window), "EmotionCategorizationDialTask", "Emotion Categorization with Dial")
+    window.add_task(EmotionRatingDialTask(window), "EmotionRatingDialTask", "Emotion Rating with Dial")
     window.add_task(EmotionDialTask(window), "EmotionDialTask", "Emotion Dial")
     window.add_task(EmotionDialQuestionsTask(window), "EmotionDialQuestions", "Emotion Dial Alternative")
     window.add_task(EmotionStimTask(window), "EmotionStim", "Emotion Stimulation Control")
