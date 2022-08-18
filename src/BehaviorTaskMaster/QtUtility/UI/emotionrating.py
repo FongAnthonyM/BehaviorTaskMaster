@@ -32,7 +32,7 @@ class Ui_EmotionRating(object):
         sizePolicy.setHeightForWidth(self.titleLabel.sizePolicy().hasHeightForWidth())
         self.titleLabel.setSizePolicy(sizePolicy)
         font = QFont()
-        font.setPointSize(20)
+        font.setPointSize(22)
         self.titleLabel.setFont(font)
         self.titleLabel.setAlignment(Qt.AlignCenter)
 
@@ -58,7 +58,7 @@ class Ui_EmotionRating(object):
         sizePolicy1.setHeightForWidth(self.backButton.sizePolicy().hasHeightForWidth())
         self.backButton.setSizePolicy(sizePolicy1)
         font1 = QFont()
-        font1.setPointSize(16)
+        font1.setPointSize(18)
         self.backButton.setFont(font1)
 
         self.widgetLayout.addWidget(self.backButton, 9, 1, 1, 2)

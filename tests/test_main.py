@@ -38,7 +38,7 @@ if __name__ == "__main__":
 
     window = BehaviorTaskWindow()
     window.add_task(EmotionCategorizationTask(window), "EmotionCategorizationTask", "Emotion Categorization")
-    window.add_task(EmotionCategorizationTask(window), "EmotionRatingTask", "Emotion Rating")
+    window.add_task(EmotionRatingTask(window), "EmotionRatingTask", "Emotion Rating")
     window.add_task(EmotionCategorizationDialTask(window), "EmotionCategorizationDialTask", "Emotion Categorization with Dial")
     window.add_task(EmotionRatingDialTask(window), "EmotionRatingDialTask", "Emotion Rating with Dial")
     window.add_task(EmotionDialTask(window), "EmotionDialTask", "Emotion Dial")

@@ -141,7 +141,7 @@ class RatingWidget(QWidget):
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         font = QtGui.QFont()
-        font.setPointSize(16)
+        font.setPointSize(18)
         self.ui.answerChecks = []
         self.ui.answersLayout.setAlignment(QtGui.Qt.AlignCenter)
 
@@ -164,7 +164,7 @@ class RatingWidget(QWidget):
             self.ui.answersLayout.addWidget(item_label, i + 2, 1, 1, 1)
             for j, rating in enumerate(ratings):
                 answer_radio = QtWidgets.QRadioButton(self.ui.answersBox)
-                answer_radio.setStyleSheet("margin-left:50%; margin-right:50%;")
+                answer_radio.setStyleSheet("QRadioButton::indicator { width: 40px; height: 40px;} QRadioButton{margin-left:50%; margin-right:50%;};")
                 #sizePolicy.setHeightForWidth(answer_radio.sizePolicy().hasHeightForWidth())
                 #answer_radio.setSizePolicy(sizePolicy)
                 answer_radio.setObjectName(f"answer_check_{item}_{j}")
