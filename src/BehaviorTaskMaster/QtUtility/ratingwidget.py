@@ -156,6 +156,7 @@ class RatingWidget(QWidget):
 
         for i, item in enumerate(items):
             self.rating_items[item] = set()
+            self.selected_ratings[item] = -1
             item_label = QtWidgets.QLabel(self.ui.answersBox)
             item_label.setObjectName(f"{item}Label")
             item_label.setFont(font)
