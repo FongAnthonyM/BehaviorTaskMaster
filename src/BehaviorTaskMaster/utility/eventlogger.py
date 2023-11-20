@@ -1336,9 +1336,9 @@ class HDF5eventLogger(HDF5container):
     START_NAME = "StartTime"
     TYPE_NAME = "Type"
     LINK_NAME = "LinkID"
-    EVENT_DTYPE = np.dtype([(TIME_NAME, np.float),
-                            (DELTA_NAME, np.float),
-                            (START_NAME, np.float),
+    EVENT_DTYPE = np.dtype([(TIME_NAME, np.float64),
+                            (DELTA_NAME, np.float64),
+                            (START_NAME, np.float64),
                             (TYPE_NAME, h5py.string_dtype(encoding="utf-8")),
                             (LINK_NAME, h5py.string_dtype(encoding="utf-8"))])
 
@@ -1522,11 +1522,11 @@ class HDF5eventLogger(HDF5container):
         dtypes = []
         for key, value in event.items():
             if isinstance(value, int):
-                dtype = np.int
+                dtype = np.int64
             elif isinstance(value, float):
-                dtype = np.float
+                dtype = np.float64
             elif isinstance(value, datetime.datetime):
-                dtype = np.float
+                dtype = np.float64
             else:
                 dtype = h5py.string_dtype(encoding="utf-8")
 
