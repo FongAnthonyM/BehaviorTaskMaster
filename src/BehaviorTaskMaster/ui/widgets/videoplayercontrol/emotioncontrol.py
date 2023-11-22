@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'VideoPlayerControlContainer.ui',
-# licensing of 'VideoPlayerControlContainer.ui' applies.
+# Form implementation generated from reading ui file 'emotioncontrol.ui',
+# licensing of 'emotioncontrol.ui' applies.
 #
 # Created: Mon Sep 23 14:47:28 2019
 #      by: pyside2-uic  running on PySide2 5.13.0
@@ -10,11 +10,11 @@
 
 from PySide2 import QtCore, QtGui, QtWidgets
 
-class Ui_VideoPlayerControlContainer(object):
-    def setupUi(self, VideoPlayerControlContainer):
-        VideoPlayerControlContainer.setObjectName("VideoPlayerControlContainer")
-        VideoPlayerControlContainer.resize(800, 600)
-        self.gridLayout = QtWidgets.QGridLayout(VideoPlayerControlContainer)
+class Ui_EmotionControl(object):
+    def setupUi(self, EmotionControl):
+        EmotionControl.setObjectName("EmotionControl")
+        EmotionControl.resize(800, 600)
+        self.gridLayout = QtWidgets.QGridLayout(EmotionControl)
         self.gridLayout.setObjectName("gridLayout")
         spacerItem = QtWidgets.QSpacerItem(688, 20, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
         self.gridLayout.addItem(spacerItem, 0, 1, 1, 3)
@@ -24,7 +24,7 @@ class Ui_VideoPlayerControlContainer(object):
         self.gridLayout.addItem(spacerItem2, 0, 4, 8, 1)
         spacerItem3 = QtWidgets.QSpacerItem(20, 20, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
         self.gridLayout.addItem(spacerItem3, 7, 1, 1, 3)
-        self.titleLabel = QtWidgets.QLabel(VideoPlayerControlContainer)
+        self.titleLabel = QtWidgets.QLabel(EmotionControl)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -38,7 +38,7 @@ class Ui_VideoPlayerControlContainer(object):
         self.gridLayout.addWidget(self.titleLabel, 1, 1, 1, 3)
         spacerItem4 = QtWidgets.QSpacerItem(10, 20, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Minimum)
         self.gridLayout.addItem(spacerItem4, 0, 0, 8, 1)
-        self.groupBox = QtWidgets.QGroupBox(VideoPlayerControlContainer)
+        self.groupBox = QtWidgets.QGroupBox(EmotionControl)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -167,22 +167,22 @@ class Ui_VideoPlayerControlContainer(object):
         self.gridLayout_2.addWidget(self.quequedBlocks, 4, 4, 3, 1)
         self.gridLayout.addWidget(self.groupBox, 3, 1, 1, 3)
 
-        self.retranslateUi(VideoPlayerControlContainer)
-        QtCore.QMetaObject.connectSlotsByName(VideoPlayerControlContainer)
+        self.retranslateUi(EmotionControl)
+        QtCore.QMetaObject.connectSlotsByName(EmotionControl)
 
-    def retranslateUi(self, VideoPlayerControlContainer):
-        VideoPlayerControlContainer.setWindowTitle(QtWidgets.QApplication.translate("VideoPlayerControlContainer", "EmotionTaskParameters", None, -1))
-        self.titleLabel.setText(QtWidgets.QApplication.translate("VideoPlayerControlContainer", "Emotion Task Control", None, -1))
-        self.startButton.setText(QtWidgets.QApplication.translate("VideoPlayerControlContainer", "Start", None, -1))
-        self.videosLabel.setText(QtWidgets.QApplication.translate("VideoPlayerControlContainer", "Quequed Blocks", None, -1))
-        self.label_2.setText(QtWidgets.QApplication.translate("VideoPlayerControlContainer", "Currently Playing", None, -1))
-        self.stopButton.setText(QtWidgets.QApplication.translate("VideoPlayerControlContainer", "Stop", None, -1))
-        self.muteButton.setText(QtWidgets.QApplication.translate("VideoPlayerControlContainer", "Mute", None, -1))
-        self.playButton.setText(QtWidgets.QApplication.translate("VideoPlayerControlContainer", "Play", None, -1))
-        self.skipButton.setText(QtWidgets.QApplication.translate("VideoPlayerControlContainer", "Skip", None, -1))
-        self.durationLabel.setText(QtWidgets.QApplication.translate("VideoPlayerControlContainer", "00:00 / 00:00", None, -1))
-        self.fullscreenButton.setText(QtWidgets.QApplication.translate("VideoPlayerControlContainer", "FullScreen", None, -1))
-        self.showButton.setText(QtWidgets.QApplication.translate("VideoPlayerControlContainer", "Show", None, -1))
-        self.label.setText(QtWidgets.QApplication.translate("VideoPlayerControlContainer", "Completed Blocks", None, -1))
-        self.backButton.setText(QtWidgets.QApplication.translate("VideoPlayerControlContainer", "Back", None, -1))
+    def retranslateUi(self, EmotionControl):
+        EmotionControl.setWindowTitle(QtWidgets.QApplication.translate("EmotionControl", "EmotionTaskParameters", None, -1))
+        self.titleLabel.setText(QtWidgets.QApplication.translate("EmotionControl", "Emotion Task Control", None, -1))
+        self.startButton.setText(QtWidgets.QApplication.translate("EmotionControl", "Start", None, -1))
+        self.videosLabel.setText(QtWidgets.QApplication.translate("EmotionControl", "Quequed Blocks", None, -1))
+        self.label_2.setText(QtWidgets.QApplication.translate("EmotionControl", "Currently Playing", None, -1))
+        self.stopButton.setText(QtWidgets.QApplication.translate("EmotionControl", "Stop", None, -1))
+        self.muteButton.setText(QtWidgets.QApplication.translate("EmotionControl", "Mute", None, -1))
+        self.playButton.setText(QtWidgets.QApplication.translate("EmotionControl", "Play", None, -1))
+        self.skipButton.setText(QtWidgets.QApplication.translate("EmotionControl", "Skip", None, -1))
+        self.durationLabel.setText(QtWidgets.QApplication.translate("EmotionControl", "00:00 / 00:00", None, -1))
+        self.fullscreenButton.setText(QtWidgets.QApplication.translate("EmotionControl", "FullScreen", None, -1))
+        self.showButton.setText(QtWidgets.QApplication.translate("EmotionControl", "Show", None, -1))
+        self.label.setText(QtWidgets.QApplication.translate("EmotionControl", "Completed Blocks", None, -1))
+        self.backButton.setText(QtWidgets.QApplication.translate("EmotionControl", "Back", None, -1))
 

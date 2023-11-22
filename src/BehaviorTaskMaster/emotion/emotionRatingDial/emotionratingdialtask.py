@@ -34,7 +34,7 @@ from ...ui.widgets import InstructionsContainer, WashoutContainer, FinishContain
 from ...ui.widgets import VideoPlayerControlContainer
 from ..emotionRating.UI import RatingsParametersContainer
 
-from ...ui.widgets.videoplayercontrol.VideoPlayerControlContainer import Ui_VideoPlayerControlContainer
+from ...ui.widgets.videoplayercontrol.emotioncontrol import Ui_EmotionControl
 from ..emotionCategorization.UI.emotionparameters import Ui_EmotionParameters
 
 
@@ -480,8 +480,8 @@ class ParametersWidget(QWidget):
         sys.exit()
 
 
-class VideoPlayerControlContainer(BaseWidgetContainer):
-    def __init__(self, name="VideoPlayerControlContainer",  x_name="", events=None, init=False):
+class EmotionControl(BaseWidgetContainer):
+    def __init__(self, name="EmotionControl",  x_name="", events=None, init=False):
         BaseWidgetContainer.__init__(self, name, init)
         self.back_action = self.remove_from_stack
         self.experiment_name = x_name
@@ -573,7 +573,7 @@ class ControlWidget(QWidget):
         self.back_action = self.default_back
         self.start_action = self.default_start
 
-        self.ui = Ui_VideoPlayerControlContainer()
+        self.ui = Ui_EmotionControl()
         self.ui.setupUi(self)
 
         self.play_icon = self.style().standardIcon(QStyle.SP_MediaPlay)
@@ -892,7 +892,7 @@ class ControlWidget(QWidget):
         self.events.set_time()
         self.start_sequence()
         self.ui.startButton.setEnabled(False)
-        self.ui.backButton.setText(QtWidgets.QApplication.translate("VideoPlayerControlContainer", 'Stop', None, -1))
+        self.ui.backButton.setText(QtWidgets.QApplication.translate("EmotionControl", 'Stop', None, -1))
         self.sequencer.start()
         self.task_window.show()
 
@@ -917,7 +917,7 @@ class ControlWidget(QWidget):
             self.running = False
             self.reset()
             self.ui.startButton.setEnabled(True)
-            self.ui.backButton.setText(QtWidgets.QApplication.translate("VideoPlayerControlContainer", 'Back', None, -1))
+            self.ui.backButton.setText(QtWidgets.QApplication.translate("EmotionControl", 'Back', None, -1))
 
     def reset(self):
         if not self.running:

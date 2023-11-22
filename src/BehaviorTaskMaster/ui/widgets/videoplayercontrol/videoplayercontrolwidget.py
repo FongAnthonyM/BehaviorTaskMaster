@@ -22,7 +22,7 @@ from PySide2 import QtGui, QtWidgets, QtMultimedia
 from PySide2.QtWidgets import QWidget, QAction, QFileDialog, QAbstractItemView, QStyle
 
 # Local Packages #
-from .VideoPlayerControlContainer import Ui_VideoPlayerControlContainer
+from .emotioncontrol import Ui_EmotionControl
 
 
 # Definitions #
@@ -36,7 +36,7 @@ class VideoPlayerControlWidget(QWidget):
         self.back_action = self.default_back
         self.start_action = self.default_start
 
-        self.ui = Ui_VideoPlayerControlContainer()
+        self.ui = Ui_EmotionControl()
         self.ui.setupUi(self)
 
         self.play_icon = self.style().standardIcon(QStyle.SP_MediaPlay)
@@ -355,7 +355,7 @@ class VideoPlayerControlWidget(QWidget):
         self.events.set_time()
         self.start_sequence()
         self.ui.startButton.setEnabled(False)
-        self.ui.backButton.setText(QtWidgets.QApplication.translate("VideoPlayerControlContainer", 'Stop', None, -1))
+        self.ui.backButton.setText(QtWidgets.QApplication.translate("EmotionControl", 'Stop', None, -1))
         self.sequencer.start()
         self.task_window.show()
 
@@ -380,7 +380,7 @@ class VideoPlayerControlWidget(QWidget):
             self.running = False
             self.reset()
             self.ui.startButton.setEnabled(True)
-            self.ui.backButton.setText(QtWidgets.QApplication.translate("VideoPlayerControlContainer", 'Back', None, -1))
+            self.ui.backButton.setText(QtWidgets.QApplication.translate("EmotionControl", 'Back', None, -1))
 
     def reset(self):
         if not self.running:

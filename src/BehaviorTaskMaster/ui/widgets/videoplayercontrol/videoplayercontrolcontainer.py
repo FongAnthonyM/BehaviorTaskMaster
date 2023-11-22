@@ -25,7 +25,7 @@ from .videoplayercontrolwidget import VideoPlayerControlWidget
 # Definitions #
 # Classes #
 class VideoPlayerControlContainer(BaseWidgetContainer):
-    def __init__(self, name="VideoPlayerControlContainer", x_name="", events=None, init=False):
+    def __init__(self, name="EmotionControl", x_name="", events=None, init=False):
         BaseWidgetContainer.__init__(self, name, init)
         self.back_action = self.remove_from_stack
         self.experiment_name = x_name
