@@ -4,7 +4,7 @@
 Description:
 """
 # Package Header #
-from ...header import *
+from src.BehaviorTaskMaster.header import *
 
 # Header #
 __author__ = __author__
@@ -22,9 +22,9 @@ from PySide2.QtWidgets import QApplication
 
 # Local Packages #
 from src.BehaviorTaskMaster.emotion.emotionCategorization.emotioncategorizationtask import EmotionCategorizationTask
-from src.BehaviorTaskMaster.emotion.rating.ratingtask import RatingTask
+from src.BehaviorTaskMaster.emotion.emotionRating.emotionratingtask import RatingTask
 from src.BehaviorTaskMaster.emotion.emotionCategorizationDial.emotioncategorizationdialtask import EmotionCategorizationDialTask
-from src.BehaviorTaskMaster.emotion.ratingDial.ratingdialtask import RatingDialTask
+from src.BehaviorTaskMaster.emotion.emotionRatingDial.emotionratingdialtask import RatingDialTask
 from src.BehaviorTaskMaster.emotion.emotionDial.emotiondialtask import EmotionDialTask
 from src.BehaviorTaskMaster.emotion.emotionDialQuestions.emotiondialquestionstask import EmotionDialQuestionsTask
 from src.BehaviorTaskMaster.emotion.emotionStim.emotionstimtask import EmotionStimTask
