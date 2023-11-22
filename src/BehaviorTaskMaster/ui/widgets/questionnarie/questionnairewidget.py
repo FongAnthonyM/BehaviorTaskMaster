@@ -24,7 +24,7 @@ from PySide2.QtGui import QKeySequence
 from PySide2.QtWidgets import QWidget, QAction
 
 # Local Packages #
-from ...ui.widgets.questionnarie import Ui_EmotionQuestionnaire
+from .emotionquestionnaire import Ui_EmotionQuestionnaire
 
 
 # Definitions #
