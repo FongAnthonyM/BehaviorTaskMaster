@@ -30,6 +30,7 @@ from .videoplayercontrol import Ui_VideoPlayerControl
 class VideoPlayerControlWidget(QWidget):
     header = ('Video', 'Questions', 'Washout', '')
     base_washout = 60
+    default_washout = 0
 
     def __init__(self, player=None, init=False, **kwargs):
         super().__init__(**kwargs)
@@ -138,22 +139,22 @@ class VideoPlayerControlWidget(QWidget):
     def _fill_queue(self):
         for i, block in enumerate(self.blocks):
             self.add_item(self.queue_model, _id=i, **block)
-        self.add_item(self.queue_model, _id=0, washout=self.base_washout)
-        for i, block in enumerate(self.blocks):
-            self.add_item(self.queue_model, _id=i, question=block['questions'])
 
-    @staticmethod
-    def add_item(model, _id=0, index=-1, video=None, question=None, washout=0):
+    def add_item(self, model, _id=0, index=-1, video=None, configuration=None, washout=None, **kwargs):
         # Make Row Objects
         id_number = QtGui.QStandardItem(str(_id))
         if video is None or video == '':
             video_name = QtGui.QStandardItem('')
         else:
             video_name = QtGui.QStandardItem(pathlib.Path(video).name)
-        if question is None or question == '':
+
+        if configuration is None or configuration == '':
             questions_name = QtGui.QStandardItem('')
         else:
-            questions_name = QtGui.QStandardItem(pathlib.Path(question).name)
+            questions_name = QtGui.QStandardItem(pathlib.Path(configuration).name)
+
+        if washout is None or washout == '':
+            washout = self.default_washout
         if washout == 0:
             washout_name = QtGui.QStandardItem('')
         elif isinstance(washout, str):
@@ -256,7 +257,6 @@ class VideoPlayerControlWidget(QWidget):
 
     def start_sequence(self):
         self.sequencer.clear()
-        block = self.blocks[0]
         block_sequence = self.sequence_order.index('*block*')
         sequence_order = self.sequence_order[:block_sequence]
 
@@ -266,34 +266,29 @@ class VideoPlayerControlWidget(QWidget):
         last = sequence_order.pop()
         for item in sequence_order:
             self.sequencer.insert(self.block_widgets[item], ok_action=self.advance)
-        self.sequencer.insert(self.block_widgets[last], ok_action=self.advance)
-        self.sequencer.insert(self.block_widgets['washout'], milliseconds=(self.base_washout-block['washout']) * 1000, timer_action=self.advance_block)
+        self.sequencer.insert(self.block_widgets[last], ok_action=self.advance_block)
 
     def end_sequence(self):
         block = self.blocks[-1]
         block_sequence = self.sequence_order.index('*block*')
         sequence_order = self.sequence_order[block_sequence + 1:]
 
+        self.sequencer.insert(self.block_widgets['washout'], milliseconds=block['washout'] * 1000, timer_action=self.advance)
         self.sequencer.insert(self.block_widgets['finish'])
 
     def next_queue(self):
         if self.playing_model.rowCount() > 0:
             complete_index = int(self.playing_model.item(0, 3).text())
-            video = self.playing_model.item(0, 0).text()
-            question = self.playing_model.item(0, 1).text()
-            washout = self.playing_model.item(0, 2).text()
-            self.playing_model.item(0, 3).text()
-            self.add_item(self.complete_model, _id=complete_index, video=video, question=question, washout=washout)
+            complete = self.blocks[complete_index]
+            self.add_item(self.complete_model, _id=complete_index, **complete)
 
         self.playing_model.clear()
         self.playing_model.setHorizontalHeaderLabels(self.header)
         if self.queue_model.rowCount() > 0:
             play_index = int(self.queue_model.item(0, 3).text())
-            video = self.queue_model.item(0, 0).text()
-            question = self.queue_model.item(0, 1).text()
-            washout = self.queue_model.item(0, 2).text()
+            block = self.blocks[play_index]
 
-            self.add_item(self.playing_model, _id=play_index, video=video, question=question, washout=washout)
+            self.add_item(self.playing_model, _id=play_index, **block)
             self.queue_model.removeRow(0)
             flag = True
         else:
@@ -308,14 +303,10 @@ class VideoPlayerControlWidget(QWidget):
         washout = self.playing_model.item(0, 2).text()
         block = self.blocks[play_index]
 
-        if video != '':
-            if block['washout'] > 0:
-                self.sequencer.insert(self.block_widgets['washout'], milliseconds=block['washout'] * 1000, timer_action=self.advance)
-            self.sequencer.insert(self.block_widgets['video_player'], path=block['video'], finish_action=self.advance_block)
-        elif questions != '':
-            self.sequencer.insert(self.block_widgets['questionnaire'], path=block['questions'], finish_action=self.advance_block)
-        elif washout != '':
-            self.sequencer.insert(self.block_widgets['washout'], milliseconds=self.base_washout * 1000, timer_action=self.advance_block)
+        self.sequencer.insert(self.block_widgets['washout'], milliseconds=block['washout'] * 1000, timer_action=self.advance)
+        # self.sequencer.insert(self.block_widgets['video_player'], path=block['video'], finish_action=self.advance_trigger)
+        self.sequencer.insert(self.block_widgets['video_player'], path=block['video'], finish_action=self.advance)
+        self.sequencer.insert(self.block_widgets['questionnaire'], path=block['questions'], finish_action=self.advance_block)
 
     def advance(self, event=None, caller=None):
         self.events.append(**event)

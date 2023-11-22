@@ -338,7 +338,7 @@ class VideoConfigurationParametersWidget(QWidget):
             video = pathlib.Path(self.list_model.item(i, 2).text())
             configuration = pathlib.Path(self.list_model.item(i, 3).text())
             washout = self.ui.washoutBox.value()
-            self.blocks.append({'video': video, 'configurations': configuration, 'washout': washout})
+            self.blocks.append({'video': video, 'configuration': configuration, 'washout': washout})
 
     def ok(self):
         self.evaluate()

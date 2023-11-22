@@ -114,16 +114,15 @@ class ControlWidget(VideoPlayerControlWidget):
 
     def _fill_queue(self):
         for i, block in enumerate(self.blocks):
-            self.add_item(self.queue_model, _id=i, video=block['video'], question=block['questions'],
-                          washout=block['washout'])
+            self.add_item(self.queue_model, _id=i, video=block['video'], configuration=block['questions'])
 
     @staticmethod
-    def add_item(model, _id=0, video=pathlib.Path, question=pathlib.Path, washout=0, index=-1):
+    def add_item(model, _id=0, index=-1, video=None, configuration=None, washout=0):
         # Make Row Objects
         id_number = QtGui.QStandardItem(str(_id))
         video_name = QtGui.QStandardItem(video.name)
         questions_name = QtGui.QStandardItem(question.name)
-        washout_name = QtGui.QStandardItem(str(washout) + "s")
+        washout_name = QtGui.QStandardItem(str(configuration) + "s")
 
         # Row Settings
         video_name.setEditable(False)
@@ -172,7 +171,7 @@ class ControlWidget(VideoPlayerControlWidget):
             complete_index = int(self.playing_model.item(0, 3).text())
             complete = self.blocks[complete_index]
             self.add_item(self.complete_model, _id=complete_index, video=complete['video'],
-                          question=complete['questions'], washout=complete['washout'])
+                          configuration=complete['questions'])
 
         self.playing_model.clear()
         self.playing_model.setHorizontalHeaderLabels(self.header)
@@ -180,8 +179,7 @@ class ControlWidget(VideoPlayerControlWidget):
             play_index = int(self.queue_model.item(0, 3).text())
             block = self.blocks[play_index]
 
-            self.add_item(self.playing_model, _id=play_index, video=block['video'], question=block['questions'],
-                          washout=block['washout'])
+            self.add_item(self.playing_model, _id=play_index, video=block['video'], configuration=block['questions'])
             self.queue_model.removeRow(0)
             flag = True
         else:
