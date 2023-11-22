@@ -21,13 +21,12 @@ from PySide2.QtGui import QKeySequence
 from PySide2.QtWidgets import QAction
 
 # Local Packages #
-from .ui import MainStackedWindow
-from ...ui.mainmenu import MainMenuWidget
+from .ui import MainMenuWidget, MainWindow
 
 
 # Definitions #
 # Classes #
-class BehaviorTaskWindow(MainStackedWindow):
+class BehaviorTaskWindow(MainWindow):
     def __init__(self):
         super(BehaviorTaskWindow, self).__init__()
         self.tasks = dict()
