@@ -16,7 +16,6 @@ __email__ = __email__
 import sys
 
 # Third-Party Packages #
-from bidict import bidict
 from PySide2 import QtCore, QtGui
 from PySide2.QtWidgets import QApplication, QWidget
 

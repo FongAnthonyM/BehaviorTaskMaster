@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'emotiondialparameters.ui',
-# licensing of 'emotiondialparameters.ui' applies.
+# Form implementation generated from reading ui file 'videoparameters.ui',
+# licensing of 'videoparameters.ui' applies.
 #
 # Created: Thu Oct 24 12:07:17 2019
 #      by: pyside2-uic  running on PySide2 5.13.0
@@ -10,13 +10,13 @@
 
 from PySide2 import QtCore, QtGui, QtWidgets
 
-class Ui_EmotionParameters(object):
-    def setupUi(self, EmotionParameters):
-        EmotionParameters.setObjectName("EmotionParameters")
-        EmotionParameters.resize(836, 600)
-        self.gridLayout = QtWidgets.QGridLayout(EmotionParameters)
+class Ui_VideoParameters(object):
+    def setupUi(self, VideoParameters):
+        VideoParameters.setObjectName("VideoConfigurationParameters")
+        VideoParameters.resize(836, 600)
+        self.gridLayout = QtWidgets.QGridLayout(VideoParameters)
         self.gridLayout.setObjectName("gridLayout")
-        self.okButton = QtWidgets.QPushButton(EmotionParameters)
+        self.okButton = QtWidgets.QPushButton(VideoParameters)
         font = QtGui.QFont()
         font.setPointSize(16)
         self.okButton.setFont(font)
@@ -28,7 +28,7 @@ class Ui_EmotionParameters(object):
         self.gridLayout.addItem(spacerItem1, 0, 4, 8, 1)
         spacerItem2 = QtWidgets.QSpacerItem(20, 10, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
         self.gridLayout.addItem(spacerItem2, 4, 1, 1, 3)
-        self.backButton = QtWidgets.QPushButton(EmotionParameters)
+        self.backButton = QtWidgets.QPushButton(VideoParameters)
         font = QtGui.QFont()
         font.setPointSize(16)
         self.backButton.setFont(font)
@@ -36,7 +36,7 @@ class Ui_EmotionParameters(object):
         self.gridLayout.addWidget(self.backButton, 5, 3, 1, 1)
         spacerItem3 = QtWidgets.QSpacerItem(20, 10, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
         self.gridLayout.addItem(spacerItem3, 2, 1, 1, 3)
-        self.titleLabel = QtWidgets.QLabel(EmotionParameters)
+        self.titleLabel = QtWidgets.QLabel(VideoParameters)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -54,7 +54,7 @@ class Ui_EmotionParameters(object):
         self.gridLayout.addItem(spacerItem5, 0, 1, 1, 3)
         spacerItem6 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Minimum)
         self.gridLayout.addItem(spacerItem6, 5, 2, 1, 1)
-        self.groupBox = QtWidgets.QGroupBox(EmotionParameters)
+        self.groupBox = QtWidgets.QGroupBox(VideoParameters)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -145,23 +145,23 @@ class Ui_EmotionParameters(object):
         self.gridLayout_2.addWidget(self.videoDirectory, 2, 4, 1, 3)
         self.gridLayout.addWidget(self.groupBox, 3, 1, 1, 3)
 
-        self.retranslateUi(EmotionParameters)
-        QtCore.QMetaObject.connectSlotsByName(EmotionParameters)
+        self.retranslateUi(VideoParameters)
+        QtCore.QMetaObject.connectSlotsByName(VideoParameters)
 
-    def retranslateUi(self, EmotionParameters):
-        EmotionParameters.setWindowTitle(QtWidgets.QApplication.translate("EmotionParameters", "EmotionTaskParameters", None, -1))
-        self.okButton.setText(QtWidgets.QApplication.translate("EmotionParameters", "OK", None, -1))
-        self.backButton.setText(QtWidgets.QApplication.translate("EmotionParameters", "Back", None, -1))
-        self.titleLabel.setText(QtWidgets.QApplication.translate("EmotionParameters", "Emotion Task Parameters", None, -1))
-        self.videosLabel.setText(QtWidgets.QApplication.translate("EmotionParameters", "Videos and Questions", None, -1))
-        self.groupBox_3.setTitle(QtWidgets.QApplication.translate("EmotionParameters", "Subject Information", None, -1))
-        self.subjectIDEdit.setText(QtWidgets.QApplication.translate("EmotionParameters", "EC", None, -1))
-        self.label.setText(QtWidgets.QApplication.translate("EmotionParameters", "Subject ID", None, -1))
-        self.label_3.setText(QtWidgets.QApplication.translate("EmotionParameters", "Block", None, -1))
-        self.addVideoButton.setText(QtWidgets.QApplication.translate("EmotionParameters", "Add Video", None, -1))
-        self.deleteLastButton.setText(QtWidgets.QApplication.translate("EmotionParameters", "Delete Last", None, -1))
-        self.groupBox_2.setTitle(QtWidgets.QApplication.translate("EmotionParameters", "Task Prpperities", None, -1))
-        self.label_2.setText(QtWidgets.QApplication.translate("EmotionParameters", "Washout Time (s)", None, -1))
-        self.clearAll.setText(QtWidgets.QApplication.translate("EmotionParameters", "Clear All", None, -1))
-        self.videoDirectory.setText(QtWidgets.QApplication.translate("EmotionParameters", "Video Directory", None, -1))
+    def retranslateUi(self, VideoParameters):
+        VideoParameters.setWindowTitle(QtWidgets.QApplication.translate("VideoConfigurationParameters", "EmotionTaskParameters", None, -1))
+        self.okButton.setText(QtWidgets.QApplication.translate("VideoConfigurationParameters", "OK", None, -1))
+        self.backButton.setText(QtWidgets.QApplication.translate("VideoConfigurationParameters", "Back", None, -1))
+        self.titleLabel.setText(QtWidgets.QApplication.translate("VideoConfigurationParameters", "Emotion Task Parameters", None, -1))
+        self.videosLabel.setText(QtWidgets.QApplication.translate("VideoConfigurationParameters", "Videos and Questions", None, -1))
+        self.groupBox_3.setTitle(QtWidgets.QApplication.translate("VideoConfigurationParameters", "Subject Information", None, -1))
+        self.subjectIDEdit.setText(QtWidgets.QApplication.translate("VideoConfigurationParameters", "EC", None, -1))
+        self.label.setText(QtWidgets.QApplication.translate("VideoConfigurationParameters", "Subject ID", None, -1))
+        self.label_3.setText(QtWidgets.QApplication.translate("VideoConfigurationParameters", "Block", None, -1))
+        self.addVideoButton.setText(QtWidgets.QApplication.translate("VideoConfigurationParameters", "Add Video", None, -1))
+        self.deleteLastButton.setText(QtWidgets.QApplication.translate("VideoConfigurationParameters", "Delete Last", None, -1))
+        self.groupBox_2.setTitle(QtWidgets.QApplication.translate("VideoConfigurationParameters", "Task Prpperities", None, -1))
+        self.label_2.setText(QtWidgets.QApplication.translate("VideoConfigurationParameters", "Washout Time (s)", None, -1))
+        self.clearAll.setText(QtWidgets.QApplication.translate("VideoConfigurationParameters", "Clear All", None, -1))
+        self.videoDirectory.setText(QtWidgets.QApplication.translate("VideoConfigurationParameters", "Video Directory", None, -1))
 

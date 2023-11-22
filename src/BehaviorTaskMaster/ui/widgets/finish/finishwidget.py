@@ -20,7 +20,7 @@ from PySide2 import QtCore, QtGui, QtWidgets, QtMultimedia, QtMultimediaWidgets
 from PySide2.QtWidgets import QWidget, QAction
 
 # Local Packages #
-from .emotionfinish import Ui_EmotionFinish
+from .finish import Ui_Finish
 
 
 # Definitions #
@@ -31,7 +31,7 @@ class FinishWidget(QWidget):
         self._path = None
         self.run_action = self.default_run
 
-        self.ui = Ui_EmotionFinish()
+        self.ui = Ui_Finish()
         self.ui.setupUi(self)
 
         self.text = None

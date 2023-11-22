@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>EmotionControl</class>
- <widget class="QWidget" name="EmotionControl">
+ <class>VideoPlayerControl</class>
+ <widget class="QWidget" name="VideoPlayerControl">
   <property name="geometry">
    <rect>
     <x>0</x>

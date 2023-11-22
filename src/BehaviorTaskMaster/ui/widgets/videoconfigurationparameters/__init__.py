@@ -13,5 +13,5 @@ __email__ = __email__
 
 # Imports #
 # Local Packages #
-from .ratingsparameterswidget import RatingsParametersWidget
-from .ratingsparameterscontainer import RatingsParametersContainer
+from .videoconfigurationparameterswidget import VideoConfigurationParametersWidget
+from .videoconfigurationparameterscontainer import VideoConfigurationParametersContainer

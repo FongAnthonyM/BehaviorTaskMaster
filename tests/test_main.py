@@ -4,7 +4,7 @@
 Description:
 """
 # Package Header #
-from src.BehaviorTaskMaster.header import *
+from ...header import *
 
 # Header #
 __author__ = __author__
@@ -22,9 +22,9 @@ from PySide2.QtWidgets import QApplication
 
 # Local Packages #
 from src.BehaviorTaskMaster.emotion.emotionCategorization.emotioncategorizationtask import EmotionCategorizationTask
-from src.BehaviorTaskMaster.emotion.emotionRating.emotionratingtask import EmotionRatingTask
+from src.BehaviorTaskMaster.emotion.rating.ratingtask import RatingTask
 from src.BehaviorTaskMaster.emotion.emotionCategorizationDial.emotioncategorizationdialtask import EmotionCategorizationDialTask
-from src.BehaviorTaskMaster.emotion.emotionRatingDial.emotionratingdialtask import EmotionRatingDialTask
+from src.BehaviorTaskMaster.emotion.ratingDial.ratingdialtask import RatingDialTask
 from src.BehaviorTaskMaster.emotion.emotionDial.emotiondialtask import EmotionDialTask
 from src.BehaviorTaskMaster.emotion.emotionDialQuestions.emotiondialquestionstask import EmotionDialQuestionsTask
 from src.BehaviorTaskMaster.emotion.emotionStim.emotionstimtask import EmotionStimTask
@@ -38,9 +38,9 @@ if __name__ == "__main__":
 
     window = BehaviorTaskWindow()
     window.add_task(EmotionCategorizationTask(window), "EmotionCategorizationTask", "Emotion Categorization")
-    window.add_task(EmotionRatingTask(window), "EmotionRatingTask", "Emotion Rating")
+    window.add_task(RatingTask(window), "RatingTask", "Emotion Rating")
     window.add_task(EmotionCategorizationDialTask(window), "EmotionCategorizationDialTask", "Emotion Categorization with Dial")
-    window.add_task(EmotionRatingDialTask(window), "EmotionRatingDialTask", "Emotion Rating with Dial")
+    window.add_task(RatingDialTask(window), "RatingDialTask", "Emotion Rating with Dial")
     window.add_task(EmotionDialTask(window), "EmotionDialTask", "Emotion Dial")
     window.add_task(EmotionDialQuestionsTask(window), "EmotionDialQuestions", "Emotion Dial Alternative")
     window.add_task(EmotionStimTask(window), "EmotionStim", "Emotion Stimulation Control")

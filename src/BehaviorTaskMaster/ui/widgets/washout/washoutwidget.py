@@ -19,7 +19,7 @@ from PySide2 import QtCore, QtGui, QtWidgets, QtMultimedia, QtMultimediaWidgets
 from PySide2.QtWidgets import QWidget, QAction
 
 # Local Packages #
-from .emotionwashout import Ui_EmotionWashout
+from .washout import Ui_Washout
 
 
 # Definitions #
@@ -29,7 +29,7 @@ class WashoutWidget(QWidget):
         super(WashoutWidget, self).__init__()
         self.timer_action = self.default_timer_action
 
-        self.ui = Ui_EmotionWashout()
+        self.ui = Ui_Washout()
         self.ui.setupUi(self)
 
         self.timer = QtCore.QTimer(self)

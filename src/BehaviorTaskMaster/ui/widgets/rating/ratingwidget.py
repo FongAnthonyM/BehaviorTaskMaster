@@ -24,7 +24,7 @@ from PySide2.QtGui import QKeySequence
 from PySide2.QtWidgets import QWidget, QAction
 
 # Local Packages #
-from .emotionrating import Ui_EmotionRating
+from .rating import Ui_Rating
 
 
 # Definitions #
@@ -74,7 +74,7 @@ class RatingWidget(QWidget):
         else:
             self.answer_action = answer_action
 
-        self.ui = Ui_EmotionRating()
+        self.ui = Ui_Rating()
         self.ui.setupUi(self)
 
         self.ui.continueButton.clicked.connect(self._continue)

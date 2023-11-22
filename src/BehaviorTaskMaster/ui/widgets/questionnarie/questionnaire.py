@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'emotionquestionnaire.ui',
-# licensing of 'emotionquestionnaire.ui' applies.
+# Form implementation generated from reading ui file 'questionnaire.ui',
+# licensing of 'questionnaire.ui' applies.
 #
 # Created: Fri Oct 11 11:35:30 2019
 #      by: pyside2-uic  running on PySide2 5.13.0
@@ -10,11 +10,11 @@
 
 from PySide2 import QtCore, QtGui, QtWidgets
 
-class Ui_EmotionQuestionnaire(object):
-    def setupUi(self, EmotionQuestionnaire):
-        EmotionQuestionnaire.setObjectName("QuestionnaireContainer")
-        EmotionQuestionnaire.resize(800, 600)
-        self.widgetLayout = QtWidgets.QGridLayout(EmotionQuestionnaire)
+class Ui_Questionnaire(object):
+    def setupUi(self, Questionnaire):
+        Questionnaire.setObjectName("QuestionnaireContainer")
+        Questionnaire.resize(800, 600)
+        self.widgetLayout = QtWidgets.QGridLayout(Questionnaire)
         self.widgetLayout.setObjectName("widgetLayout")
         spacerItem = QtWidgets.QSpacerItem(30, 20, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Minimum)
         self.widgetLayout.addItem(spacerItem, 5, 6, 6, 1)
@@ -26,7 +26,7 @@ class Ui_EmotionQuestionnaire(object):
         self.widgetLayout.addItem(spacerItem3, 5, 0, 6, 1)
         spacerItem4 = QtWidgets.QSpacerItem(60, 20, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Minimum)
         self.widgetLayout.addItem(spacerItem4, 10, 5, 1, 1)
-        self.titleLabel = QtWidgets.QLabel(EmotionQuestionnaire)
+        self.titleLabel = QtWidgets.QLabel(Questionnaire)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -38,7 +38,7 @@ class Ui_EmotionQuestionnaire(object):
         self.titleLabel.setAlignment(QtCore.Qt.AlignCenter)
         self.titleLabel.setObjectName("titleLabel")
         self.widgetLayout.addWidget(self.titleLabel, 2, 2, 1, 3)
-        self.continueButton = QtWidgets.QPushButton(EmotionQuestionnaire)
+        self.continueButton = QtWidgets.QPushButton(Questionnaire)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -53,7 +53,7 @@ class Ui_EmotionQuestionnaire(object):
         self.widgetLayout.addItem(spacerItem5, 3, 2, 1, 3)
         spacerItem6 = QtWidgets.QSpacerItem(60, 20, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Minimum)
         self.widgetLayout.addItem(spacerItem6, 10, 1, 1, 1)
-        self.backButton = QtWidgets.QPushButton(EmotionQuestionnaire)
+        self.backButton = QtWidgets.QPushButton(Questionnaire)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -65,7 +65,7 @@ class Ui_EmotionQuestionnaire(object):
         self.backButton.setText("")
         self.backButton.setObjectName("backButton")
         self.widgetLayout.addWidget(self.backButton, 9, 1, 1, 2)
-        self.QuestionBox = QtWidgets.QGroupBox(EmotionQuestionnaire)
+        self.QuestionBox = QtWidgets.QGroupBox(Questionnaire)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -87,7 +87,7 @@ class Ui_EmotionQuestionnaire(object):
         self.questionBrowser.setObjectName("questionBrowser")
         self.questionLayout.addWidget(self.questionBrowser, 0, 0, 1, 1)
         self.widgetLayout.addWidget(self.QuestionBox, 5, 1, 1, 5)
-        self.answersBox = QtWidgets.QGroupBox(EmotionQuestionnaire)
+        self.answersBox = QtWidgets.QGroupBox(Questionnaire)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -112,7 +112,7 @@ class Ui_EmotionQuestionnaire(object):
         self.widgetLayout.addWidget(self.answersBox, 8, 1, 1, 5)
         spacerItem11 = QtWidgets.QSpacerItem(688, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Preferred)
         self.widgetLayout.addItem(spacerItem11, 0, 2, 1, 3)
-        self.colorSpacer = QtWidgets.QPushButton(EmotionQuestionnaire)
+        self.colorSpacer = QtWidgets.QPushButton(Questionnaire)
         self.colorSpacer.setEnabled(False)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
         sizePolicy.setHorizontalStretch(0)
@@ -123,11 +123,11 @@ class Ui_EmotionQuestionnaire(object):
         self.colorSpacer.setObjectName("colorSpacer")
         self.widgetLayout.addWidget(self.colorSpacer, 0, 5, 4, 2)
 
-        self.retranslateUi(EmotionQuestionnaire)
-        QtCore.QMetaObject.connectSlotsByName(EmotionQuestionnaire)
+        self.retranslateUi(Questionnaire)
+        QtCore.QMetaObject.connectSlotsByName(Questionnaire)
 
-    def retranslateUi(self, EmotionQuestionnaire):
-        EmotionQuestionnaire.setWindowTitle(QtWidgets.QApplication.translate("QuestionnaireContainer", "EmotionTaskQuestionnaire", None, -1))
+    def retranslateUi(self, Questionnaire):
+        Questionnaire.setWindowTitle(QtWidgets.QApplication.translate("QuestionnaireContainer", "EmotionTaskQuestionnaire", None, -1))
         self.titleLabel.setText(QtWidgets.QApplication.translate("QuestionnaireContainer", "Questionnaire", None, -1))
         self.continueButton.setText(QtWidgets.QApplication.translate("QuestionnaireContainer", "Next", None, -1))
 

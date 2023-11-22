@@ -23,3 +23,5 @@ from .rating import *
 from .videoplayer import *
 from .videoplayercontrol import *
 from .washout import *
+from .videoconfigurationparameters import *
+from .videoparameters import *

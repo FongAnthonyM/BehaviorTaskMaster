@@ -1,6 +1,4 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-""" emotiondialtask.py
+""" videoConfigurationParameterswidget.py
 Description:
 """
 # Package Header #
@@ -26,7 +24,8 @@ from PySide2.QtGui import QKeySequence
 from PySide2.QtWidgets import QWidget, QAction, QFileDialog, QAbstractItemView, QStyle
 
 # Local Packages #
-from .emotionparameters import Ui_EmotionParameters
+from .videoconfigurationparameters import Ui_VideoConfigurationParameters
+
 
 # Definitions #
 # Constants #
@@ -34,13 +33,13 @@ START_DIR = ""
 
 
 # Classes #
-class RatingsParametersWidget(QWidget):
-    header = ('Video', 'Questions', 'Video Path', 'Question Path')
+class VideoConfigurationParametersWidget(QWidget):
+    header = ('Video', 'Configurations', 'Video Path', 'Configurations Path')
     v_types = ('*.avi', '*.mp4', '*.ogg', '*.qt', '*.wmv', '*.yuv')
     q_types = ('*.toml',)
 
     def __init__(self):
-        super(ParametersWidget, self).__init__()
+        super().__init__()
         self.ok_action = self.default_ok
         self.back_action = self.default_back
 
@@ -49,7 +48,7 @@ class RatingsParametersWidget(QWidget):
         self.session = []
         self.blocks = []
 
-        self.ui = Ui_EmotionParameters()
+        self.ui = Ui_VideoConfigurationParameters()
         self.ui.setupUi(self)
 
         self.list_model = None

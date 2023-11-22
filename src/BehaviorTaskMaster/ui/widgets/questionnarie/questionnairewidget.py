@@ -24,7 +24,7 @@ from PySide2.QtGui import QKeySequence
 from PySide2.QtWidgets import QWidget, QAction
 
 # Local Packages #
-from .emotionquestionnaire import Ui_EmotionQuestionnaire
+from .questionnaire import Ui_Questionnaire
 
 
 # Definitions #
@@ -58,7 +58,7 @@ class QuestionnaireWidget(QWidget):
         else:
             self.answer_action = answer_action
 
-        self.ui = Ui_EmotionQuestionnaire()
+        self.ui = Ui_Questionnaire()
         self.ui.setupUi(self)
 
         self.ui.continueButton.clicked.connect(self._continue)

@@ -20,7 +20,7 @@ from PySide2 import QtCore, QtGui, QtWidgets, QtMultimedia, QtMultimediaWidgets
 from PySide2.QtWidgets import QWidget, QAction
 
 # Local Packages #
-from .emotionvideoplayer import Ui_EmotionVideoPlayer
+from .videoplayer import Ui_VideoPlayer
 
 
 # Definitions #
@@ -37,7 +37,7 @@ class VideoPlayerWidget(QWidget):
         else:
             self.finish_action = finish_action
 
-        self.ui = Ui_EmotionVideoPlayer()
+        self.ui = Ui_VideoPlayer()
         self.ui.setupUi(self)
         self.backgroundPalette = QtGui.QPalette()
         self.backgroundPalette.setColor(QtGui.QPalette.Background, QtGui.QColor(0, 0, 0))

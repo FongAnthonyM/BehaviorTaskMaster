@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'emotionvideoplayer.ui',
-# licensing of 'emotionvideoplayer.ui' applies.
+# Form implementation generated from reading ui file 'videoPlayer.ui',
+# licensing of 'videoPlayer.ui' applies.
 #
 # Created: Fri Oct 11 13:48:36 2019
 #      by: pyside2-uic  running on PySide2 5.13.0
@@ -10,11 +10,11 @@
 
 from PySide2 import QtCore, QtGui, QtWidgets
 
-class Ui_EmotionVideoPlayer(object):
-    def setupUi(self, EmotionVideoPlayer):
-        EmotionVideoPlayer.setObjectName("VideoPlayerContainer")
-        EmotionVideoPlayer.resize(800, 600)
-        self.gridLayout = QtWidgets.QGridLayout(EmotionVideoPlayer)
+class Ui_VideoPlayer(object):
+    def setupUi(self, VideoPlayer):
+        VideoPlayer.setObjectName("VideoPlayerContainer")
+        VideoPlayer.resize(800, 600)
+        self.gridLayout = QtWidgets.QGridLayout(VideoPlayer)
         self.gridLayout.setSpacing(0)
         self.gridLayout.setContentsMargins(0, 0, 0, 0)
         self.gridLayout.setObjectName("gridLayout")
@@ -27,9 +27,9 @@ class Ui_EmotionVideoPlayer(object):
         spacerItem3 = QtWidgets.QSpacerItem(20, 50, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
         self.gridLayout.addItem(spacerItem3, 0, 1, 1, 1)
 
-        self.retranslateUi(EmotionVideoPlayer)
-        QtCore.QMetaObject.connectSlotsByName(EmotionVideoPlayer)
+        self.retranslateUi(VideoPlayer)
+        QtCore.QMetaObject.connectSlotsByName(VideoPlayer)
 
-    def retranslateUi(self, EmotionVideoPlayer):
-        EmotionVideoPlayer.setWindowTitle(QtWidgets.QApplication.translate("VideoPlayerContainer", "VideoPlayerContainer", None, -1))
+    def retranslateUi(self, VideoPlayer):
+        VideoPlayer.setWindowTitle(QtWidgets.QApplication.translate("VideoPlayerContainer", "VideoPlayerContainer", None, -1))
 

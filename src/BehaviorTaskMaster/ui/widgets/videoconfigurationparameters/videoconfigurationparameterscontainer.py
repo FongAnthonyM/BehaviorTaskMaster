@@ -19,17 +19,14 @@ __email__ = __email__
 # Third-Party Packages #
 
 # Local Packages #
-from ....ui import BaseWidgetContainer
-from .categorizationparameterswidget import CategorizationParametersWidget
+from ..base import BaseWidgetContainer
+from .videoconfigurationparameterswidget import VideoConfigurationParametersWidget
+
 
 # Definitions #
-# Constants #
-START_DIR = ""
-
-
 # Classes #
-class CategorizationParametersContainer(BaseWidgetContainer):
-    def __init__(self, name="EmotionParameters", init=False):
+class VideoConfigurationParametersContainer(BaseWidgetContainer):
+    def __init__(self, name="VideoConfigurationParameters", init=False):
         BaseWidgetContainer.__init__(self, name, init)
         self.ok_action = None
         self.back_action = self.remove_from_stack
@@ -54,7 +51,7 @@ class CategorizationParametersContainer(BaseWidgetContainer):
         return self.widget.randomize
 
     def construct_widget(self):
-        self.widget = CategorizationParametersWidget()
+        self.widget = VideoConfigurationParametersWidget()
 
     def run(self, ok_action=None, back_action=None):
         if ok_action is not None:

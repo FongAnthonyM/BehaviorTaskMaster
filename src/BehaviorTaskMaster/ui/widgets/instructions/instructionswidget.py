@@ -20,7 +20,7 @@ from PySide2.QtGui import QKeySequence
 from PySide2.QtWidgets import QWidget, QAction
 
 # Local Packages #
-from .emotioninstructions import Ui_EmotionInstructions
+from .instructions import Ui_Instructions
 
 
 # Definitions #
@@ -31,7 +31,7 @@ class InstructionsWidget(QWidget):
         self.ok_action = self.default_ok
         self.back_action = self.default_back
 
-        self.ui = Ui_EmotionInstructions()
+        self.ui = Ui_Instructions()
         self.ui.setupUi(self)
 
         self.ui.okButton.clicked.connect(self.ok)

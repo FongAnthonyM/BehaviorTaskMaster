@@ -27,7 +27,7 @@ from PySide2.QtGui import QKeySequence
 from PySide2.QtWidgets import QWidget, QAction, QFileDialog, QAbstractItemView, QStyle
 
 # Local Packages #
-from .emotionparameters import Ui_EmotionParameters
+from .videoparameters import Ui_VideoParameters
 
 # Definitions #
 # Constants #
@@ -35,10 +35,9 @@ START_DIR = ""
 
 
 # Classes #
-class CategorizationParametersWidget(QWidget):
-    header = ('Video', 'Questions', 'Video Path', 'Question Path')
-    v_types = ('*.avi', '*.mp4', '*.ogg', '*.qt', '*.wmv', '*.yuv')
-    q_types = ('*.toml',)
+class VideoParametersWidget(QWidget):
+    header = ('Video', 'Video Path')
+    vtype_s = ('*.avi', '*.mp4', '*.ogg', '*.qt', '*.wmv', '*.yuv')
 
     def __init__(self):
         super().__init__()
@@ -50,7 +49,7 @@ class CategorizationParametersWidget(QWidget):
         self.session = []
         self.blocks = []
 
-        self.ui = Ui_EmotionParameters()
+        self.ui = Ui_VideoParameters()
         self.ui.setupUi(self)
 
         self.list_model = None
@@ -79,21 +78,17 @@ class CategorizationParametersWidget(QWidget):
         return copy.deepcopy(self._parameters)
 
     def _construct_video_list(self):
-        self.list_model = QtGui.QStandardItemModel(0, 4)
+        self.list_model = QtGui.QStandardItemModel(0, 2)
         self.list_model.setHorizontalHeaderLabels(self.header)
         self.ui.videoList.setModel(self.list_model)
         self.ui.videoList.setDragDropMode(QAbstractItemView.InternalMove)
         self.ui.videoList.setSelectionMode(QAbstractItemView.MultiSelection)
         self.ui.videoList.setColumnWidth(0, 200)
-        self.ui.videoList.setColumnWidth(1, 200)
-        self.ui.videoList.setColumnWidth(2, 100)
-        self.ui.videoList.setColumnWidth(3, 100)
+        self.ui.videoList.setColumnWidth(1, 100)
 
         self.ui.videoList.doubleClicked.connect(self.double_click)
         self.ui.addVideoButton.clicked.connect(self.add_videos)
-        self.ui.addQuestionsButton.clicked.connect(self.add_questions)
         self.ui.videoDirectory.clicked.connect(self.video_directory)
-        self.ui.questionDirectory.clicked.connect(self.question_directory)
         self.ui.deleteLastButton.clicked.connect(self.delete_last)
         self.ui.clearAll.clicked.connect(self.clear_all)
 
@@ -130,13 +125,8 @@ class CategorizationParametersWidget(QWidget):
         index = -1
         for i in reversed(range(0, end)):
             video = self.list_model.item(i, 0).text()
-            question = self.list_model.item(i, 1).text()
             if item == 'video':
                 text = video
-            elif item == 'question':
-                text = question
-            elif item == 'video&question':
-                text = video + question
             else:
                 break
             if text == '':
@@ -145,61 +135,42 @@ class CategorizationParametersWidget(QWidget):
                 break
         return index
 
-    def add_item(self, video='', question='', index=-1):
+    def add_item(self, video='', index=-1):
         # Make Row Objects
         video_name = QtGui.QStandardItem(pathlib.Path(video).name)
-        questions_name = QtGui.QStandardItem(pathlib.Path(question).name)
         videos = QtGui.QStandardItem(video)
-        questions = QtGui.QStandardItem(question)
 
         # Row Settings
         video_name.setEditable(False)
         video_name.setDragEnabled(True)
         video_name.setDropEnabled(False)
-        questions_name.setEditable(False)
-        questions_name.setDropEnabled(False)
         videos.setEditable(False)
         videos.setDropEnabled(False)
-        questions.setEditable(False)
 
         if index == -1:
             index = self.list_model.rowCount()
             self.list_model.appendRow(video_name)
         else:
             self.list_model.insertRow(index, video_name)
-        self.list_model.setItem(index, 1, questions_name)
-        self.list_model.setItem(index, 2, videos)
-        self.list_model.setItem(index, 3, questions)
+        self.list_model.setItem(index, 1, videos)
 
-    def edit_item(self, index=None, video='', question=''):
+    def edit_item(self, index=None, video=''):
         if index is None:
             item = ''
-            if video != '' and question != '':
-                item = 'video&question'
-            elif video != '':
+            if video != '':
                 item = 'video'
-            elif question != '':
-                item = 'question'
+
             index = self.find_last_row(item=item)
 
         videos_name = self.list_model.item(index, 0)
-        questions_name = self.list_model.item(index, 1)
-        videos = self.list_model.item(index, 2)
-        questions = self.list_model.item(index, 3)
+        videos = self.list_model.item(index, 1)
 
         if video != '':
             videos_name.setText(pathlib.Path(video).name)
             videos.setText(video)
-        if question != '':
-            questions_name.setText(pathlib.Path(question).name)
-            questions.setText(question)
 
     def change_video(self, row):
-        start_dir = pathlib.Path.home()
-        other = start_dir.joinpath(START_DIR)
-        if other.is_dir():
-            start_dir = other
-        dialog = QFileDialog(self, caption="Open Video", directory=start_dir.as_posix())
+        dialog = QFileDialog(self, caption="Open Video", directory=QDir.homePath())
         dialog.setFileMode(QFileDialog.ExistingFile)
         dialog.setViewMode(QFileDialog.Detail)
 
@@ -210,28 +181,8 @@ class CategorizationParametersWidget(QWidget):
             video_name.setText(pathlib.Path(v).name)
             videos.setText(v)
 
-    def change_question(self, row):
-        start_dir = pathlib.Path.home()
-        other = start_dir.joinpath(START_DIR)
-        if other.is_dir():
-            start_dir = other
-        dialog = QFileDialog(self, caption="Open Question", directory=start_dir.as_posix())
-        dialog.setFileMode(QFileDialog.ExistingFile)
-        dialog.setViewMode(QFileDialog.Detail)
-
-        if dialog.exec_():
-            questions_name = self.list_model.item(row, 1)
-            questions = self.list_model.item(row, 3)
-            q = dialog.selectedFiles()[0]
-            questions_name.setText(pathlib.Path(q).name)
-            questions.setText(q)
-
     def add_videos(self):
-        start_dir = pathlib.Path.home()
-        other = start_dir.joinpath(START_DIR)
-        if other.is_dir():
-            start_dir = other
-        dialog = QFileDialog(self, caption="Open Video", directory=start_dir.as_posix())
+        dialog = QFileDialog(self, caption="Open Video", directory=QDir.homePath())
         dialog.setFileMode(QFileDialog.ExistingFiles)
         dialog.setViewMode(QFileDialog.Detail)
 
@@ -244,30 +195,8 @@ class CategorizationParametersWidget(QWidget):
                 else:
                     self.edit_item(index=last, video=video)
 
-    def add_questions(self):
-        start_dir = pathlib.Path.home()
-        other = start_dir.joinpath(START_DIR)
-        if other.is_dir():
-            start_dir = other
-        dialog = QFileDialog(self, caption="Open Questions", directory=start_dir.as_posix())
-        dialog.setFileMode(QFileDialog.ExistingFiles)
-        dialog.setViewMode(QFileDialog.Detail)
-
-        if dialog.exec_():
-            question_names = dialog.selectedFiles()
-            for question in question_names:
-                last = self.find_last_row('question')
-                if last == -1:
-                    self.add_item(question=question)
-                else:
-                    self.edit_item(index=last, question=question)
-
     def video_directory(self):
-        start_dir = pathlib.Path.home()
-        other = start_dir.joinpath(START_DIR)
-        if other.is_dir():
-            start_dir = other
-        dialog = QFileDialog(self, caption="Open Video Directory", directory=start_dir.as_posix())
+        dialog = QFileDialog(self, caption="Open Video Directory", directory=QDir.homePath())
         dialog.setFileMode(QFileDialog.Directory)
         dialog.setViewMode(QFileDialog.Detail)
 
@@ -275,7 +204,7 @@ class CategorizationParametersWidget(QWidget):
             dir_names = dialog.selectedFiles()
             dir_path = pathlib.Path(dir_names[0])
             files = []
-            for ext in self.v_types:
+            for ext in self.vtype_s:
                 files.extend(dir_path.glob(ext))
             for video in files:
                 last = self.find_last_row('video')
@@ -283,31 +212,6 @@ class CategorizationParametersWidget(QWidget):
                     self.add_item(video=str(video))
                 else:
                     self.edit_item(index=last, video=str(video))
-
-    def question_directory(self):
-        start_dir = pathlib.Path.home()
-        other = start_dir.joinpath(START_DIR)
-        if other.is_dir():
-            start_dir = other
-        dialog = QFileDialog(self, caption="Open Questions Directory", directory=start_dir.as_posix())
-        dialog.setFileMode(QFileDialog.Directory)
-        dialog.setViewMode(QFileDialog.Detail)
-
-        if dialog.exec_():
-            dir_names = dialog.selectedFiles()
-            dir_path = pathlib.Path(dir_names[0])
-            files = []
-            if len(self.q_types) < 1 or '*' in self.q_types:
-                files = dir_path.iterdir()
-            else:
-                for ext in self.q_types:
-                    files.extend(dir_path.glob(ext))
-            for question in files:
-                last = self.find_last_row('question')
-                if last == -1:
-                    self.add_item(question=str(question))
-                else:
-                    self.edit_item(index=last, question=str(question))
 
     def delete_last(self):
         last = self.list_model.rowCount() - 1
@@ -337,10 +241,9 @@ class CategorizationParametersWidget(QWidget):
         self.subject.append(self.ui.subjectIDEdit.text())
         self.session.append(self.ui.blockEdit.text())
         for i in range(0, self.list_model.rowCount()):
-            video = pathlib.Path(self.list_model.item(i, 2).text())
-            question = pathlib.Path(self.list_model.item(i, 3).text())
+            video = pathlib.Path(self.list_model.item(i, 1).text())
             washout = self.ui.washoutBox.value()
-            self.blocks.append({'video': video, 'questions': question, 'washout': washout})
+            self.blocks.append({'video': video, 'washout': washout})
 
     def ok(self):
         self.evaluate()

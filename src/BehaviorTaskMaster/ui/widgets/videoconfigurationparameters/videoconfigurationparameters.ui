@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>EmotionParameters</class>
- <widget class="QWidget" name="EmotionParameters">
+ <class>VideoConfigurationParameters</class>
+ <widget class="QWidget" name="VideoConfigurationParameters">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -191,16 +191,16 @@
        </widget>
       </item>
       <item row="2" column="6">
-       <widget class="QPushButton" name="questionDirectory">
+       <widget class="QPushButton" name="configurationDirectory">
         <property name="text">
-         <string>Question Directory</string>
+         <string>Configuration Directory</string>
         </property>
        </widget>
       </item>
       <item row="2" column="4">
-       <widget class="QPushButton" name="addQuestionsButton">
+       <widget class="QPushButton" name="addConfigurationsButton">
         <property name="text">
-         <string>Add Questions</string>
+         <string>Add Configurations</string>
         </property>
        </widget>
       </item>
@@ -295,7 +295,7 @@
          </font>
         </property>
         <property name="text">
-         <string>Videos and Questions</string>
+         <string>Videos and Configurations</string>
         </property>
         <property name="alignment">
          <set>Qt::AlignCenter</set>

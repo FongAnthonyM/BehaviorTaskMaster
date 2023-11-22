@@ -1,4 +1,4 @@
-""" taskwindow.py
+""" videoplayercontrolwidget.py
 Description:
 """
 # Package Header #
@@ -22,7 +22,7 @@ from PySide2 import QtGui, QtWidgets, QtMultimedia
 from PySide2.QtWidgets import QWidget, QAction, QFileDialog, QAbstractItemView, QStyle
 
 # Local Packages #
-from .emotioncontrol import Ui_EmotionControl
+from .videoplayercontrol import Ui_VideoPlayerControl
 
 
 # Definitions #
@@ -36,7 +36,7 @@ class VideoPlayerControlWidget(QWidget):
         self.back_action = self.default_back
         self.start_action = self.default_start
 
-        self.ui = Ui_EmotionControl()
+        self.ui = Ui_VideoPlayerControl()
         self.ui.setupUi(self)
 
         self.play_icon = self.style().standardIcon(QStyle.SP_MediaPlay)
@@ -109,14 +109,25 @@ class VideoPlayerControlWidget(QWidget):
         return pathlib.Path(__file__).parent.joinpath(file_name)
 
     def construct_blocks(self):
+        columns = len(self.header)
+        self.queue_model = QtGui.QStandardItemModel(0, columns)
+        self.queue_model.setHorizontalHeaderLabels(self.header)
+        self.ui.quequedBlocks.setModel(self.queue_model)
+        # self.ui.quequedBlocks.setDragDropMode(QAbstractItemView.InternalMove)
+        # self.ui.quequedBlocks.setSelectionMode(QAbstractItemView.MultiSelection)
+        self.ui.quequedBlocks.setColumnWidth(2, 75)
+        self.ui.quequedBlocks.setColumnWidth(3, 25)
         self.blocks = self.parameters['blocks']
-        self._construct_queue()
-        self.playing_model = QtGui.QStandardItemModel(0, 4)
+
+        self._fill_queue()
+
+        self.playing_model = QtGui.QStandardItemModel(0, columns)
         self.playing_model.setHorizontalHeaderLabels(self.header)
         self.ui.playingBlock.setModel(self.playing_model)
         self.ui.playingBlock.setColumnWidth(2, 75)
         self.ui.playingBlock.setColumnWidth(3, 25)
-        self.complete_model = QtGui.QStandardItemModel(0, 4)
+
+        self.complete_model = QtGui.QStandardItemModel(0, columns)
         self.complete_model.setHorizontalHeaderLabels(self.header)
         self.ui.completedBlocks.setModel(self.complete_model)
         # self.ui.completedBlocks.setDragDropMode(QAbstractItemView.InternalMove)
@@ -124,22 +135,15 @@ class VideoPlayerControlWidget(QWidget):
         self.ui.completedBlocks.setColumnWidth(2, 75)
         self.ui.completedBlocks.setColumnWidth(3, 25)
 
-    def _construct_queue(self):
-        self.queue_model = QtGui.QStandardItemModel(0, 4)
-        self.queue_model.setHorizontalHeaderLabels(self.header)
-        self.ui.quequedBlocks.setModel(self.queue_model)
-        # self.ui.quequedBlocks.setDragDropMode(QAbstractItemView.InternalMove)
-        # self.ui.quequedBlocks.setSelectionMode(QAbstractItemView.MultiSelection)
-        self.ui.quequedBlocks.setColumnWidth(2, 75)
-        self.ui.quequedBlocks.setColumnWidth(3, 25)
+    def _fill_queue(self):
         for i, block in enumerate(self.blocks):
-            self.add_item(self.queue_model, _id=i, video=block['video'], washout=block['washout'])
+            self.add_item(self.queue_model, _id=i, **block)
         self.add_item(self.queue_model, _id=0, washout=self.base_washout)
         for i, block in enumerate(self.blocks):
             self.add_item(self.queue_model, _id=i, question=block['questions'])
 
     @staticmethod
-    def add_item(model, _id=0, video=None, question=None, washout=0, index=-1):
+    def add_item(model, _id=0, index=-1, video=None, question=None, washout=0):
         # Make Row Objects
         id_number = QtGui.QStandardItem(str(_id))
         if video is None or video == '':
@@ -355,7 +359,7 @@ class VideoPlayerControlWidget(QWidget):
         self.events.set_time()
         self.start_sequence()
         self.ui.startButton.setEnabled(False)
-        self.ui.backButton.setText(QtWidgets.QApplication.translate("EmotionControl", 'Stop', None, -1))
+        self.ui.backButton.setText(QtWidgets.QApplication.translate("VideoPlayerControl", 'Stop', None, -1))
         self.sequencer.start()
         self.task_window.show()
 
@@ -380,7 +384,7 @@ class VideoPlayerControlWidget(QWidget):
             self.running = False
             self.reset()
             self.ui.startButton.setEnabled(True)
-            self.ui.backButton.setText(QtWidgets.QApplication.translate("EmotionControl", 'Back', None, -1))
+            self.ui.backButton.setText(QtWidgets.QApplication.translate("VideoPlayerControl", 'Back', None, -1))
 
     def reset(self):
         if not self.running:
@@ -392,8 +396,4 @@ class VideoPlayerControlWidget(QWidget):
             self.complete_model.setHorizontalHeaderLabels(self.header)
             self.queue_model.setHorizontalHeaderLabels(self.header)
             self.playing_model.setHorizontalHeaderLabels(self.header)
-            for i, block in enumerate(self.blocks):
-                self.add_item(self.queue_model, _id=i, video=block['video'], washout=block['washout'])
-            self.add_item(self.queue_model, _id=0, washout=self.base_washout)
-            for i, block in enumerate(self.blocks):
-                self.add_item(self.queue_model, _id=i, question=block['questions'])
+            self._fill_queue()

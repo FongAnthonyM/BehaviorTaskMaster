@@ -13,5 +13,5 @@ __email__ = __email__
 
 # Imports #
 # Local Packages #
-from .dialparameterswidget import DialParametersWidget
-from .dialparameterscontainer import DialParametersContainer
+from .videoparameterswidget import VideoParametersWidget
+from .videoparameterscontainer import VideoParametersContainer
