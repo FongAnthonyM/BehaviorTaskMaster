@@ -4,7 +4,7 @@
 Description:
 """
 # Package Header #
-from src.BehaviorTaskMaster.__header__ import *
+from ....header import *
 
 # Header #
 __author__ = __author__
@@ -17,17 +17,17 @@ __email__ = __email__
 # Standard Libraries #
 import sys
 
-# Downloaded Libraries #
+# Third-Party Packages #
 from PySide2.QtWidgets import QApplication
 
-# Local Libraries #
-from src.BehaviorTaskMaster.emotionTasks.emotionCategorization.emotioncategorizationtask import EmotionCategorizationTask
-from src.BehaviorTaskMaster.emotionTasks.emotionRating.emotionratingtask import EmotionRatingTask
-from src.BehaviorTaskMaster.emotionTasks.emotionCategorizationDial.emotioncategorizationdialtask import EmotionCategorizationDialTask
-from src.BehaviorTaskMaster.emotionTasks.emotionRatingDial.emotionratingdialtask import EmotionRatingDialTask
-from src.BehaviorTaskMaster.emotionTasks.emotionDial.emotiondialtask import EmotionDialTask
-from src.BehaviorTaskMaster.emotionTasks.emotionDialQuestions.emotiondialquestionstask import EmotionDialQuestionsTask
-from src.BehaviorTaskMaster.emotionTasks.emotionStim.emotionstimtask import EmotionStimTask
+# Local Packages #
+from ...emotion.emotionCategorization.emotioncategorizationtask import EmotionCategorizationTask
+from ...emotion.emotionRating.emotionratingtask import EmotionRatingTask
+from ...emotion.emotionCategorizationDial.emotioncategorizationdialtask import EmotionCategorizationDialTask
+from ...emotion.emotionRatingDial.emotionratingdialtask import EmotionRatingDialTask
+from ...emotion.emotionDial.emotiondialtask import EmotionDialTask
+from ...emotion.emotionDialQuestions.emotiondialquestionstask import EmotionDialQuestionsTask
+from ...emotion.emotionStim.emotionstimtask import EmotionStimTask
 from src.BehaviorTaskMaster import BehaviorTaskWindow
 
 

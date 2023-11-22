@@ -1,40 +1,29 @@
-"""
-.py
-
-Last Edited:
-
-Lead Author[s]: Anthony Fong
-Contributor[s]:
-
-Description:
-
-
-Machine I/O
-Input:
-Output:
-
-User I/O
-Input:
-Output:
-
+"""iotriggers.py
 
 """
-########################################################################################################################
+# Package Header #
+from ..header import *
 
-########## Libraries, Imports, & Setup ##########
+# Header #
+__author__ = __author__
+__credits__ = __credits__
+__maintainer__ = __maintainer__
+__email__ = __email__
 
-# Default Libraries #
+
+# Imports #
+# Standard Libraries #
 import collections
 from abc import ABC, abstractmethod
 from warnings import warn
 import warnings
 import pathlib
 
-# Downloaded Libraries #
+# Third-Party Packages #
 from bidict import bidict
 import numpy as np
 
-# Local Libraries #
+# Local Packages #
 from .audiodevice import AudioDevice
 
 

@@ -1,29 +1,18 @@
-"""
-.py
-
-Last Edited:
-
-Lead Author[s]: Anthony Fong
-Contributor[s]:
-
-Description:
-
-
-Machine I/O
-Input:
-Output:
-
-User I/O
-Input:
-Output:
-
+"""eventlogger.py
 
 """
-########################################################################################################################
+# Package Header #
+from ..header import *
 
-########## Libraries, Imports, & Setup ##########
+# Header #
+__author__ = __author__
+__credits__ = __credits__
+__maintainer__ = __maintainer__
+__email__ = __email__
 
-# Default Libraries #
+
+# Imports #
+# Standard Libraries #
 from abc import ABC, abstractmethod
 import bisect
 import collections
@@ -35,12 +24,12 @@ import time
 import uuid
 from warnings import warn
 
-# Downloaded Libraries #
+# Third-Party Libraries #
 from bidict import bidict
 import h5py
 import numpy as np
 
-# Local Libraries #
+# Local Packages #
 from .iotriggers import AudioTrigger
 
 
@@ -1623,7 +1612,7 @@ def recursive_looping(loops, func, previous=None, size=None, **kwargs):
 
 
 if __name__ == "__main__":
-    test_path = pathlib.Path("C:/Users/ChangLab/Documents/PycharmProjects/BehaviorTaskMaster/emotionTasks/emotionCategorizationDial").joinpath("ECwork_B0w0_2020-01-16_11~58~09.h5")
+    test_path = pathlib.Path("C:/Users/ChangLab/Documents/PycharmProjects/BehaviorTaskMaster/emotion/emotionCategorizationDial").joinpath("ECwork_B0w0_2020-01-16_11~58~09.h5")
     path = pathlib.Path.cwd().joinpath("test.h5")
     '''
     meth = SubjectEventLogger(test_path)

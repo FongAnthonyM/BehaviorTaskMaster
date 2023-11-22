@@ -1,38 +1,27 @@
-"""
-.py
-
-Last Edited:
-
-Lead Author[s]: Anthony Fong
-Contributor[s]:
-
-Description:
-
-
-Machine I/O
-Input:
-Output:
-
-User I/O
-Input:
-Output:
-
+"""audiodevice.py
 
 """
-########################################################################################################################
+# Package Header #
+from ..header import *
 
-########## Libraries, Imports, & Setup ##########
+# Header #
+__author__ = __author__
+__credits__ = __credits__
+__maintainer__ = __maintainer__
+__email__ = __email__
 
-# Default Libraries #
+
+# Imports #
+# Standard Libraries #
 from abc import ABC, abstractmethod
 from warnings import warn
 import warnings
 import pathlib
 
-# Downloaded Libraries #
+# Third-Party Packages #
 import sounddevice
 
-# Local Libraries #
+# Local Packages #
 
 
 # Definitions #
@@ -41,7 +30,7 @@ class AudioDevice:
     _sd = sounddevice
 
     def __init__(self, samplerate=44100, device=None):
-        self._device = self.default_device
+        self._device = self.default_device if device is None else device
 
         self.samplerate = samplerate
 
@@ -76,4 +65,3 @@ class AudioDevice:
 
     def wait(self, ignore_errors=None):
         self._sd.wait(ignore_errors)
-

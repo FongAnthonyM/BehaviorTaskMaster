@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "BehaviorTaskMaster"
-version = "0.1.0"
+version = "0.2.0"
 description = "Behaviortaskmaster"
 authors = ["Anthony Fong <FongAnthonyM@gmail.com>"]
 license = "MIT"
