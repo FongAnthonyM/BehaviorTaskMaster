@@ -25,12 +25,13 @@ from .videoplayercontrolwidget import VideoPlayerControlWidget
 # Definitions #
 # Classes #
 class VideoPlayerControlContainer(BaseWidgetContainer):
-    def __init__(self, name="VideoPlayerControl", widget_type=VideoPlayerControlWidget, x_name="", events=None, init=False):
+    def __init__(self, name="VideoPlayerControl", widget_type=VideoPlayerControlWidget, x_name="", events=None, init=False, **kwargs):
         BaseWidgetContainer.__init__(self, name, init)
         self.widget_type = widget_type
         self.back_action = self.remove_from_stack
         self.experiment_name = x_name
         self._events = events
+        self.w_kwargs = kwargs
 
     @property
     def task_window(self):
@@ -95,7 +96,7 @@ class VideoPlayerControlContainer(BaseWidgetContainer):
             self.widget.events = value
 
     def construct_widget(self):
-        self.widget = self.widget_type()
+        self.widget = self.widget_type(**self.w_kwargs)
         self.widget.events = self._events
         self.widget.experiment_name = self.experiment_name
 

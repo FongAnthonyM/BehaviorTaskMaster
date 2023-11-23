@@ -54,7 +54,7 @@ class RatingTask:
         self.task_window.sequencer = self.sequencer
 
         self.parameters = VideoConfigurationParametersContainer()
-        self.control = VideoPlayerControlContainer(events=self.events, x_name=self.EXPERIMENT_NAME)
+        self.control = VideoPlayerControlContainer(events=self.events, x_name=self.EXPERIMENT_NAME, path=pathlib.Path(__file__).parent)
         self.instructions = InstructionsContainer(path=pathlib.Path(__file__).parent.joinpath('instructions.txt'), events=self.events)
         self.video_player = VideoPlayerContainer(events=self.events)
         self.questionnaire = RatingContainer(events=self.events)

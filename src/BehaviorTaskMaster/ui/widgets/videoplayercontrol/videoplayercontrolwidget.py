@@ -32,7 +32,7 @@ class VideoPlayerControlWidget(QWidget):
     base_washout = 60
     default_washout = 0
 
-    def __init__(self, player=None, init=False, **kwargs):
+    def __init__(self, player=None, path=pathlib.Path(__file__).parent, init=False, **kwargs):
         super().__init__(**kwargs)
         self.back_action = self.default_back
         self.start_action = self.default_start
@@ -47,7 +47,7 @@ class VideoPlayerControlWidget(QWidget):
         self.volume_icon = self.style().standardIcon(QStyle.SP_MediaVolume)
         self.mute_icon = self.style().standardIcon(QStyle.SP_MediaVolumeMuted)
 
-        self._path = None
+        self._path = path
         self.subject = None
         self.session = None
         self.experiment_name = None
@@ -104,10 +104,10 @@ class VideoPlayerControlWidget(QWidget):
         self._construct_volume_controls()
         self.update_buttons(self.media_player.state())
 
-    def construct_path(self):
+    def construct_path(self, parent=pathlib.Path(__file__).parent):
         now = datetime.datetime.now().isoformat('_', 'seconds').replace(':', '~')
         file_name = self.parameters['subject'][0] + '_' + self.parameters['session'][0] + '_' + now + '.h5'
-        return pathlib.Path(__file__).parent.joinpath(file_name)
+        return parent.joinpath(file_name)
 
     def construct_blocks(self):
         columns = len(self.header)
@@ -341,7 +341,7 @@ class VideoPlayerControlWidget(QWidget):
             self.start_action(caller=self)
 
     def default_start(self, caller=None):
-        self.events.path = self.construct_path()
+        self.events.path = self.construct_path(self.path)
         self.events.construct()
         self.events.Subject = self.subject
         self.events.Task = self.experiment_name
