@@ -143,28 +143,28 @@ class RatingContainer(BaseWidgetContainer):
             self.answer_action = answer_action
 
         if self.path.as_posix() == '.':
-            event = {'_type': 'Rating', 'SubType': 'NoFile'}
+            event = {"type_": 'Rating', 'SubType': 'NoFile'}
             self.widget.finish_action(event=event, caller=self)
         else:
             self.widget.load_file(self.path)
-            event = {'SubType': 'RatingsStart'}
+            event = {'SubType': 'Start'}
             super().run()
             # self.events.trigger_event(**event)
-            self.events.append(type_="General", **event)
+            self.events.append(type_="Rating", **event)
 
     def next_rating(self, event=None, caller=None):
         self.events.append(**event)
         self.widget.default_next(event=event, caller=caller)
-        event = {'SubType': 'RatingNext', 'Ratings': event['Ratings']}
+        t_event = {'SubType': 'Next'}
         # self.events.trigger_event(**event)
-        self.events.append(type_="General", **event)
+        self.events.append(type_="Rating", **t_event)
 
     def previous_rating(self, event=None, caller=None):
         self.events.append(**event)
         self.widget.default_previous(event=event, caller=caller)
-        t_event = {'SubType': 'RatingPrevious', 'Ratings': event['Ratings']}
+        t_event = {'SubType': 'Previous'}
         # self.events.trigger_event(**event)
-        self.events.append(type_="General", **event)
+        self.events.append(type_="Rating", **t_event)
 
     def answer_selected(self, event=None, caller=None):
         self.events.append(**event)

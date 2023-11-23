@@ -203,8 +203,13 @@ class RatingWidget(QWidget):
 
     def answer(self, item, rating, value):
         self.selected_ratings[item] = rating
-        event = {'type_': 'Rating_AnswerSelected', 'File': self.path.name,
-                 'Item': item, 'Rating': rating, 'Value': value}
+        event = {
+            'type_': 'Rating_AnswerSelected',
+            'File': self.path.name,
+            'Item': item,
+            'Rating': rating,
+            'Value': value,
+        }
         self.answer_action(event=event, caller=self)
 
     def limit_answer(self, item, answer_widget):
@@ -245,8 +250,11 @@ class RatingWidget(QWidget):
     def previous(self):
         if self.r_index > 0:
             self.r_index -= 1
-            event = {'type_': 'Rating_AnswerRetracted', 'File': self.path.name,
-                     'Ratings': str(self.ratings[self.r_index]['ratings'])}
+            event = {
+                'type_': 'Rating_AnswerRetracted',
+                'File': self.path.name,
+                'Ratings': str(self.ratings[self.r_index]['ratings']),
+            }
             self.previous_action(event=event, caller=self)
         else:
             event = {'type_': 'Rating_Exited', 'File': self.path.name}
@@ -266,16 +274,3 @@ class RatingWidget(QWidget):
     def default_back(self, event=None, caller=None):
         print('There is no going back')
 
-
-if __name__ == "__main__":
-    from PySide2.QtWidgets import QApplication
-
-    r_path = pathlib.Path.cwd().joinpath("rating.toml")
-
-    app = QApplication(sys.argv)
-
-    window = RatingWidget()
-    window.load_file(r_path)
-    window.show()
-
-    sys.exit(app.exec_())

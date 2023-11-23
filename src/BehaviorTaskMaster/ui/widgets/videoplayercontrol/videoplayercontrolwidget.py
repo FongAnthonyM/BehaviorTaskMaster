@@ -306,7 +306,7 @@ class VideoPlayerControlWidget(QWidget):
         self.sequencer.insert(self.block_widgets['washout'], milliseconds=block['washout'] * 1000, timer_action=self.advance)
         # self.sequencer.insert(self.block_widgets['video_player'], path=block['video'], finish_action=self.advance_trigger)
         self.sequencer.insert(self.block_widgets['video_player'], path=block['video'], finish_action=self.advance)
-        self.sequencer.insert(self.block_widgets['questionnaire'], path=block['questions'], finish_action=self.advance_block)
+        self.sequencer.insert(self.block_widgets['questionnaire'], path=block['configuration'], finish_action=self.advance_block)
 
     def advance(self, event=None, caller=None):
         self.events.append(**event)

@@ -143,28 +143,28 @@ class QuestionnaireContainer(BaseWidgetContainer):
             self.answer_action = answer_action
 
         if self.path.as_posix() == '.':
-            event = {'_type': 'Questionnaire', 'SubType': 'NoFile'}
+            event = {"type_": 'Questionnaire', 'SubType': 'NoFile'}
             self.widget.finish_action(event=event, caller=self)
         else:
             self.widget.load_file(self.path)
-            event = {'SubType': 'QuestionsStart'}
+            event = {'SubType': 'Start'}
             super().run()
             # self.events.trigger_event(**event)
-            self.events.append(type_="General", **event)
+            self.events.append(type_="Questionnaire", **event)
 
     def next_question(self, event=None, caller=None):
         self.events.append(**event)
         self.widget.default_next(event=event, caller=caller)
-        event = {'SubType': 'QuestionNext', 'Question': event['Question']}
+        t_event = {'SubType': 'Next', 'Question': event['Question']}
         # self.events.trigger_event(**event)
-        self.events.append(type_="General", **event)
+        self.events.append(type_="Questionnaire", **t_event)
 
     def previous_question(self, event=None, caller=None):
         self.events.append(**event)
         self.widget.default_previous(event=event, caller=caller)
-        t_event = {'SubType': 'QuestionPrevious', 'Question': event['Question']}
+        t_event = {'SubType': 'Previous', 'Question': event['Question']}
         # self.events.trigger_event(**event)
-        self.events.append(type_="General", **event)
+        self.events.append(type_="Questionnaire", **event)
 
     def answer_selected(self, event=None, caller=None):
         self.events.append(**event)
