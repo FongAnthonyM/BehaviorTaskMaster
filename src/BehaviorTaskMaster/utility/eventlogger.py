@@ -1337,6 +1337,7 @@ class HDF5eventLogger(HDF5container):
 
         self.default_child_kwargs = {}
         self.event_types = {}
+        self.event_dataset_types = {}
         self.start_datetime = None
         self.start_time_counter = None
         self.start_time_offset = None
@@ -1416,20 +1417,36 @@ class HDF5eventLogger(HDF5container):
         now = self.start_datetime + datetime.timedelta(seconds=seconds)
         return {"Time": now, "DeltaTime": seconds, "StartTime": self.start_datetime, self.TYPE_NAME: type_, **kwargs}
 
+    def add_hierarchy_child(self, name, event, child_kwargs=None):
+        if self.LINK_NAME not in event:
+            event[self.LINK_NAME] = str(uuid.uuid4())
+        child_dtype = self.event2dtype(event)
+        if child_kwargs is None:
+            child_kwargs = self.default_child_kwargs
+        child_dataset = self.create_event_dataset(name, dtype=child_dtype, **child_kwargs)
+        self.hierarchy.add_child_dataset(name, child_dataset)
+
     def append_event(self, event, axis=0, child_kwargs=None):
         child_name = event[self.TYPE_NAME]
-        if child_name not in self.hierarchy.child_datasets:
-            child_event = event.copy()
-            for field in self.EVENT_FIELDS.keys():
-                if field in child_event:
-                    child_event.pop(field)
-            if self.LINK_NAME not in child_event:
-                child_event[self.LINK_NAME] = str(uuid.uuid4())
-            child_dtype = self.event2dtype(child_event)
-            if child_kwargs is None:
-                child_kwargs = self.default_child_kwargs
-            child_dataset = self.create_event_dataset(child_name, dtype=child_dtype, **child_kwargs)
-            self.hierarchy.add_child_dataset(child_name, child_dataset)
+        child_event = event.copy()
+        for field in self.EVENT_FIELDS.keys():
+            if field in child_event:
+                child_event.pop(field)
+        event_type = self.event2dtype(child_event)
+
+        event_types = self.event_dataset_types.get(child_name, None)
+        if event_types is None:
+            self.add_hierarchy_child(child_name, child_event, child_kwargs)
+            self.event_dataset_types[child_name] = {event_type, child_name}
+        else:
+            name = event_types.get(event_type, None)
+            if name is None:
+                child_name = f"{child_name}_{len(event_types)}"
+                self.add_hierarchy_child(child_name, child_event, child_kwargs)
+                self.event_types[event_type] = child_name
+            else:
+                child_name = name
+
         self.hierarchy.append_item(event, (child_name,), axis)
 
     def set_time(self):
@@ -1520,7 +1537,7 @@ class HDF5eventLogger(HDF5container):
                 dtype = h5py.string_dtype(encoding="utf-8")
 
             dtypes.append((key, dtype))
-        return dtypes
+        return tuple(dtypes)
 
 
 class SubjectEventLogger(HDF5eventLogger):
