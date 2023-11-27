@@ -143,11 +143,11 @@ class QuestionnaireContainer(BaseWidgetContainer):
             self.answer_action = answer_action
 
         if self.path.as_posix() == '.':
-            event = {"type_": 'Questionnaire', 'SubType': 'NoFile'}
+            event = {"type_": 'Questionnaire_Start', 'File': 'None'}
             self.widget.finish_action(event=event, caller=self)
         else:
             self.widget.load_file(self.path)
-            event = {'SubType': 'Start'}
+            event = {'File': self.path.as_posix()}
             super().run()
             # self.events.trigger_event(**event)
             self.events.append(type_="Questionnaire", **event)

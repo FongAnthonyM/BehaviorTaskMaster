@@ -1443,7 +1443,7 @@ class HDF5eventLogger(HDF5container):
             if name is None:
                 child_name = f"{child_name}_{len(event_types)}"
                 self.add_hierarchy_child(child_name, child_event, child_kwargs)
-                self.event_types[event_type] = child_name
+                event_types[event_type] = child_name
             else:
                 child_name = name
 

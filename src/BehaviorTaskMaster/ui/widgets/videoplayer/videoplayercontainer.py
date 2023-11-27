@@ -137,10 +137,10 @@ class VideoPlayerContainer(BaseWidgetContainer):
             self.finish_action = finish_action
 
         self.load_video()
-        event = {'SubType': 'Start'}
+        event = {'File': self.path.as_posix()}
         super().run()
         # self.events.trigger_event(**event)
-        self.events.append(type_="Video", **event)
+        self.events.append(type_="Video_Start", **event)
         self.widget.play()
 
     def load_video(self, video=None):

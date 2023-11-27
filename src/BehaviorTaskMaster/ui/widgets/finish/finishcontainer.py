@@ -74,7 +74,7 @@ class FinishContainer(BaseWidgetContainer):
         event = {}
         super().run()
         # self.events.trigger_event(**event)
-        self.events.append(type_="TaskFinished", **event)
+        self.events.append(type_="TaskFinished_Start", **event)
         self.widget.start()
 
     def finish_process(self, event=None, caller=None):

@@ -61,10 +61,10 @@ class InstructionsContainer(BaseWidgetContainer):
         self.widget.ok_action = self.ok_action
         self.widget.back_action = self.back_action
         self.load_text()
-        event = {'SubType': 'Start'}
+        event = {'File': self.path.as_posix()}
         super().run()
         # self.events.trigger_event(**event)
-        self.events.append(type_="Instructions", **event)
+        self.events.append(type_="Instructions_Start", **event)
 
     def load_text(self):
         with self.path.open('r') as file:

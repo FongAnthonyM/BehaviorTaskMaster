@@ -143,14 +143,14 @@ class RatingContainer(BaseWidgetContainer):
             self.answer_action = answer_action
 
         if self.path.as_posix() == '.':
-            event = {"type_": 'Rating', 'SubType': 'NoFile'}
+            event = {"type_": 'Rating_Start', 'File': 'None'}
             self.widget.finish_action(event=event, caller=self)
         else:
             self.widget.load_file(self.path)
-            event = {'SubType': 'Start'}
+            event = {'File': self.path.as_posix()}
             super().run()
             # self.events.trigger_event(**event)
-            self.events.append(type_="Rating", **event)
+            self.events.append(type_="Rating_start", **event)
 
     def next_rating(self, event=None, caller=None):
         self.events.append(**event)

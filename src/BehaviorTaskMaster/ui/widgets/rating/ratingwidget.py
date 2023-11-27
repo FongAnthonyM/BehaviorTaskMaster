@@ -227,7 +227,8 @@ class RatingWidget(QWidget):
     def _continue(self):
         self.r_index += 1
         event = {'type_': 'Rating_AnswerConfirmed', 'File': self.path.name}
-        event.update(self.selected_ratings)
+        event.update({k: "" for k in self.rating_items.keys()} | self.selected_ratings)
+        self.selected_ratings.clear()
         if self.r_index < len(self.ratings):
             self.next_action(event=event, caller=self)
         else:

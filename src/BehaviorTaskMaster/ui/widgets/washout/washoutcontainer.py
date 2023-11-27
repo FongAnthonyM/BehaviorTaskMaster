@@ -45,10 +45,10 @@ class WashoutContainer(BaseWidgetContainer):
 
         self.widget.timer_action = self.timer_action
         self.widget.milliseconds = self.milliseconds
-        event = {'SubType': 'WashoutStart'}
+        event = {'Duration': self.milliseconds / 1000}
         super().run()
         # self.events.trigger_event(**event)
-        self.events.append(type_="General", **event)
+        self.events.append(type_="Washout_Start", **event)
         self.widget.start()
 
     def setup(self):
