@@ -1537,7 +1537,7 @@ class HDF5eventLogger(HDF5container):
                 dtype = h5py.string_dtype(encoding="utf-8")
 
             dtypes.append((key, dtype))
-        return tuple(dtypes)
+        return np.dtype(dtypes)
 
 
 class SubjectEventLogger(HDF5eventLogger):

@@ -50,7 +50,7 @@ class InstructionsWidget(QWidget):
         self.ui.textBrowser.setText(self.text)
 
     def ok(self):
-        event = {'type_': 'Instructions', 'Accepted': True}
+        event = {'type_': 'Instructions_Confirmation', 'Accepted': True}
         self.ok_action(event=event, caller=self)
 
     def default_ok(self, event=None, caller=None):
