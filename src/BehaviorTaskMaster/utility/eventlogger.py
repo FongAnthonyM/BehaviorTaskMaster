@@ -1437,7 +1437,7 @@ class HDF5eventLogger(HDF5container):
         event_types = self.event_dataset_types.get(child_name, None)
         if event_types is None:
             self.add_hierarchy_child(child_name, child_event, child_kwargs)
-            self.event_dataset_types[child_name] = {event_type, child_name}
+            self.event_dataset_types[child_name] = {event_type: child_name}
         else:
             name = event_types.get(event_type, None)
             if name is None:
