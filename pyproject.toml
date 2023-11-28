@@ -24,6 +24,7 @@ h5py = ">=6.0"
 sounddevice = ">=0.4.3"
 PySide2 = ">=5.15.2"
 toml = ">=0.10.2"
+pyserial = ">=3.5"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2.5"
