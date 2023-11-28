@@ -2,7 +2,7 @@
 Description:
 """
 # Package Header #
-from ...header import *
+from ....header import *
 
 # Header #
 __author__ = __author__
@@ -23,13 +23,13 @@ from PySide2 import QtGui, QtWidgets, QtMultimedia
 from PySide2.QtWidgets import QWidget, QAction, QFileDialog, QAbstractItemView, QStyle
 
 # Local Packages #
-from ...utility.iotriggers import AudioTrigger
-from ...utility.eventlogger import SubjectEventLogger
-from ...ui.windows import TaskWindow
-from ...ui.widgets import BaseWidgetContainer, WidgetContainerSequencer
-from ...ui.widgets import InstructionsContainer, WashoutContainer, FinishContainer, VideoPlayerContainer, QuestionnaireImageContainer
-from ...ui.widgets import VideoPlayerControlContainer
-from ...ui.widgets import VideoConfigurationParametersContainer
+from src.BehaviorTaskMaster.utility.iotriggers import AudioTrigger
+from src.BehaviorTaskMaster.utility.eventlogger import SubjectEventLogger
+from src.BehaviorTaskMaster.ui.windows import TaskWindow
+from src.BehaviorTaskMaster.ui.widgets import BaseWidgetContainer, WidgetContainerSequencer
+from src.BehaviorTaskMaster.ui.widgets import InstructionsContainer, WashoutContainer, FinishContainer, VideoPlayerContainer, QuestionnaireImageContainer
+from src.BehaviorTaskMaster.ui.widgets import VideoPlayerControlContainer
+from src.BehaviorTaskMaster.ui.widgets import VideoConfigurationParametersContainer
 
 
 # Definitions #
