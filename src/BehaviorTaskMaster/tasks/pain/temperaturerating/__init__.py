@@ -1,8 +1,8 @@
 """ __init__.py
-
+Description:
 """
 # Package Header #
-from ...header import *
+from ....header import *
 
 # Header #
 __author__ = __author__
@@ -13,4 +13,4 @@ __email__ = __email__
 
 # Imports #
 # Local Packages #
-from .temperaturerating import *
+from .temperatureratingtask import TemperatureRatingTask

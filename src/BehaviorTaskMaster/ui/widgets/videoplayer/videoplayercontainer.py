@@ -41,6 +41,7 @@ class VideoPlayerContainer(BaseWidgetContainer):
         self.source = source
 
         self._path = None
+        self._config_path = None
         if path is None:
             self._path = pathlib.Path(__file__).parent.joinpath('emotionTask', 'default.mp4')
         else:
@@ -76,6 +77,17 @@ class VideoPlayerContainer(BaseWidgetContainer):
             self._path = value
         else:
             self._path = pathlib.Path(value)
+
+    @property
+    def config_path(self):
+        return self._config_path
+
+    @config_path.setter
+    def config_path(self, value):
+        if isinstance(value, pathlib.Path) or value is None:
+            self._config_path = value
+        else:
+            self._config_path = pathlib.Path(value)
 
     @property
     def url(self):
@@ -128,11 +140,13 @@ class VideoPlayerContainer(BaseWidgetContainer):
         self.widget.frame_action = self._frame_action
         self.widget.finish_action = self._finish_action
 
-    def run(self, source="path", path=None, url=None, frame_action=None, finish_action=None):
+    def run(self, source="path", path=None, url=None, config=None, frame_action=None, finish_action=None):
         if source is not None:
             self.source = source
         if path is not None:
             self.path = path
+        if config is not None:
+            self.config_path = config
         if url is not None:
             self.url = url
         if frame_action is not None:
@@ -141,6 +155,7 @@ class VideoPlayerContainer(BaseWidgetContainer):
             self.finish_action = finish_action
 
         self.load_video()
+        self.load_config()
         event = {'File': self.path.as_posix()}
         super().run()
         # self.events.trigger_event(**event)
@@ -154,13 +169,17 @@ class VideoPlayerContainer(BaseWidgetContainer):
         else:
             self.widget.set_video(video)
 
+    def load_config(self):
+        pass
+
     def frame_process(self, frame=None, number=None, event=None, caller=None, **kwargs):
         # could use frame metadata if it exists: print(frame.metaData(str_name))
         # self.events.append(**event)
         # print(self.events[-1])
-        now = datetime.datetime.now()
-        period = (now - self.previous_time).total_seconds()
-        print(now.strftime("%H:%M:%S.%f"))
-        print(f"Frame Period: {period}")
-        print(f"Frame Rate: {1/period}")
-        self.previous_time = now
+        # now = datetime.datetime.now()
+        # period = (now - self.previous_time).total_seconds()
+        # print(now.strftime("%H:%M:%S.%f"))
+        # print(f"Frame Period: {period}")
+        # print(f"Frame Rate: {1/period}")
+        # self.previous_time = now
+        pass
