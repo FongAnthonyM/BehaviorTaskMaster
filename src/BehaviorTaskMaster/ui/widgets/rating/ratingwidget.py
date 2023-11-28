@@ -159,7 +159,7 @@ class RatingWidget(QWidget):
 
         for i, item in enumerate(items):
             self.rating_items[item] = set()
-            self.selected_ratings[item] = -1
+            self.selected_ratings[item] = ""
             item_label = QtWidgets.QLabel(self.ui.answersBox)
             item_label.setObjectName(f"{item}Label")
             item_label.setFont(font)
@@ -182,6 +182,7 @@ class RatingWidget(QWidget):
     def remove_answers(self):
         self.rating_key.clear()
         self.rating_items.clear()
+        self.selected_ratings.clear()
         while not self.ui.answersLayout.isEmpty():
             item = self.ui.answersLayout.takeAt(0)
             if not item.isEmpty():
@@ -202,7 +203,7 @@ class RatingWidget(QWidget):
         self.limit_answer(item, answer_radio)
 
     def answer(self, item, rating, value):
-        self.selected_ratings[item] = rating
+        self.selected_ratings[item] = rating if value else ""
         event = {
             'type_': 'Rating_AnswerSelected',
             'File': self.path.name,
@@ -227,8 +228,7 @@ class RatingWidget(QWidget):
     def _continue(self):
         self.r_index += 1
         event = {'type_': 'Rating_AnswerConfirmed', 'File': self.path.name}
-        event.update({k: "" for k in self.rating_items.keys()} | self.selected_ratings)
-        self.selected_ratings.clear()
+        event.update(self.selected_ratings)
         if self.r_index < len(self.ratings):
             self.next_action(event=event, caller=self)
         else:
