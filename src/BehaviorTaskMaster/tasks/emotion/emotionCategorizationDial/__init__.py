@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
 """ __init__.py
 Description: 
 """
@@ -14,12 +12,5 @@ __email__ = __email__
 
 
 # Imports #
-# Standard Libraries #
-
-# Third-Party Packages #
-
 # Local Packages #
-
-
-# Definitions #
-# Classes #
+from .emotioncategorizationdialtask import EmotionCategorizationDialTask

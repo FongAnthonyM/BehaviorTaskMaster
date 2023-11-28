@@ -1,7 +1,5 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
 """ __init__.py
-Description: 
+Description:
 """
 # Package Header #
 from ....header import *
@@ -14,12 +12,5 @@ __email__ = __email__
 
 
 # Imports #
-# Standard Libraries #
-
-# Third-Party Packages #
-
 # Local Packages #
-
-
-# Definitions #
-# Classes #
+from .emotiondialquestionstask import EmotionDialQuestionsTask

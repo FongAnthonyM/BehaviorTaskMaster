@@ -150,7 +150,7 @@ class RatingContainer(BaseWidgetContainer):
             event = {'File': self.path.as_posix()}
             super().run()
             # self.events.trigger_event(**event)
-            self.events.append(type_="Rating_start", **event)
+            self.events.append(type_="Rating_Start", **event)
 
     def next_rating(self, event=None, caller=None):
         self.events.append(**event)
