@@ -159,6 +159,8 @@ class VideoPlayerContainer(BaseWidgetContainer):
         # self.events.append(**event)
         # print(self.events[-1])
         now = datetime.datetime.now()
+        period = (now - self.previous_time).total_seconds()
         print(now.strftime("%H:%M:%S.%f"))
-        print(f"Frame Period: {(now - self.previous_time).total_seconds()}")
+        print(f"Frame Period: {period}")
+        print(f"Frame Rate: {1/period}")
         self.previous_time = now
