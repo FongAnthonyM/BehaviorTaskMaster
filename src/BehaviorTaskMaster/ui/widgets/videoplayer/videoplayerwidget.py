@@ -74,7 +74,7 @@ class VideoPlayerWidget(QWidget):
     def frame(self, frame):
         self.frame_number += 1
         # event = {'type_': 'Video_Frame', 'Video': self.video.name, 'FrameNumber': self.frame_number}
-        # self.frame_action(frame, self.frame_number, event=event, caller=self)
+        self.frame_action(frame, self.frame_number, caller=self)
 
     def default_frame(self, frame=None, number=None, event=None, caller=None):
         print(QtCore.QTime.currentTime().toString("hh:mm:ss.zzzz"))

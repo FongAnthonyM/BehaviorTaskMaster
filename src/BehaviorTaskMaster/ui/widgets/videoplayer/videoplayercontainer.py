@@ -1,6 +1,8 @@
 """ videoplayercontainer.py
 Description:
 """
+import time
+
 # Package Header #
 from ....header import *
 
@@ -13,6 +15,7 @@ __email__ = __email__
 
 # Imports #
 # Standard Libraries #
+import datetime
 import pathlib
 
 # Third-Party Packages #
@@ -30,6 +33,7 @@ class VideoPlayerContainer(BaseWidgetContainer):
         BaseWidgetContainer.__init__(self, name, init)
         self._frame_action = self.frame_process
         self._finish_action = None
+        self.previous_time = None
 
         self.events = events
 
@@ -140,6 +144,7 @@ class VideoPlayerContainer(BaseWidgetContainer):
         event = {'File': self.path.as_posix()}
         super().run()
         # self.events.trigger_event(**event)
+        self.previous_time = datetime.datetime.now()
         self.events.append(type_="Video_Start", **event)
         self.widget.play()
 
@@ -149,7 +154,11 @@ class VideoPlayerContainer(BaseWidgetContainer):
         else:
             self.widget.set_video(video)
 
-    def frame_process(self, frame=None, number=None, event=None, caller=None):
-        # could use frame metadata if is exists: print(frame.metaData(str_name))
-        self.events.append(**event)
+    def frame_process(self, frame=None, number=None, event=None, caller=None, **kwargs):
+        # could use frame metadata if it exists: print(frame.metaData(str_name))
+        # self.events.append(**event)
         # print(self.events[-1])
+        now = datetime.datetime.now()
+        print(now.strftime("%H:%M:%S.%f"))
+        print(f"Frame Period: {(now - self.previous_time).total_seconds()}")
+        self.previous_time = now
