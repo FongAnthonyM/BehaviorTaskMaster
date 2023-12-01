@@ -68,7 +68,7 @@ class TemperatureVideoPlayerContainer(VideoPlayerContainer):
 
             event = {
                 "type_": "Temperature_Start",
-                "frame_start": temperature_config["frame_start"],
+                "frame_start": temperature_config["start_frame"],
                 "baseline": temperature_config["baseline"],
             }
             event.update({f"duration_{i}": d for i, d in enumerate(temperature_config["durations"])})
