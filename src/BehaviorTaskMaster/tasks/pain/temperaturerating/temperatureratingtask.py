@@ -24,6 +24,7 @@ import toml
 # Local Packages #
 from ....utility.iotriggers import AudioTrigger
 from ....utility.eventlogger import SubjectEventLogger
+from ....utility.tcsdevice import TCSDevice
 from ....ui.windows import TaskWindow
 from ....ui.widgets import BaseWidgetContainer, WidgetContainerSequencer
 from ....ui.widgets import InstructionsContainer, WashoutContainer, FinishContainer, VideoPlayerContainer, RatingContainer
@@ -48,17 +49,17 @@ class TemperatureVideoPlayerContainer(VideoPlayerContainer):
 
     def load_config(self):
         if self.config_path.as_posix() != '.':
-            self.temperature_configs = toml.load(self.path)["TCS"]
+            self.temperature_configs = toml.load(self.config_path)["TCS"]
             self.start_frame = self.temperature_configs[0]["start_frame"]
             self.temp_index = 0
 
     def frame_process(self, frame=None, number=None, event=None, caller=None, **kwargs):
         # could use frame metadata if it exists: print(frame.metaData(str_name))
-        if frame == self.start_frame:
+        if number == self.start_frame:
             print(f"Temp Start:{datetime.datetime.now().strftime('%H:%M:%S.%f')}")
             temperature_config = self.temperature_configs[0]
             self.device.set_quiet()
-            self.device.set_basline(temperature_config["baseline"])
+            self.device.set_baseline(temperature_config["baseline"])
             self.device.set_durations(temperature_config["durations"])
             self.device.set_ramp_speed(temperature_config["ramp_speed"])
             self.device.set_return_speed(temperature_config["return_speed"])
@@ -105,7 +106,7 @@ class TemperatureRatingTask:
         self.parameters = VideoConfigurationParametersContainer()
         self.control = VideoPlayerControlContainer(events=self.events, x_name=self.EXPERIMENT_NAME, path=pathlib.Path(__file__).parent)
         self.instructions = InstructionsContainer(path=pathlib.Path(__file__).parent.joinpath('instructions.txt'), events=self.events)
-        self.video_player = TemperatureVideoPlayerContainer(events=self.events)
+        self.video_player = TemperatureVideoPlayerContainer(events=self.events, device=TCSDevice())
         self.questionnaire = RatingContainer(events=self.events)
         self.washout = WashoutContainer(events=self.events)
         self.finished = FinishContainer(events=self.events)

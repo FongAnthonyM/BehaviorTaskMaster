@@ -1,10 +1,10 @@
 [[TCS]]
 start_frame =  300
-basline =      31.0
+baseline =     31.0
 durations =    [1.0, 1.0, 1.0, 1.0, 1.0]
 ramp_speed =   [100.0, 100.0, 100.0, 100.0, 100.0]
 return_speed = [200.0, 200.0, 200.0, 200.0, 200.0]
-temprature =   [45.0, 25.0, 25.0, 45.0, 45.0]
+temperatures = [45.0, 25.0, 25.0, 45.0, 45.0]
 
 [[Ratings]]
 color = "224,224,224"  # Color of the suqure in the top right

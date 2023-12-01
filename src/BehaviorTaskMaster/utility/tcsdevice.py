@@ -23,7 +23,7 @@ import serial
 # Definitions #
 # Classes #
 class TCSDevice:
-    def __init__(self, port='/dev/ttyACM0'):
+    def __init__(self, port="COM3"):
         # some initial parameters
         self.baseline = 30.0
         # Open serial port
