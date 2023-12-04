@@ -53,7 +53,7 @@ class VideoPlayerWidget(QWidget):
         self.mediaPlayer.mediaStatusChanged.connect(self.status_check)
 
         self.frameProbe = QtMultimedia.QVideoProbe(self)
-        # self.frameProbe.videoFrameProbed.connect(self.frame)
+        self.frameProbe.videoFrameProbed.connect(self.frame)  # Sets Frame action
         self.frameProbe.setSource(self.mediaPlayer)
         self.frame_number = 0
 
@@ -73,8 +73,8 @@ class VideoPlayerWidget(QWidget):
 
     def frame(self, frame):
         self.frame_number += 1
-        event = {'type_': 'Video_Frame', 'Video': self.video.name, 'FrameNumber': self.frame_number}
-        self.frame_action(frame, self.frame_number, event=event, caller=self)
+        # event = {'type_': 'Video_Frame', 'Video': self.video.name, 'FrameNumber': self.frame_number}
+        self.frame_action(frame, self.frame_number, caller=self)
 
     def default_frame(self, frame=None, number=None, event=None, caller=None):
         print(QtCore.QTime.currentTime().toString("hh:mm:ss.zzzz"))

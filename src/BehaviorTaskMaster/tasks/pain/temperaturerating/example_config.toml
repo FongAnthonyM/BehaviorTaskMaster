@@ -1,0 +1,22 @@
+[[TCS]]
+start_frame =  300
+baseline =     31.0
+durations =    [1.0, 1.0, 1.0, 1.0, 1.0]
+ramp_speed =   [100.0, 100.0, 100.0, 100.0, 100.0]
+return_speed = [200.0, 200.0, 200.0, 200.0, 200.0]
+temperatures = [45.0, 25.0, 25.0, 45.0, 45.0]
+
+[[Ratings]]
+color = "224,224,224"  # Color of the suqure in the top right
+ratings = ["Calm\n0", "\n1", "\n2", "Normal\n3", "\n4", "\n5", "Activated\n6"]
+items = ["Activation Level",]
+
+[[Ratings]]
+color = "224,224,224"
+ratings = ["Unpleasant\n0", "\n1", "\n2", "Normal\n3", "\n4", "\n5", "Pleasant\n6"]
+items = ["Valence",]
+
+[[Ratings]]
+color = "224,224,224"
+ratings = ["Not at all\n0", "\n1", "\n2", "Moderately\n3", "\n4", "\n5", "Strongly\n6"]
+items = ["Affection/Tenderness", "Fear", "Anger", "Amusement", "Awe", "Disgust", "Sadness", "Compassion", "Joy"]
