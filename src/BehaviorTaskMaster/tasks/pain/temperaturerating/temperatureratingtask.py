@@ -49,9 +49,12 @@ class TemperatureVideoPlayerContainer(VideoPlayerContainer):
 
     def load_config(self):
         if self.config_path.as_posix() != '.':
-            self.temperature_configs = toml.load(self.config_path)["TCS"]
-            self.start_frame = self.temperature_configs[0]["start_frame"]
-            self.temp_index = 0
+            self.temperature_configs = toml.load(self.config_path).get("TCS", None)
+            if self.temperature_configs is None:
+                self.start_frame = -1
+            else:
+                self.start_frame = self.temperature_configs[0]["start_frame"]
+                self.temp_index = 0
 
     def frame_process(self, frame=None, number=None, event=None, caller=None, **kwargs):
         # could use frame metadata if it exists: print(frame.metaData(str_name))
