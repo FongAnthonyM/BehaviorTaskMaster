@@ -1,7 +1,7 @@
 [[Ratings]]
 color = "224,224,224"
 ratings = ["One End\n0", "\n1", "\n2", "\n3", "\n4", "\n5", "\n6","\n7", "\n8", "\n9", "Middle\n10", "\n11", "\n12", "\n13", "\n14", "\n15", "\n16","\n17", "\n18", "\n19", "Other End\n20"]
-items = ["Activation Level",]
+items = ["Affection/Tenderness", "Fear", "Anger", "Amusement", "Awe", "Disgust", "Sadness", "Compassion", "Joy"]
 
 [[Ratings]]
 color = "224,224,224"

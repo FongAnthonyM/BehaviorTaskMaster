@@ -140,7 +140,7 @@ class RatingWidget(QWidget):
         self.ui.answersLayout.addItem(leftSpacer, 1, 0, size[0], 1)
         self.ui.answersLayout.addItem(rightSpacer, 1, b_size[1] - 1, size[0], 1)
 
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         font = QtGui.QFont()
@@ -154,7 +154,7 @@ class RatingWidget(QWidget):
             item_label.setAlignment(QtGui.Qt.AlignCenter)
             item_label.setObjectName(f"{rating}Label")
             item_label.setText(QtWidgets.QApplication.translate("RatingContainer", rating, None, -1))
-            #item_label.setStyleSheet("margin-left:50%; margin-right:50%;")
+            # item_label.setStyleSheet("margin-left:10%; margin-right:10%;")
             self.ui.answersLayout.addWidget(item_label, 1, j + 2, 1, 1)
 
         for i, item in enumerate(items):
@@ -168,7 +168,7 @@ class RatingWidget(QWidget):
             self.ui.answersLayout.addWidget(item_label, i + 2, 1, 1, 1)
             for j, rating in enumerate(ratings):
                 answer_radio = QtWidgets.QRadioButton(self.ui.answersBox)
-                answer_radio.setStyleSheet("QRadioButton::indicator { width: 40px; height: 40px;} QRadioButton{margin-left:50%; margin-right:50%;};")
+                answer_radio.setStyleSheet("QRadioButton{margin-left:10%; margin-right:10%;};")
                 #sizePolicy.setHeightForWidth(answer_radio.sizePolicy().hasHeightForWidth())
                 #answer_radio.setSizePolicy(sizePolicy)
                 answer_radio.setObjectName(f"answer_check_{item}_{j}")
@@ -178,6 +178,8 @@ class RatingWidget(QWidget):
                 self.ui.answersLayout.addWidget(answer_radio, i + 2, j + 2, 1, 1)
                 self.rating_key[answer_radio] = {"item": item, "rating": str(j)}
                 self.rating_items[item].add(answer_radio)
+
+        # self.resize(1024, 768)
 
     def remove_answers(self):
         self.rating_key.clear()
